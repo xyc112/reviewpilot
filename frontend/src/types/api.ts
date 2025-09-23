@@ -1,3 +1,4 @@
+// 统一类型定义
 export interface Course {
     courseId: number
     courseName: string
@@ -74,4 +75,46 @@ export interface QuizResult {
         correctAnswer: string
         selectedAnswer: string
     }>
+}
+
+// API 请求/响应相关类型
+export interface ApiResponse<T> {
+    data: T
+    message?: string
+    success: boolean
+}
+
+export interface ErrorResponse {
+    error: string
+    timestamp?: string
+    path?: string
+    status?: number
+}
+
+// 请求参数类型
+export interface GetKnowledgeGraphParams {
+    courseId: number
+    userId?: number
+}
+
+export interface GetRandomQuestionsParams {
+    pointId: number
+    count?: number
+    userId?: number
+}
+
+export interface CreateCourseRequest {
+    courseName: string
+    syllabus: string
+}
+
+export interface CreateKnowledgePointRequest {
+    pointName: string
+    description: string
+}
+
+export interface CreateKnowledgeRelationRequest {
+    sourcePoint: { pointId: number }
+    targetPoint: { pointId: number }
+    relationType: string
 }
