@@ -3,14 +3,14 @@ spring:
     name: reviewpilot
 
   datasource:
-    url: jdbc:mysql://localhost:3306/reviewpilot?useSSL=false&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true&characterEncoding=utf8
-    username: root
-    password:
+    url: jdbc:mysql://mysql2.sqlpub.com:3307/reviewpilot?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true
+    username: reviewpilot
+    password: ${REVIEWPILOT_DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connection-timeout: 30000
-      maximum-pool-size: 20
-      minimum-idle: 5
+      maximum-pool-size: 7
+      minimum-idle: 3
       idle-timeout: 600000
       max-lifetime: 1800000
 
