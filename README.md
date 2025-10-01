@@ -2,10 +2,7 @@
 
 > 基于知识图谱的个性化复习导航系统 | 南京大学《人机交互》课程项目
 
-https://img.shields.io/badge/Java-25-blue.svg
-[https://img.shields.io/badge/Spring%2520Boot-3.2.0-brightgreen.svg](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)
-https://img.shields.io/badge/MySQL-8.0-orange.svg
-https://img.shields.io/badge/Vue-3-4FC08D.svg
+![Java](https://img.shields.io/badge/Java-25-blue.svg)![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)![Vue](https://img.shields.io/badge/Vue-3-4FC08D.svg)
 
 ## 🎯 项目简介
 
