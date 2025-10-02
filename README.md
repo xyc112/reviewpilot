@@ -128,7 +128,7 @@ mvn spring-boot:run
 
 ### 前端部署
 
-#### 方式一：Web 版本
+#### Web 版本
 
 ```bash
 cd ../frontend
@@ -136,7 +136,7 @@ npm install
 vite
 ```
 
-#### 方式二：桌面客户端
+#### 桌面客户端
 
 ```bash
 cd ../electron
@@ -177,19 +177,6 @@ npm start
 - ✅ **开发友好**: 直接代理到 Vite 开发服务器
 - ✅ **完全解耦**: 不影响原有 Web 项目架构
 
-### 开发环境运行
-
-```bash
-cd electron
-npm start
-```
-
-### 生产环境打包
-
-```bash
-# 打包为当前平台应用
-npm run build
-```
 
 ## 🔧 配置说明
 
@@ -319,7 +306,7 @@ GET /api/quiz/attempts/history?pointId=1
 reviewpilot/
 ├── backend/                         # 后端项目
 │   ├── src/main/java/
-│   │   └── com/nju/reviewpilot/
+│   │   └── com/reviewpilot/
 │   │       ├── entity/              # 数据实体类
 │   │       ├── repository/          # 数据访问层
 │   │       ├── service/             # 业务逻辑层
