@@ -1,20 +1,20 @@
 <template>
-  <div class="knowledge-graph-view">
+  <div class="courses">
     <div class="page-header">
-      <h1>知识图谱</h1>
-      <p>可视化展示知识点关系，发现学习路径</p>
+      <h1>课程管理</h1>
+      <p>选择课程开始学习之旅</p>
     </div>
-    <KnowledgeGraph />
+    <CourseList />
   </div>
 </template>
 
 <script setup lang="ts">
-import KnowledgeGraph from '../components/KnowledgeGraph.vue'
+import CourseList from '../components/CourseList.vue'
 </script>
 
 <style scoped>
-.knowledge-graph-view {
-  max-width: 1400px;
+.courses {
+  max-width: 1200px;
   margin: 0 auto;
 }
 
