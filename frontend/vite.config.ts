@@ -1,15 +1,30 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [react({
+        jsxImportSource: '@emotion/react',
+        babel: {
+            plugins: ['@emotion/babel-plugin'],
+        },
+    })],
     server: {
         port: 5173,
+        host: true,
         proxy: {
             '/api': {
                 target: 'http://localhost:8080',
-                changeOrigin: true
-            }
-        }
-    }
+                changeOrigin: true,
+            },
+        },
+    },
+    build: {
+        outDir: 'dist',
+        sourcemap: true,
+    },
+    resolve: {
+        alias: {
+            '@': '/src',
+        },
+    },
 })

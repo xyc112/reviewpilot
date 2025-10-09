@@ -1,7 +1,7 @@
 # IDE files
-**/.idea/
-**/*.iml
+.idea/
+*.iml
 
 # Build outputs
-**/target/
-**/node_modules/
+target/
+node_modules/
