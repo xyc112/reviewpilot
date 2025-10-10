@@ -4,7 +4,7 @@ import { WarningOutlined, RocketOutlined } from "@ant-design/icons";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { KnowledgePoint } from "@/types/api";
-import { userAPI } from "@/services/api";
+// import { userAPI } from "@/services/api";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { MASTERY_LEVELS, DIFFICULTY_LEVELS } from "@/utils/constants";
 

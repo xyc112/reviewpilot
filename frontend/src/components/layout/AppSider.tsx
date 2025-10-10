@@ -21,9 +21,6 @@ const siderStyles = {
   sider: css`
     background: #fff;
     border-right: 1px solid #f0f0f0;
-    .ant-menu {
-      border-right: none;
-    }
   `,
   logo: css`
     height: 64px;

@@ -4,13 +4,13 @@ import {
   Row,
   Col,
   Button,
-  Radio,
-  Checkbox,
+  /*Radio,
+  Checkbox,*/
   Typography,
   Progress,
   Tag,
   Statistic,
-  List,
+  // List,
 } from "antd";
 import {
   PlayCircleOutlined,
@@ -20,11 +20,11 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { css } from "@emotion/react";
-import { useAppStore } from "@/stores/appStore";
+// import { useAppStore } from "@/stores/appStore";
 import { QuizQuestion } from "@/types/api";
-import { quizAPI } from "@/services/api";
+// import { quizAPI } from "@/services/api";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import EmptyState from "@/components/common/EmptyState";
+// import EmptyState from "@/components/common/EmptyState";
 import { DIFFICULTY_LEVELS } from "@/utils/constants";
 
 const { Title, Text } = Typography;
@@ -92,7 +92,7 @@ const QuizSystem: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(1800); // 30分钟
   const [loading, setLoading] = useState(false);
   const [score, setScore] = useState(0);
-  const { currentCourse } = useAppStore();
+  // const { currentCourse } = useAppStore();
 
   useEffect(() => {
     if (quizStarted && timeLeft > 0) {

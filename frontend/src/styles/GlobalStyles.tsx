@@ -22,11 +22,8 @@ export const GlobalStyles: React.FC = () => {
           -moz-osx-font-smoothing: grayscale;
         }
 
-        #root {
-          min-height: 100vh;
-        }
-
         /* 自定义滚动条 */
+
         ::-webkit-scrollbar {
           width: 6px;
         }
@@ -42,25 +39,6 @@ export const GlobalStyles: React.FC = () => {
 
         ::-webkit-scrollbar-thumb:hover {
           background: #a8a8a8;
-        }
-
-        .ant-layout {
-          background: #f5f5f5;
-        }
-
-        .ant-layout-header {
-          background: #fff;
-          border-bottom: 1px solid #f0f0f0;
-          padding: 0 24px;
-        }
-
-        .ant-layout-sider {
-          background: #fff;
-          border-right: 1px solid #f0f0f0;
-        }
-
-        .ant-menu {
-          border-right: none;
         }
       `}
     />

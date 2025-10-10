@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Select, Button, Typography, Tag } from "antd";
+import { Card, /*Row, Col,*/ Select, Button, Typography, Tag } from "antd";
 import { ReloadOutlined, FullscreenOutlined } from "@ant-design/icons";
 import ReactECharts from "echarts-for-react";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { KnowledgeGraphData } from "@/types/api";
-import { knowledgeGraphAPI } from "@/services/api";
+// import { knowledgeGraphAPI } from "@/services/api";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { MASTERY_LEVELS, DIFFICULTY_LEVELS } from "@/utils/constants";
 
@@ -128,15 +128,18 @@ const KnowledgeGraph: React.FC = () => {
         fontSize: 12,
       },
       tooltip: {
-        formatter: ({ data }: any) => `
-          <div>
-            <strong>${data.name}</strong><br/>
-            掌握度: ${data.masteryScore}%<br/>
-            难度: ${DIFFICULTY_LEVELS[data.difficulty].label}<br/>
-            题目数: ${data.questionCount}<br/>
-            预估学习: ${data.estimatedStudyTime}分钟
-          </div>
-        `,
+        formatter: ({ data }: any) => {
+          const difficulty = data.difficulty as keyof typeof DIFFICULTY_LEVELS;
+          return `
+      <div>
+        <strong>${data.name}</strong><br/>
+        掌握度: ${data.masteryScore}%<br/>
+        难度: ${DIFFICULTY_LEVELS[difficulty].label}<br/>
+        题目数: ${data.questionCount}<br/>
+        预估学习: ${data.estimatedStudyTime}分钟
+      </div>
+    `;
+        },
       },
     }));
 

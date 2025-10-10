@@ -22,7 +22,7 @@ import {
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { Note, KnowledgePoint } from "@/types/api";
-import { notesAPI } from "@/services/api";
+// import { notesAPI } from "@/services/api";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import { formatDate } from "@/utils/helpers";
