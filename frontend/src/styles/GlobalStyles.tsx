@@ -1,10 +1,10 @@
-import { Global, css } from '@emotion/react'
-import React from 'react'
+import { Global, css } from "@emotion/react";
+import React from "react";
 
 export const GlobalStyles: React.FC = () => {
-    return (
-        <Global
-            styles={css`
+  return (
+    <Global
+      styles={css`
         * {
           margin: 0;
           padding: 0;
@@ -12,7 +12,9 @@ export const GlobalStyles: React.FC = () => {
         }
 
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          font-family:
+            -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
           line-height: 1.6;
           color: #333;
           background-color: #f5f5f5;
@@ -61,6 +63,6 @@ export const GlobalStyles: React.FC = () => {
           border-right: none;
         }
       `}
-        />
-    )
-}
+    />
+  );
+};

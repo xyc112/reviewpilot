@@ -1,31 +1,31 @@
-import React from 'react'
-import { Layout, Menu } from 'antd'
+import React from "react";
+import { Layout, Menu } from "antd";
 import {
-    DashboardOutlined,
-    ShareAltOutlined,
-    BarChartOutlined,
-    FileTextOutlined,
-    QuestionCircleOutlined,
-    TeamOutlined
-} from '@ant-design/icons'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { css } from '@emotion/react'
+  DashboardOutlined,
+  ShareAltOutlined,
+  BarChartOutlined,
+  FileTextOutlined,
+  QuestionCircleOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import { useNavigate, useLocation } from "react-router-dom";
+import { css } from "@emotion/react";
 
-const { Sider } = Layout
+const { Sider } = Layout;
 
 interface AppSiderProps {
-    collapsed: boolean
+  collapsed: boolean;
 }
 
 const siderStyles = {
-    sider: css`
+  sider: css`
     background: #fff;
     border-right: 1px solid #f0f0f0;
     .ant-menu {
       border-right: none;
     }
   `,
-    logo: css`
+  logo: css`
     height: 64px;
     display: flex;
     align-items: center;
@@ -34,70 +34,66 @@ const siderStyles = {
     font-size: 18px;
     font-weight: 600;
     color: #1890ff;
-  `
-}
+  `,
+};
 
 const menuItems = [
-    {
-        key: '/',
-        icon: <DashboardOutlined />,
-        label: '学习概览',
-    },
-    {
-        key: '/knowledge-graph',
-        icon: <ShareAltOutlined />,
-        label: '知识图谱',
-    },
-    {
-        key: '/diagnosis',
-        icon: <BarChartOutlined />,
-        label: '学习诊断',
-    },
-    {
-        key: '/notes',
-        icon: <FileTextOutlined />,
-        label: '笔记管理',
-    },
-    {
-        key: '/quiz',
-        icon: <QuestionCircleOutlined />,
-        label: '测验系统',
-    },
-    {
-        key: '/analytics',
-        icon: <TeamOutlined />,
-        label: '学习分析',
-    },
-]
+  {
+    key: "/",
+    icon: <DashboardOutlined />,
+    label: "学习概览",
+  },
+  {
+    key: "/knowledge-graph",
+    icon: <ShareAltOutlined />,
+    label: "知识图谱",
+  },
+  {
+    key: "/diagnosis",
+    icon: <BarChartOutlined />,
+    label: "学习诊断",
+  },
+  {
+    key: "/notes",
+    icon: <FileTextOutlined />,
+    label: "笔记管理",
+  },
+  {
+    key: "/quiz",
+    icon: <QuestionCircleOutlined />,
+    label: "测验系统",
+  },
+  {
+    key: "/analytics",
+    icon: <TeamOutlined />,
+    label: "学习分析",
+  },
+];
 
 const AppSider: React.FC<AppSiderProps> = ({ collapsed }) => {
-    const navigate = useNavigate()
-    const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handleMenuClick = ({ key }: { key: string }) => {
-        navigate(key)
-    }
+  const handleMenuClick = ({ key }: { key: string }) => {
+    navigate(key);
+  };
 
-    return (
-        <Sider
-            trigger={null}
-    collapsible
-    collapsed={collapsed}
-    css={siderStyles.sider}
-        >
-        {!collapsed && (
-        <div css={siderStyles.logo}>
-            ReviewPilot
-            </div>
-    )}
-    <Menu
+  return (
+    <Sider
+      trigger={null}
+      collapsible
+      collapsed={collapsed}
+      css={siderStyles.sider}
+    >
+      {!collapsed && <div css={siderStyles.logo}>ReviewPilot</div>}
+      <Menu
         mode="inline"
-    selectedKeys={[location.pathname]}
-    items={menuItems}
-    onClick={handleMenuClick}
-    />
+        selectedKeys={[location.pathname]}
+        items={menuItems}
+        onClick={handleMenuClick}
+      />
     </Sider>
-)
-}
+  );
+};
 
-export default AppSider
+export default AppSider;
