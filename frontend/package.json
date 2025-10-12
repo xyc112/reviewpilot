@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "format": "prettier --write ."
+    "format": "prettier -w ."
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.0",
