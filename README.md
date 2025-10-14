@@ -160,7 +160,3 @@ reviewpilot/
 │ └── vite.config.ts # Vite构建配置
 └── 📄 package.json # 项目根配置
 ```
-
-------
-
-**让复习更高效，让学习更智能** ✨
