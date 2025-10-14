@@ -2,9 +2,6 @@
   "name": "frontend",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "format": "prettier -w ."
-  },
   "dependencies": {
     "@ant-design/icons": "^5.2.0",
     "@emotion/react": "^11.11.1",
