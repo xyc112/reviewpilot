@@ -7,7 +7,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore } from "@/stores/authStore.ts";
 import { css } from "@emotion/react";
 
 const { Header } = Layout;

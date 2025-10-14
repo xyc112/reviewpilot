@@ -6,7 +6,7 @@ import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { KnowledgeGraphData } from "@/types/api";
 // import { knowledgeGraphAPI } from "@/services/api";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 import { MASTERY_LEVELS, DIFFICULTY_LEVELS } from "@/utils/constants";
 
 const { Title } = Typography;

@@ -10,8 +10,8 @@ import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { LearningProgress, KnowledgePoint } from "@/types/api";
 // import { analyticsAPI, userAPI } from '@/services/api'
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-// import EmptyState from '@/components/common/EmptyState'
+import LoadingSpinner from "@/components/LoadingSpinner.tsx";
+// import EmptyState from '@/components/EmptyState'
 
 const { Title, Text } = Typography;
 

@@ -23,8 +23,8 @@ import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 import { Note, KnowledgePoint } from "@/types/api";
 // import { notesAPI } from "@/services/api";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-import EmptyState from "@/components/common/EmptyState";
+import LoadingSpinner from "@/components/LoadingSpinner.tsx";
+import EmptyState from "@/components/EmptyState.tsx";
 import { formatDate } from "@/utils/helpers";
 
 const { Title, Text } = Typography;

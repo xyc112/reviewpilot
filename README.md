@@ -69,7 +69,7 @@ setx REVIEWPILOT_DB_PASSWORD "数据库密码" /M
 3. **启动前端**
 	
 	```bash
-	cd ../frontend && npm install && vite
+	cd ../frontend && npm i && vite
 	```
 
 ## 🏗️ 系统架构
@@ -122,13 +122,11 @@ reviewpilot/
 └── 📁 frontend/ # 前端项目
           ├── src/
           │    ├── components/ # 可复用组件
-          │    │     ├── common/ # 通用组件
-          │    │     │    ├── EmptyState.tsx # 空状态组件
-          │    │     │    ├── ErrorBoundary.tsx # 错误边界组件
-          │    │     │    └── LoadingSpinner.tsx # 加载动画组件
-          │    │     └── layout/ # 布局组件
-          │    │          ├── AppHeader.tsx # 顶部导航
-          │    │          └── AppSider.tsx # 侧边栏
+          │    │     ├── EmptyState.tsx # 空状态组件
+          │    │     ├── ErrorBoundary.tsx # 错误边界组件
+          │    │     ├── LoadingSpinner.tsx # 加载动画组件
+          │    │     ├── AppHeader.tsx # 顶部导航
+          │    │     └── AppSider.tsx # 侧边栏
           │    ├── pages/ # 页面组件
           │    │    ├── Dashboard.tsx # 仪表板页面
           │    │    ├── KnowledgeGraph.tsx # 知识图谱页面

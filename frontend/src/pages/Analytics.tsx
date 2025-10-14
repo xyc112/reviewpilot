@@ -19,7 +19,7 @@ import ReactECharts from "echarts-for-react";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
 // import { analyticsAPI } from "@/services/api";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 import { MASTERY_LEVELS } from "@/utils/constants";
 
 const { Title, Text } = Typography;

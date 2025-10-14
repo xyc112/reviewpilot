@@ -23,8 +23,8 @@ import { css } from "@emotion/react";
 // import { useAppStore } from "@/stores/appStore";
 import { QuizQuestion } from "@/types/api";
 // import { quizAPI } from "@/services/api";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-// import EmptyState from "@/components/common/EmptyState";
+import LoadingSpinner from "@/components/LoadingSpinner.tsx";
+// import EmptyState from "@/components/EmptyState";
 import { DIFFICULTY_LEVELS } from "@/utils/constants";
 
 const { Title, Text } = Typography;
