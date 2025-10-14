@@ -109,54 +109,48 @@ reviewpilot/
 ├── 📄 README.md # 项目说明文档
 ├── 📄 API.md # API接口文档
 ├── 📁 backend/ # 后端项目
-│ ├── src/main/java/
-│ │ └── com/reviewpilot/
-│ │ ├── entity/ # 数据实体类
-│ │ ├── repository/ # 数据访问层
-│ │ ├── service/ # 业务逻辑层
-│ │ ├── controller/ # API控制层
-│ │ ├── dto/ # 数据传输对象
-│ │ ├── config/ # 配置类
-│ │ └── handler/ # 异常处理
-│ ├── src/main/resources/
-│ │ └── application.yml # 应用配置
-│ └── pom.xml # Maven配置
-├── 📁 frontend/ # 前端项目
-│ ├── public/
-│ │ └── index.html # HTML入口文件
-│ ├── src/
-│ │ ├── components/ # 可复用组件
-│ │ │ ├── common/ # 通用组件
-│ │ │ │ ├── EmptyState.tsx # 空状态组件
-│ │ │ │ ├── ErrorBoundary.tsx # 错误边界组件
-│ │ │ │ └── LoadingSpinner.tsx # 加载动画组件
-│ │ │ └── layout/ # 布局组件
-│ │ │ ├── AppHeader.tsx # 顶部导航
-│ │ │ └── AppSider.tsx # 侧边栏
-│ │ ├── pages/ # 页面组件
-│ │ │ ├── Dashboard.tsx # 仪表板页面
-│ │ │ ├── KnowledgeGraph.tsx # 知识图谱页面
-│ │ │ ├── LearningDiagnosis.tsx # 学习诊断页面
-│ │ │ ├── QuizSystem.tsx # 测验系统页面
-│ │ │ ├── NotesManagement.tsx # 笔记管理页面
-│ │ │ └── Analytics.tsx # 统计分析页面
-│ │ ├── stores/ # 状态管理
-│ │ │ ├── appStore.ts # 应用状态
-│ │ │ └── authStore.ts # 认证状态
-│ │ ├── services/ # API 服务
-│ │ │ └── api.ts # API客户端
-│ │ ├── types/ # TypeScript 类型定义
-│ │ │ └── api.ts # API类型定义
-│ │ ├── utils/ # 工具函数
-│ │ │ ├── constants.ts # 常量定义
-│ │ │ └── helpers.ts # 辅助函数
-│ │ ├── styles/ # 样式文件
-│ │ │ └── GlobalStyles.tsx # 全局样式
-│ │ ├── App.tsx # 根组件
-│ │ └── main.tsx # 应用入口
-│ ├── package.json # 项目依赖
-│ ├── package-lock.json # 依赖锁文件
-│ ├── tsconfig.json # TypeScript配置
-│ └── vite.config.ts # Vite构建配置
-└── 📄 package.json # 项目根配置
+│         ├── src/main/
+│         │        ├── java/backend/
+│         │        │         ├── entity/ # 数据实体类
+│         │        │         ├── repository/ # 数据访问层
+│         │        │         ├── service/ # 业务逻辑层
+│         │        │         ├── controller/ # API控制层
+│         │        │         └── handler/ # 异常处理
+│         │        └── resources/
+│         │              └── application.yml # 应用配置
+│         └── pom.xml # Maven配置
+└── 📁 frontend/ # 前端项目
+          ├── src/
+          │    ├── components/ # 可复用组件
+          │    │     ├── common/ # 通用组件
+          │    │     │    ├── EmptyState.tsx # 空状态组件
+          │    │     │    ├── ErrorBoundary.tsx # 错误边界组件
+          │    │     │    └── LoadingSpinner.tsx # 加载动画组件
+          │    │     └── layout/ # 布局组件
+          │    │          ├── AppHeader.tsx # 顶部导航
+          │    │          └── AppSider.tsx # 侧边栏
+          │    ├── pages/ # 页面组件
+          │    │    ├── Dashboard.tsx # 仪表板页面
+          │    │    ├── KnowledgeGraph.tsx # 知识图谱页面
+          │    │    ├── LearningDiagnosis.tsx # 学习诊断页面
+          │    │    ├── QuizSystem.tsx # 测验系统页面
+          │    │    ├── NotesManagement.tsx # 笔记管理页面
+          │    │    └── Analytics.tsx # 统计分析页面
+          │    ├── stores/ # 状态管理
+          │    │    ├── appStore.ts # 应用状态
+          │    │    └── authStore.ts # 认证状态
+          │    ├── services/ # API 服务
+          │    │    └── api.ts # API客户端
+          │    ├── types/ # TypeScript 类型定义
+          │    │    └── api.ts # API类型定义
+          │    ├── utils/ # 工具函数
+          │    │    ├── constants.ts # 常量定义
+          │    │    └── helpers.ts # 辅助函数
+          │    ├── App.tsx # 根组件
+          │    └── main.tsx # 应用入口
+          ├── index.html # HTML入口文件
+          ├── package.json # 项目依赖
+          ├── package-lock.json # 依赖锁文件
+          ├── tsconfig.json # TypeScript配置
+          └── vite.config.ts # Vite构建配置
 ```
