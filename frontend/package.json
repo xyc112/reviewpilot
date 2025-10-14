@@ -3,29 +3,29 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@ant-design/icons": "^5.2.0",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "antd": "^5.12.0",
-    "axios": "^1.6.2",
-    "dayjs": "^1.11.10",
+    "@ant-design/icons": "^6.1.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "antd": "^5.27.5",
+    "axios": "^1.12.2",
+    "dayjs": "^1.11.18",
     "echarts": "^5.4.3",
     "echarts-for-react": "^3.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1",
-    "zustand": "^4.4.7"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
-    "typescript": "^5.2.2",
-    "vite": "7.1.5"
+    "typescript": "^5.9.3",
+    "vite": "7.1.10"
   }
 }
