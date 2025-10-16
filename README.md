@@ -2,7 +2,7 @@
 
 > 基于知识图谱的个性化复习导航系统 | 南京大学《人机交互》课程项目
 
-![Java](https://img.shields.io/badge/Java-21-007396?style=flat&logo=java&logoColor=white)
+![Java](https://img.shields.io/badge/Java-21-007396?style=flat&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-6DB33F?style=flat&logo=springboot&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=flat&logo=mysql&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
