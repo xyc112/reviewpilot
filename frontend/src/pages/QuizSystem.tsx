@@ -21,8 +21,8 @@ import {
 } from "@ant-design/icons";
 import { css } from "@emotion/react";
 // import { useAppStore } from "@/stores/appStore";
-import { QuizQuestion } from "@/types/api";
-// import { quizAPI } from "@/services/api";
+import { QuizQuestion } from "@/utils/types.ts";
+// import { quizAPI } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 // import EmptyState from "@/components/EmptyState";
 import { DIFFICULTY_LEVELS } from "@/utils/constants";

@@ -3,8 +3,8 @@ import { Card, Row, Col, Progress, List, Typography, Tag, Button } from "antd";
 import { WarningOutlined, RocketOutlined } from "@ant-design/icons";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
-import { KnowledgePoint } from "@/types/api";
-// import { userAPI } from "@/services/api";
+import { KnowledgePoint } from "@/utils/types.ts";
+// import { userAPI } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 import { MASTERY_LEVELS, DIFFICULTY_LEVELS } from "@/utils/constants";
 

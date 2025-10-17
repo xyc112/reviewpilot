@@ -21,8 +21,8 @@ import {
 } from "@ant-design/icons";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
-import { Note, KnowledgePoint } from "@/types/api";
-// import { notesAPI } from "@/services/api";
+import { Note, KnowledgePoint } from "@/utils/types.ts";
+// import { notesAPI } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 import EmptyState from "@/components/EmptyState.tsx";
 import { formatDate } from "@/utils/helpers";

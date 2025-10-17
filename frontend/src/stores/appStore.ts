@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Course } from "@/types/api";
+import { Course } from "@/utils/types.ts";
 
 interface AppState {
   currentCourse: Course | null;

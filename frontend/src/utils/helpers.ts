@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { KnowledgePoint } from "@/types/api";
+import { KnowledgePoint } from "@/utils/types.ts";
 
 /**
  * 格式化日期

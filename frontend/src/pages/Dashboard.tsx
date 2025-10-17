@@ -8,8 +8,8 @@ import {
 } from "@ant-design/icons";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
-import { LearningProgress, KnowledgePoint } from "@/types/api";
-// import { analyticsAPI, userAPI } from '@/services/api'
+import { LearningProgress, KnowledgePoint } from "@/utils/types.ts";
+// import { analyticsAPI, userAPI } from '@/utils/api'
 import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 // import EmptyState from '@/components/EmptyState'
 

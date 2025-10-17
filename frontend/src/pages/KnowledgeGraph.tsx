@@ -4,8 +4,8 @@ import { ReloadOutlined, FullscreenOutlined } from "@ant-design/icons";
 import ReactECharts from "echarts-for-react";
 import { css } from "@emotion/react";
 import { useAppStore } from "@/stores/appStore";
-import { KnowledgeGraphData } from "@/types/api";
-// import { knowledgeGraphAPI } from "@/services/api";
+import { KnowledgeGraphData } from "@/utils/types.ts";
+// import { knowledgeGraphAPI } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner.tsx";
 import { MASTERY_LEVELS, DIFFICULTY_LEVELS } from "@/utils/constants";
 
