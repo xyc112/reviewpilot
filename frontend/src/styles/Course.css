@@ -296,3 +296,370 @@
     background: #f56565;
     color: white;
 }
+
+
+/* 添加到 src/styles/Course.css 文件末尾 */
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+.empty-state p {
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+/* 课程卡片美化 */
+.course-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.course-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.course-title {
+    color: #2d3748;
+    margin: 0 10px 0 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.course-description {
+    color: #718096;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.course-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.course-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-card-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .course-title {
+        margin-right: 0;
+    }
+
+    .course-links {
+        flex-direction: column;
+    }
+}
+
+/* 添加到 src/styles/Course.css 文件末尾 */
+
+/* 测验列表样式 */
+.quizzes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.quiz-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.quiz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.quiz-card h3 {
+    color: #2d3748;
+    margin: 0 0 12px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.quiz-card p {
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* 测验详情样式 */
+.quiz-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.question-card {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.question-card:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.question-type {
+    background: #4299e1;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.options {
+    margin-top: 15px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option:hover {
+    border-color: #cbd5e0;
+}
+
+.option.selected {
+    border-color: #4299e1;
+    background-color: #ebf8ff;
+}
+
+.option-label {
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 20px;
+}
+
+/* 测验结果样式 */
+.quiz-result {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.result-summary {
+    text-align: center;
+    padding: 30px 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 30px;
+}
+
+.score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.score-value {
+    color: #4299e1;
+}
+
+.score-total {
+    color: #a0aec0;
+}
+
+.result-details .question-result {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.result-details .question-result.correct {
+    background-color: #f0fff4;
+    border: 1px solid #9ae6b4;
+}
+
+.result-details .question-result.incorrect {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+}
+
+.question-result .option {
+    cursor: default;
+    margin-bottom: 5px;
+}
+
+.question-result .option.correct {
+    border-color: #48bb78;
+    background-color: #f0fff4;
+}
+
+.question-result .option.incorrect {
+    border-color: #f56565;
+    background-color: #fff5f5;
+}
+
+.question-result .option.missing {
+    border-color: #4299e1;
+    background-color: #ebf8ff;
+}
+
+.feedback {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.correct-label {
+    color: #48bb78;
+    font-weight: bold;
+}
+
+.incorrect-label {
+    color: #f56565;
+    font-weight: bold;
+}
+
+.points {
+    color: #718096;
+}
+
+/* 创建/编辑测验样式 */
+.questions-section h3 {
+    margin: 30px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.question-form {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.question-header h4 {
+    margin: 0;
+}
+
+.option-input {
+    display: flex;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.option-input .form-control {
+    flex: 1;
+}
+
+.option-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.answer-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .quizzes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-actions {
+        flex-direction: column;
+    }
+
+    .option-input {
+        flex-direction: column;
+    }
+
+    .option-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

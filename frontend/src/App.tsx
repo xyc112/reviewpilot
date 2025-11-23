@@ -13,6 +13,10 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 // 在 import 部分添加
 import CreateCourse from './pages/CreateCourse';
 import EditCourse from './pages/EditCourse';
+import CreateQuiz from './pages/CreateQuiz';
+import EditQuiz from './pages/EditQuiz';
+import QuizDetail from './pages/QuizDetail';
+
 const App: React.FC = () => {
     return (
         <AuthProvider>
@@ -34,6 +38,9 @@ const App: React.FC = () => {
                         // 在 Routes 部分添加新路由
                         <Route path="courses/new" element={<CreateCourse />} />
                         <Route path="courses/edit/:id" element={<EditCourse />} />
+                        <Route path="courses/:id/quizzes/new" element={<CreateQuiz />} />
+                        <Route path="courses/:id/quizzes/edit/:quizId" element={<EditQuiz />} />
+                        <Route path="courses/:courseId/quizzes/:quizId" element={<QuizDetail />} />
                     </Route>
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

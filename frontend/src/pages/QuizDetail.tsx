@@ -1,0 +1,234 @@
+// src/pages/QuizDetail.tsx
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Quiz, Question, QuizAttempt } from '../types';
+import { quizAPI } from '../services/api';
+
+const QuizDetail: React.FC = () => {
+    const { courseId, quizId } = useParams<{ courseId: string; quizId: string }>();
+    const navigate = useNavigate();
+
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [answers, setAnswers] = useState<{[key: string]: number[]}>({});
+    const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
+    const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (courseId && quizId) {
+            fetchQuiz(Number(courseId), quizId);
+        }
+    }, [courseId, quizId]);
+
+    const fetchQuiz = async (courseId: number, quizId: string) => {
+        try {
+            const response = await quizAPI.getQuiz(courseId, quizId);
+            setQuiz(response.data);
+        } catch (err: any) {
+            setError('获取测验失败');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAnswerChange = (questionId: string, optionIndex: number, isMultiple: boolean) => {
+        setAnswers(prev => {
+            const currentAnswers = prev[questionId] || [];
+
+            if (isMultiple) {
+                // 多选题处理
+                if (currentAnswers.includes(optionIndex)) {
+                    // 如果已选择，则取消选择
+                    return {
+                        ...prev,
+                        [questionId]: currentAnswers.filter(i => i !== optionIndex)
+                    };
+                } else {
+                    // 添加选择
+                    return {
+                        ...prev,
+                        [questionId]: [...currentAnswers, optionIndex].sort()
+                    };
+                }
+            } else {
+                // 单选题处理
+                return {
+                    ...prev,
+                    [questionId]: [optionIndex]
+                };
+            }
+        });
+    };
+
+    const handleSubmit = async () => {
+        if (!quiz) return;
+
+        setSubmitting(true);
+
+        try {
+            // 构造提交数据
+            const submitData = Object.entries(answers).map(([questionId, answer]) => ({
+                questionId,
+                answer
+            }));
+
+            const response = await quizAPI.submitAttempt(Number(courseId), quiz.id, submitData);
+            setAttempt(response.data);
+        } catch (err: any) {
+            setError('提交测验失败: ' + (err.response?.data?.message || '未知错误'));
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleReset = () => {
+        setAnswers({});
+        setAttempt(null);
+    };
+
+    if (loading) return <div className="loading">加载中...</div>;
+    if (error) return <div className="error-message">{error}</div>;
+    if (!quiz) return <div className="error-message">测验不存在</div>;
+
+    if (attempt) {
+        return (
+            <div className="container">
+                <div className="page-header">
+                    <h1>{quiz.title} - 结果</h1>
+                </div>
+
+                <div className="quiz-result">
+                    <div className="result-summary">
+                        <h2>测验结果</h2>
+                        <div className="score">
+                            <span className="score-value">{attempt.score}</span>
+                            <span className="score-total">/ {attempt.total}</span>
+                        </div>
+                        <p>得分率: {Math.round((attempt.score / attempt.total) * 100)}%</p>
+                    </div>
+
+                    <div className="result-details">
+                        <h3>题目详情</h3>
+                        {quiz.questions.map((question, index) => {
+                            const result = attempt.results.find(r => r.questionId === question.id);
+                            const userAnswer = answers[question.id] || [];
+
+                            return (
+                                <div
+                                    key={question.id}
+                                    className={`question-result ${result?.correct ? 'correct' : 'incorrect'}`}
+                                >
+                                    <h4>题目 {index + 1}: {question.question}</h4>
+                                    <div className="options">
+                                        {question.options?.map((option, optIndex) => {
+                                            const isUserAnswer = userAnswer.includes(optIndex);
+                                            const isCorrectAnswer = question.answer?.includes(optIndex);
+
+                                            let optionClass = "option";
+                                            if (isUserAnswer && isCorrectAnswer) {
+                                                optionClass += " correct";
+                                            } else if (isUserAnswer && !isCorrectAnswer) {
+                                                optionClass += " incorrect";
+                                            } else if (!isUserAnswer && isCorrectAnswer) {
+                                                optionClass += " missing";
+                                            }
+
+                                            return (
+                                                <div key={optIndex} className={optionClass}>
+                                                    <span className="option-label">
+                                                        {String.fromCharCode(65 + optIndex)}.
+                                                    </span>
+                                                    <span className="option-text">{option}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {result && (
+                                        <div className="feedback">
+                                            <span className={result.correct ? "correct-label" : "incorrect-label"}>
+                                                {result.correct ? "✓ 正确" : "✗ 错误"}
+                                            </span>
+                                            <span className="points">得分: {result.score}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="form-actions">
+                        <button onClick={handleReset} className="btn btn-secondary">
+                            重新答题
+                        </button>
+                        <button
+                            onClick={() => navigate(`/courses/${courseId}/quizzes`)}
+                            className="btn btn-primary"
+                        >
+                            返回测验列表
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container">
+            <div className="page-header">
+                <h1>{quiz.title}</h1>
+                <p>共 {quiz.questions.length} 题</p>
+            </div>
+
+            <div className="quiz-container">
+                {quiz.questions.map((question, index) => (
+                    <div key={question.id} className="question-card">
+                        <h3>
+                            题目 {index + 1}: {question.question}
+                            {question.type === 'multiple' && <span className="question-type">[多选]</span>}
+                        </h3>
+
+                        <div className="options">
+                            {question.options?.map((option, optIndex) => (
+                                <div
+                                    key={optIndex}
+                                    className={`option ${
+                                        answers[question.id]?.includes(optIndex) ? 'selected' : ''
+                                    }`}
+                                    onClick={() => handleAnswerChange(
+                                        question.id,
+                                        optIndex,
+                                        question.type === 'multiple'
+                                    )}
+                                >
+                                    <span className="option-label">
+                                        {String.fromCharCode(65 + optIndex)}.
+                                    </span>
+                                    <span className="option-text">{option}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+
+                <div className="form-actions">
+                    <button
+                        onClick={handleSubmit}
+                        disabled={submitting || Object.keys(answers).length === 0}
+                        className="btn btn-primary"
+                    >
+                        {submitting ? '提交中...' : '提交答案'}
+                    </button>
+                    <button
+                        onClick={() => navigate(`/courses/${courseId}/quizzes`)}
+                        className="btn btn-outline"
+                    >
+                        返回测验列表
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default QuizDetail;
