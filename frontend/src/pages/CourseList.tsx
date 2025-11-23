@@ -72,3 +72,72 @@ const CourseList: React.FC = () => {
 };
 
 export default CourseList;
+
+// 在 CourseList.tsx 中添加这些样式（或者单独创建CSS文件）
+const courseListStyles = `
+.course-list {
+    padding: 20px 0;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+}
+
+.course-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.course-card h3 {
+    color: #2d3748;
+    margin: 0 0 12px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.course-card p {
+    color: #718096;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.course-level {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.course-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* 在现有的CSS中添加这些样式类 */
+`;

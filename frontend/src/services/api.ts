@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
-
-const api = axios.create({
-    baseURL: API_BASE_URL,
-});
+// 移除硬编码的 baseURL，使用相对路径让Vite代理工作
+const api = axios.create();
 
 // 请求拦截器，自动添加token
 api.interceptors.request.use((config) => {
@@ -30,64 +27,64 @@ api.interceptors.response.use(
 
 export const authAPI = {
     login: (credentials: { username: string; password: string }) =>
-        api.post('/auth/login', credentials),
+        api.post('/api/auth/login', credentials),
     register: (userData: { username: string; password: string; role?: string }) =>
-        api.post('/auth/register', userData),
+        api.post('/api/auth/register', userData),
 };
 
 export const courseAPI = {
-    getCourses: () => api.get('/courses'),
-    getCourse: (id: number) => api.get(`/courses/${id}`),
-    createCourse: (courseData: Partial<Course>) => api.post('/courses', courseData),
+    getCourses: () => api.get('/api/courses'),
+    getCourse: (id: number) => api.get(`/api/courses/${id}`),
+    createCourse: (courseData: Partial<Course>) => api.post('/api/courses', courseData),
     updateCourse: (id: number, courseData: Partial<Course>) =>
-        api.put(`/courses/${id}`, courseData),
-    deleteCourse: (id: number) => api.delete(`/courses/${id}`),
+        api.put(`/api/courses/${id}`, courseData),
+    deleteCourse: (id: number) => api.delete(`/api/courses/${id}`),
 };
 
 export const graphAPI = {
-    getNodes: (courseId: number) => api.get(`/graphs/${courseId}/nodes`),
+    getNodes: (courseId: number) => api.get(`/api/graphs/${courseId}/nodes`),
     getNode: (courseId: number, nodeId: string) =>
-        api.get(`/graphs/${courseId}/nodes/${nodeId}`),
+        api.get(`/api/graphs/${courseId}/nodes/${nodeId}`),
     createNode: (courseId: number, nodeData: Partial<Node>) =>
-        api.post(`/graphs/${courseId}/nodes`, nodeData),
+        api.post(`/api/graphs/${courseId}/nodes`, nodeData),
     updateNode: (courseId: number, nodeId: string, nodeData: Partial<Node>) =>
-        api.put(`/graphs/${courseId}/nodes/${nodeId}`, nodeData),
+        api.put(`/api/graphs/${courseId}/nodes/${nodeId}`, nodeData),
     deleteNode: (courseId: number, nodeId: string) =>
-        api.delete(`/graphs/${courseId}/nodes/${nodeId}`),
+        api.delete(`/api/graphs/${courseId}/nodes/${nodeId}`),
     getRelations: (courseId: number, params?: any) =>
-        api.get(`/graphs/${courseId}/relations`, { params }),
+        api.get(`/api/graphs/${courseId}/relations`, { params }),
     createRelation: (courseId: number, relationData: Partial<Relation>) =>
-        api.post(`/graphs/${courseId}/relations`, relationData),
+        api.post(`/api/graphs/${courseId}/relations`, relationData),
     updateRelation: (courseId: number, relationId: string, relationData: Partial<Relation>) =>
-        api.put(`/graphs/${courseId}/relations/${relationId}`, relationData),
+        api.put(`/api/graphs/${courseId}/relations/${relationId}`, relationData),
     deleteRelation: (courseId: number, relationId: string) =>
-        api.delete(`/graphs/${courseId}/relations/${relationId}`),
+        api.delete(`/api/graphs/${courseId}/relations/${relationId}`),
 };
 
 export const noteAPI = {
-    getNotes: (courseId: number) => api.get(`/courses/${courseId}/notes`),
+    getNotes: (courseId: number) => api.get(`/api/courses/${courseId}/notes`),
     getNote: (courseId: number, noteId: string) =>
-        api.get(`/courses/${courseId}/notes/${noteId}`),
+        api.get(`/api/courses/${courseId}/notes/${noteId}`),
     createNote: (courseId: number, noteData: Partial<Note>) =>
-        api.post(`/courses/${courseId}/notes`, noteData),
+        api.post(`/api/courses/${courseId}/notes`, noteData),
     updateNote: (courseId: number, noteId: string, noteData: Partial<Note>) =>
-        api.put(`/courses/${courseId}/notes/${noteId}`, noteData),
+        api.put(`/api/courses/${courseId}/notes/${noteId}`, noteData),
     deleteNote: (courseId: number, noteId: string) =>
-        api.delete(`/courses/${courseId}/notes/${noteId}`),
+        api.delete(`/api/courses/${courseId}/notes/${noteId}`),
 };
 
 export const quizAPI = {
-    getQuizzes: (courseId: number) => api.get(`/courses/${courseId}/quizzes`),
+    getQuizzes: (courseId: number) => api.get(`/api/courses/${courseId}/quizzes`),
     getQuiz: (courseId: number, quizId: string) =>
-        api.get(`/courses/${courseId}/quizzes/${quizId}`),
+        api.get(`/api/courses/${courseId}/quizzes/${quizId}`),
     createQuiz: (courseId: number, quizData: Partial<Quiz>) =>
-        api.post(`/courses/${courseId}/quizzes`, quizData),
+        api.post(`/api/courses/${courseId}/quizzes`, quizData),
     updateQuiz: (courseId: number, quizId: string, quizData: Partial<Quiz>) =>
-        api.put(`/courses/${courseId}/quizzes/${quizId}`, quizData),
+        api.put(`/api/courses/${courseId}/quizzes/${quizId}`, quizData),
     deleteQuiz: (courseId: number, quizId: string) =>
-        api.delete(`/courses/${courseId}/quizzes/${quizId}`),
+        api.delete(`/api/courses/${courseId}/quizzes/${quizId}`),
     submitAttempt: (courseId: number, quizId: string, answers: any) =>
-        api.post(`/courses/${courseId}/quizzes/${quizId}/attempts`, { answers }),
+        api.post(`/api/courses/${courseId}/quizzes/${quizId}/attempts`, { answers }),
 };
 
 export default api;

@@ -1,4 +1,5 @@
 export interface User {
+    id: number;        // 添加这行
     username: string;
     role: 'USER' | 'ADMIN';
     token: string;
