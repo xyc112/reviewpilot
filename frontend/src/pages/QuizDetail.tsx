@@ -1,7 +1,7 @@
 // src/pages/QuizDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Quiz, Question, QuizAttempt } from '../types';
+import { Quiz, QuizAttempt } from '../types';
 import { quizAPI } from '../services/api';
 
 const QuizDetail: React.FC = () => {
@@ -11,9 +11,9 @@ const QuizDetail: React.FC = () => {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [answers, setAnswers] = useState<{[key: string]: number[]}>({});
-    const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
+    const [answers, setAnswers] = useState<Record<string, number[]>>({});
     const [submitting, setSubmitting] = useState(false);
+    const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
 
     useEffect(() => {
         if (courseId && quizId) {
@@ -33,26 +33,28 @@ const QuizDetail: React.FC = () => {
     };
 
     const handleAnswerChange = (questionId: string, optionIndex: number, isMultiple: boolean) => {
+        console.log('点击选项:', questionId, optionIndex, isMultiple);
+
         setAnswers(prev => {
             const currentAnswers = prev[questionId] || [];
 
             if (isMultiple) {
                 // 多选题处理
+                let newAnswers;
                 if (currentAnswers.includes(optionIndex)) {
                     // 如果已选择，则取消选择
-                    return {
-                        ...prev,
-                        [questionId]: currentAnswers.filter(i => i !== optionIndex)
-                    };
+                    newAnswers = currentAnswers.filter(i => i !== optionIndex);
                 } else {
                     // 添加选择
-                    return {
-                        ...prev,
-                        [questionId]: [...currentAnswers, optionIndex].sort()
-                    };
+                    newAnswers = [...currentAnswers, optionIndex].sort();
                 }
+
+                return {
+                    ...prev,
+                    [questionId]: newAnswers
+                };
             } else {
-                // 单选题处理
+                // 单选题处理，直接替换答案
                 return {
                     ...prev,
                     [questionId]: [optionIndex]
@@ -113,41 +115,59 @@ const QuizDetail: React.FC = () => {
                         {quiz.questions.map((question, index) => {
                             const result = attempt.results.find(r => r.questionId === question.id);
                             const userAnswer = answers[question.id] || [];
+                            const isCorrect = result?.correct || false;
 
                             return (
                                 <div
                                     key={question.id}
-                                    className={`question-result ${result?.correct ? 'correct' : 'incorrect'}`}
+                                    className={`question-result ${isCorrect ? 'correct' : 'incorrect'}`}
                                 >
-                                    <h4>题目 {index + 1}: {question.question}</h4>
+                                    <div className="question-header">
+                                        <h4>题目 {index + 1}: {question.question}</h4>
+                                        <div className={`status-indicator ${isCorrect ? 'correct' : 'incorrect'}`}>
+                                            {isCorrect ? '✓ 正确' : '✗ 错误'}
+                                        </div>
+                                    </div>
                                     <div className="options">
                                         {question.options?.map((option, optIndex) => {
-                                            const isUserAnswer = userAnswer.includes(optIndex);
+                                            const isSelected = userAnswer.includes(optIndex);
                                             const isCorrectAnswer = question.answer?.includes(optIndex);
 
                                             let optionClass = "option";
-                                            if (isUserAnswer && isCorrectAnswer) {
+                                            if (isSelected && isCorrectAnswer) {
                                                 optionClass += " correct";
-                                            } else if (isUserAnswer && !isCorrectAnswer) {
+                                            } else if (isSelected && !isCorrectAnswer) {
                                                 optionClass += " incorrect";
-                                            } else if (!isUserAnswer && isCorrectAnswer) {
+                                            } else if (!isSelected && isCorrectAnswer) {
                                                 optionClass += " missing";
                                             }
 
                                             return (
                                                 <div key={optIndex} className={optionClass}>
+                                                    <span className="option-indicator">
+                                                        {isSelected && <span className="selected-dot"></span>}
+                                                    </span>
                                                     <span className="option-label">
                                                         {String.fromCharCode(65 + optIndex)}.
                                                     </span>
                                                     <span className="option-text">{option}</span>
+                                                    {isSelected && !isCorrectAnswer && (
+                                                        <span className="your-answer-indicator">(你的答案)</span>
+                                                    )}
+                                                    {!isSelected && isCorrectAnswer && (
+                                                        <span className="correct-answer-indicator">(正确答案)</span>
+                                                    )}
+                                                    {isSelected && isCorrectAnswer && (
+                                                        <span className="correct-indicator">(正确答案)</span>
+                                                    )}
                                                 </div>
                                             );
                                         })}
                                     </div>
                                     {result && (
                                         <div className="feedback">
-                                            <span className={result.correct ? "correct-label" : "incorrect-label"}>
-                                                {result.correct ? "✓ 正确" : "✗ 错误"}
+                                            <span className={isCorrect ? "correct-label" : "incorrect-label"}>
+                                                {isCorrect ? "✓ 正确" : "✗ 错误"}
                                             </span>
                                             <span className="points">得分: {result.score}</span>
                                         </div>
@@ -189,24 +209,31 @@ const QuizDetail: React.FC = () => {
                         </h3>
 
                         <div className="options">
-                            {question.options?.map((option, optIndex) => (
-                                <div
-                                    key={optIndex}
-                                    className={`option ${
-                                        answers[question.id]?.includes(optIndex) ? 'selected' : ''
-                                    }`}
-                                    onClick={() => handleAnswerChange(
-                                        question.id,
-                                        optIndex,
-                                        question.type === 'multiple'
-                                    )}
-                                >
-                                    <span className="option-label">
-                                        {String.fromCharCode(65 + optIndex)}.
-                                    </span>
-                                    <span className="option-text">{option}</span>
-                                </div>
-                            ))}
+                            {question.options?.map((option, optIndex) => {
+                                // 确保正确检查选中状态
+                                const questionAnswers = answers[question.id] || [];
+                                const isSelected = questionAnswers.includes(optIndex);
+
+                                return (
+                                    <div
+                                        key={optIndex}
+                                        className={`option ${isSelected ? 'selected' : ''}`}
+                                        onClick={() => handleAnswerChange(
+                                            question.id,
+                                            optIndex,
+                                            question.type === 'multiple'
+                                        )}
+                                    >
+                                        <span className="option-indicator">
+                                            {isSelected && <span className="selected-dot"></span>}
+                                        </span>
+                                        <span className="option-label">
+                                            {String.fromCharCode(65 + optIndex)}.
+                                        </span>
+                                        <span className="option-text">{option}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 ))}

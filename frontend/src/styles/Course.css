@@ -297,9 +297,6 @@
     color: white;
 }
 
-
-/* 添加到 src/styles/Course.css 文件末尾 */
-
 /* 空状态样式 */
 .empty-state {
     text-align: center;
@@ -410,8 +407,6 @@
     }
 }
 
-/* 添加到 src/styles/Course.css 文件末尾 */
-
 /* 测验列表样式 */
 .quizzes-grid {
     display: grid;
@@ -493,15 +488,46 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
 }
 
 .option:hover {
     border-color: #cbd5e0;
+    background-color: #f7fafc;
 }
 
 .option.selected {
     border-color: #4299e1;
     background-color: #ebf8ff;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(66, 153, 225, 0.2);
+}
+
+.option.selected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid #4299e1;
+    border-radius: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
 }
 
 .option-label {
@@ -558,21 +584,33 @@
 .question-result .option {
     cursor: default;
     margin-bottom: 5px;
+    position: relative;
+    padding: 12px 15px 12px 45px;
+}
+
+.question-result .option .option-indicator {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .question-result .option.correct {
-    border-color: #48bb78;
+    border: 2px solid #48bb78;
     background-color: #f0fff4;
+    box-shadow: 0 0 0 1px #9ae6b4;
 }
 
 .question-result .option.incorrect {
-    border-color: #f56565;
+    border: 2px solid #f56565;
     background-color: #fff5f5;
+    box-shadow: 0 0 0 1px #fed7d7;
 }
 
 .question-result .option.missing {
-    border-color: #4299e1;
+    border: 2px solid #4299e1;
     background-color: #ebf8ff;
+    box-shadow: 0 0 0 1px #90cdf4;
 }
 
 .feedback {
@@ -584,13 +622,19 @@
 }
 
 .correct-label {
-    color: #48bb78;
+    color: #38a169;
     font-weight: bold;
+    background-color: #c6f6d5;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .incorrect-label {
-    color: #f56565;
+    color: #e53e3e;
     font-weight: bold;
+    background-color: #fed7d7;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .points {
@@ -662,4 +706,78 @@
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+/* 选项指示器样式 */
+.option-indicator {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.option.selected .option-indicator {
+    border-color: #4299e1;
+    background-color: #4299e1;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+}
+
+.selected-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+/* 答案指示器 */
+.your-answer-indicator {
+    margin-left: 10px;
+    color: #e53e3e;
+    font-weight: bold;
+    background-color: #fed7d7;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.correct-answer-indicator,
+.correct-indicator {
+    margin-left: 10px;
+    color: #38a169;
+    font-weight: bold;
+    background-color: #c6f6d5;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* 结果页的状态指示器 */
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-indicator.correct {
+    background-color: #c6f6d5;
+    color: #2d7d32;
+}
+
+.status-indicator.incorrect {
+    background-color: #fed7d7;
+    color: #c53030;
 }
