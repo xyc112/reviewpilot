@@ -233,3 +233,66 @@
         padding: 20px;
     }
 }
+
+/* 添加到 Course.css 文件末尾 */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.level-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.level-beginner {
+    background: #48bb78;
+    color: white;
+}
+
+.level-intermediate {
+    background: #ed8936;
+    color: white;
+}
+
+.level-advanced {
+    background: #f56565;
+    color: white;
+}

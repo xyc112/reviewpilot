@@ -10,7 +10,9 @@ import GraphView from './pages/GraphView';
 import NoteList from './pages/NoteList';
 import QuizList from './pages/QuizList';
 import ProtectedRoute from './components/common/ProtectedRoute';
-
+// 在 import 部分添加
+import CreateCourse from './pages/CreateCourse';
+import EditCourse from './pages/EditCourse';
 const App: React.FC = () => {
     return (
         <AuthProvider>
@@ -29,6 +31,9 @@ const App: React.FC = () => {
                         <Route path="courses/:id/graph" element={<GraphView />} />
                         <Route path="courses/:id/notes" element={<NoteList />} />
                         <Route path="courses/:id/quizzes" element={<QuizList />} />
+                        // 在 Routes 部分添加新路由
+                        <Route path="courses/new" element={<CreateCourse />} />
+                        <Route path="courses/edit/:id" element={<EditCourse />} />
                     </Route>
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

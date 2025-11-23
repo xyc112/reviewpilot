@@ -1,3 +1,4 @@
+// src/pages/CourseDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Course } from '../types';
@@ -53,6 +54,14 @@ const CourseDetail: React.FC = () => {
         return levels[level as keyof typeof levels] || level;
     };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     if (loading) return (
         <div className="container">
             <div className="loading">加载中...</div>
@@ -106,7 +115,7 @@ const CourseDetail: React.FC = () => {
                             {getLevelText(course.level)}
                         </span>
                         <span className="created-date">
-                            创建于 {new Date(course.createdAt).toLocaleDateString('zh-CN')}
+                            创建于 {formatDate(course.createdAt)}
                         </span>
                     </div>
                 </div>
