@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/Auth.css';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
@@ -12,28 +13,31 @@ const Layout: React.FC = () => {
     };
 
     return (
-        <div className="app">
-            <header className="header">
-                <nav className="nav">
-                    <div className="nav-brand">
-                        <Link to="/">学习辅助系统</Link>
-                    </div>
-                    <div className="nav-links">
-                        <Link to="/courses">课程</Link>
-                        {user?.role === 'ADMIN' && (
-                            <Link to="/admin">管理</Link>
-                        )}
-                    </div>
-                    <div className="nav-user">
-                        <span>欢迎, {user?.username}</span>
-                        <button onClick={handleLogout} className="logout-btn">
-                            退出
-                        </button>
-                    </div>
+        <div className="layout">
+
+            <header className="topbar">
+                <div className="nav-left">
+                    <Link to="/" className="brand">
+                        学习辅助系统
+                    </Link>
+                </div>
+
+                <nav className="nav-center">
+                    <Link to="/courses" className="nav-item">课程</Link>
+                    {user?.role === 'ADMIN' &&
+                        <Link to="/admin" className="nav-item">管理</Link>
+                    }
                 </nav>
+
+                <div className="nav-right">
+                    <span className="user-info">你好，{user?.username}</span>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        退出
+                    </button>
+                </div>
             </header>
 
-            <main className="main">
+            <main className="main-content">
                 <Outlet />
             </main>
         </div>

@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/api';
+import '../styles/Auth.css';
 
 const Login: React.FC = () => {
-    const [formData, setFormData] = useState({
-        username: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -15,10 +13,7 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -40,36 +35,49 @@ const Login: React.FC = () => {
 
     return (
         <div className="auth-page">
-            <div className="auth-container">
-                <h2>用户登录</h2>
+            <div className="auth-card">
+                <h2 className="auth-title">欢迎回来</h2>
+                <p className="auth-subtitle">请登录继续访问学习辅助系统</p>
+
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>用户名:</label>
+                        <label>用户名</label>
                         <input
                             type="text"
                             name="username"
                             value={formData.username}
                             onChange={handleChange}
+                            className="input-box"
                             required
                         />
                     </div>
+
                     <div className="form-group">
-                        <label>密码:</label>
+                        <label>密码</label>
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
+                            className="input-box"
                             required
                         />
                     </div>
-                    {error && <div className="error">{error}</div>}
-                    <button type="submit" disabled={loading}>
+
+                    {error && <div className="error-box">{error}</div>}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="auth-btn primary"
+                    >
                         {loading ? '登录中...' : '登录'}
                     </button>
                 </form>
-                <p>
-                    没有账号？ <Link to="/register">立即注册</Link>
+
+                <p className="auth-footer">
+                    没有账号？
+                    <Link to="/register">立即注册</Link>
                 </p>
             </div>
         </div>
