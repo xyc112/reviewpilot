@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz, QuizAttempt } from '../types';
 import { quizAPI } from '../services/api';
+import '../styles/Course.css';
 
 const QuizDetail: React.FC = () => {
     const { courseId, quizId } = useParams<{ courseId: string; quizId: string }>();
@@ -32,32 +33,30 @@ const QuizDetail: React.FC = () => {
         }
     };
 
-    const handleAnswerChange = (questionId: string, optionIndex: number, isMultiple: boolean) => {
-        console.log('点击选项:', questionId, optionIndex, isMultiple);
-
+    const handleOptionSelect = (questionId: string, optionIndex: number, questionType: string) => {
         setAnswers(prev => {
             const currentAnswers = prev[questionId] || [];
 
-            if (isMultiple) {
-                // 多选题处理
+            if (questionType === 'single') {
+                // 单选题，直接替换答案
+                return {
+                    ...prev,
+                    [questionId]: [optionIndex]
+                };
+            } else {
+                // 多选题，切换选项的选中状态
                 let newAnswers;
                 if (currentAnswers.includes(optionIndex)) {
-                    // 如果已选择，则取消选择
-                    newAnswers = currentAnswers.filter(i => i !== optionIndex);
+                    // 如果已经选中，则取消选中
+                    newAnswers = currentAnswers.filter(idx => idx !== optionIndex);
                 } else {
-                    // 添加选择
-                    newAnswers = [...currentAnswers, optionIndex].sort();
+                    // 否则添加到选中项中
+                    newAnswers = [...currentAnswers, optionIndex].sort((a, b) => a - b);
                 }
 
                 return {
                     ...prev,
                     [questionId]: newAnswers
-                };
-            } else {
-                // 单选题处理，直接替换答案
-                return {
-                    ...prev,
-                    [questionId]: [optionIndex]
                 };
             }
         });
@@ -218,11 +217,7 @@ const QuizDetail: React.FC = () => {
                                     <div
                                         key={optIndex}
                                         className={`option ${isSelected ? 'selected' : ''}`}
-                                        onClick={() => handleAnswerChange(
-                                            question.id,
-                                            optIndex,
-                                            question.type === 'multiple'
-                                        )}
+                                        onClick={() => handleOptionSelect(question.id, optIndex, question.type)}
                                     >
                                         <span className="option-indicator">
                                             {isSelected && <span className="selected-dot"></span>}

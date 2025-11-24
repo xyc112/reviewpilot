@@ -713,7 +713,7 @@
     width: 20px;
     height: 20px;
     border: 2px solid #cbd5e0;
-    border-radius: 50%;
+    border-radius: 4px; /* 方形边框 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -721,20 +721,20 @@
     flex-shrink: 0;
     transition: all 0.3s ease;
     position: relative;
+    background-color: white; /* 默认背景色 */
 }
 
 .option.selected .option-indicator {
     border-color: #4299e1;
-    background-color: #4299e1;
+    background-color: #4299e1; /* 选中时的背景色 */
     transform: scale(1.1);
-    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
 }
 
 .selected-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: white;
+    width: 12px;
+    height: 12px;
+    background-color: white; /* 对勾符号的颜色 */
+    clip-path: polygon(25% 40%, 41% 55%, 75% 25%, 85% 35%, 41% 75%, 15% 50%);
 }
 
 /* 答案指示器 */

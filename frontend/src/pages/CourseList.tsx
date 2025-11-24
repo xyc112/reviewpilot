@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import '../styles/Course.css';
 
 const CourseList: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([]);

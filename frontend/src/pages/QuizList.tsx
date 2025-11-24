@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Quiz } from '../types';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import '../styles/Course.css';
 
 const QuizList: React.FC = () => {
     const { id: courseId } = useParams<{ id: string }>();

@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import '../styles/Course.css';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();

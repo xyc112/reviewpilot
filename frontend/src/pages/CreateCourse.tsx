@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import '../styles/Course.css';
 
 const CreateCourse: React.FC = () => {
     const [formData, setFormData] = useState({
