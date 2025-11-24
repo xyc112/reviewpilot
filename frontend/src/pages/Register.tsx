@@ -19,6 +19,8 @@ const Register: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        // 用户开始输入时清除错误信息
+        if (error) setError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +33,17 @@ const Register: React.FC = () => {
             login(response.data);
             navigate('/');
         } catch (err: any) {
-            setError(err.response?.data?.error || '注册失败');
+            // 清除可能存在的错误token
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            // 优先显示后端返回的详细错误信息
+            const errorMessage = err.response?.data?.message 
+                || err.response?.data?.error 
+                || err.message 
+                || '注册失败，请稍后重试';
+            setError(errorMessage);
+            console.error('注册错误:', err);
         } finally {
             setLoading(false);
         }

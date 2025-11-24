@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
+import { clearAuthData, getStoredToken, getStoredUser } from '../utils/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -15,10 +16,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
-        if (token && userData) {
-            setUser(JSON.parse(userData));
+        const token = getStoredToken();
+        const userData = getStoredUser();
+        
+        // 只有当 token 和 userData 都存在且有效时才设置用户
+        if (token && userData && userData.username) {
+            setUser(userData);
+        } else {
+            // 如果数据无效，清除所有认证信息
+            clearAuthData();
+            setUser(null);
         }
     }, []);
 
@@ -30,8 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearAuthData();
     };
 
     const isAuthenticated = !!user;

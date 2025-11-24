@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Course, Node, Relation, Note, Quiz } from '../types';
 
 // 移除硬编码的 baseURL，使用相对路径让Vite代理工作
 const api = axios.create();
@@ -16,10 +17,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        // 处理认证错误
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            // 清除本地存储
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.href = '/login';
+            
+            // 只在非登录/注册页面时跳转
+            const currentPath = window.location.pathname;
+            if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }

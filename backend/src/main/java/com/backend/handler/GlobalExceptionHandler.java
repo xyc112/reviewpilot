@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("status", ex.getStatusCode().value());
         error.put("error", ex.getReason());
+        error.put("message", ex.getReason()); // 添加 message 字段
         error.put("timestamp", java.time.LocalDateTime.now());
         return new ResponseEntity<>(error, ex.getStatusCode());
     }
@@ -28,6 +29,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("status", HttpStatus.NOT_FOUND.value());
         error.put("error", ex.getMessage());
+        error.put("message", ex.getMessage()); // 添加 message 字段
         error.put("timestamp", java.time.LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> error = new HashMap<>();
         error.put("status", HttpStatus.UNAUTHORIZED.value());
         error.put("error", "用户名或密码错误");
+        error.put("message", "用户名或密码错误"); // 添加 message 字段
         error.put("timestamp", java.time.LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }

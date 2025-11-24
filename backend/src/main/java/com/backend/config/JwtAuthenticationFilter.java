@@ -32,15 +32,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        if (jwtUtil.validateToken(token)) {
-            String username = jwtUtil.extractUsername(token);
-            UserDetails userDetails = userService.loadUserByUsername(username);
+        try {
+            String token = authHeader.substring(7);
+            if (jwtUtil.validateToken(token)) {
+                String username = jwtUtil.extractUsername(token);
+                UserDetails userDetails = userService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        } catch (Exception e) {
+            // Token 无效或用户不存在，清除认证信息
+            SecurityContextHolder.clearContext();
+            // 可以选择记录日志
+            // logger.warn("JWT authentication failed: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
