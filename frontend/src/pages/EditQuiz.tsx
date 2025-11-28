@@ -6,7 +6,8 @@ import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const EditQuiz: React.FC = () => {
-    const { courseId, quizId } = useParams<{ courseId: string; quizId: string }>();
+    // 修复：修改 useParams 的参数名
+    const { id: courseId, quizId } = useParams<{ id: string; quizId: string }>();
     const navigate = useNavigate();
     const { isAdmin, user } = useAuth();
 
@@ -34,7 +35,8 @@ const EditQuiz: React.FC = () => {
                 answer: q.answer || []
             })));
         } catch (err: any) {
-            setError('获取测验失败');
+            console.error('获取测验失败:', err);
+            setError('获取测验失败: ' + (err.response?.data?.message || '未知错误'));
         } finally {
             setLoading(false);
         }
