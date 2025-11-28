@@ -1,0 +1,988 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem 0;
+}
+
+.nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.nav-brand a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 2rem;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.auth-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #e74c3c;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: #fdf2f2;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-secondary {
+    background: #2ecc71;
+    color: white;
+}
+
+.btn-outline {
+    border: 1px solid #3498db;
+    color: #3498db;
+    background: white;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.course-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.course-card h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.course-tags {
+    margin: 1rem 0;
+}
+
+.tag {
+    display: inline-block;
+    background: #ecf0f1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.course-level {
+    color: #7f8c8d;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.course-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+
+/* GraphView 样式 */
+.graph-view {
+    height: 100%;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.graph-container {
+    display: flex;
+    height: calc(100vh - 200px);
+    gap: 1rem;
+}
+
+.graph-sidebar {
+    width: 280px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: white;
+    overflow-y: auto;
+}
+
+.group-panel-sidebar {
+    width: 320px;
+}
+
+.relations-sidebar {
+    width: 280px;
+}
+
+.graph-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.graph-visualization {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Graph Canvas Styles */
+.graph-canvas-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.graph-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.control-btn {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: #f8f9fa;
+    border-color: #3498db;
+}
+
+.control-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.zoom-info {
+    font-size: 0.875rem;
+    color: #7f8c8d;
+    padding: 0 0.5rem;
+}
+
+.graph-legend {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.legend-color-concept {
+    background: #3498db;
+}
+
+.legend-color-topic {
+    background: #9b59b6;
+}
+
+.legend-color-skill {
+    background: #e67e22;
+}
+
+.graph-help {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 250px;
+}
+
+.graph-help p {
+    margin: 0 0 0.5rem 0;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.graph-help ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    list-style: none;
+}
+
+.graph-help li {
+    font-size: 0.875rem;
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+/* D3 Graph Styles */
+.graph-container .node-circle {
+    transition: all 0.2s;
+}
+
+.graph-container .node-circle:hover {
+    filter: brightness(1.1);
+}
+
+.graph-container .link {
+    transition: all 0.2s;
+}
+
+.graph-container .link-label {
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.graph-container .node-group {
+    cursor: move;
+}
+
+.graph-container .node-group.selected circle {
+    stroke: #f39c12;
+    stroke-width: 4px;
+}
+
+.graph-placeholder {
+    text-align: center;
+    color: #7f8c8d;
+}
+
+.graph-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.stat {
+    text-align: left;
+}
+
+.nodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.node-item {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.node-item:hover {
+    background: #f8f9fa;
+}
+
+.node-item.selected {
+    border-color: #3498db;
+    background: #ebf5fb;
+}
+
+.node-label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.node-type {
+    font-size: 0.875rem;
+    color: #7f8c8d;
+    margin-bottom: 0.5rem;
+}
+
+.node-connections {
+    font-size: 0.75rem;
+    color: #95a5a6;
+    margin-bottom: 0.5rem;
+}
+
+.node-details {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: white;
+}
+
+.node-relations {
+    margin: 1rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.node-relations h4 {
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.relations-section {
+    margin: 0.75rem 0;
+}
+
+.relation-item {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.no-relations {
+    color: #95a5a6;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+/* Relation cards in sidebar */
+.relations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.relation-card {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+.relation-nodes {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.node-name {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.relation-arrow {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.relation-type {
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+}
+
+.relation-weight {
+    font-size: 0.75rem;
+    color: #95a5a6;
+    margin-bottom: 0.5rem;
+}
+
+.empty-message {
+    color: #95a5a6;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Group Panel Styles */
+.group-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.group-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #eee;
+}
+
+.group-panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.group-create-form {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.color-picker {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    cursor: pointer;
+    padding: 4px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.color-option:hover {
+    border-color: #ddd;
+}
+
+.color-option.selected {
+    border-color: #3498db;
+    background: #ebf5fb;
+}
+
+.color-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.node-selector {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+.node-selector-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.node-selector-item:hover {
+    background: #f8f9fa;
+}
+
+.node-selector-item.selected {
+    background: #ebf5fb;
+}
+
+.node-selector-item input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.node-selector-item span {
+    flex: 1;
+}
+
+.node-type-badge {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    background: #ecf0f1;
+    border-radius: 12px;
+    color: #7f8c8d;
+}
+
+.groups-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.group-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.group-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.group-color-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.group-count {
+    font-size: 0.875rem;
+    color: #7f8c8d;
+}
+
+.group-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.group-node-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #ecf0f1;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: #2c3e50;
+}
+
+.detail-item {
+    margin-bottom: 0.5rem;
+}
+
+/* 模态框样式 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.form-actions .btn {
+    width: auto;
+    flex: 1;
+}
+
+/* 按钮样式扩展 */
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+/* 表单元素样式 */
+select, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .graph-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .graph-sidebar, .relations-sidebar {
+        width: 100%;
+    }
+
+    .header-actions {
+        flex-direction: column;
+    }
+
+    .graph-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Notes Module Styles */
+.notes-view {
+    height: 100%;
+}
+
+.notes-container {
+    margin-top: 2rem;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.note-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.note-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.note-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.note-card-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.25rem;
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.note-card-content {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.note-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.note-date {
+    font-size: 0.875rem;
+    color: #7f8c8d;
+}
+
+.note-card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.visibility-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.visibility-badge.public {
+    background: #d5f4e6;
+    color: #27ae60;
+}
+
+.visibility-badge.private {
+    background: #ffeaa7;
+    color: #e17055;
+}
+
+.modal-large {
+    max-width: 800px;
+    width: 95%;
+}
+
+.note-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.note-detail-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.note-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: #7f8c8d;
+    flex-wrap: wrap;
+}
+
+.note-content {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.note-content pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.note-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #7f8c8d;
+}
+
+.empty-state p {
+    margin: 0.5rem 0;
+}
+
+.empty-state p:first-child {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+/* Responsive design for notes */
+@media (max-width: 768px) {
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .note-detail-header {
+        flex-direction: column;
+    }
+
+    .note-detail-header button {
+        margin-top: 1rem;
+        align-self: flex-start;
+    }
+
+    .note-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .note-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

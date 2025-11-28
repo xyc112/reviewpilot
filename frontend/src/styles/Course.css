@@ -1,0 +1,783 @@
+/* styles/Course.css */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+    border-radius: 0 0 20px 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.course-meta {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.level-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.level-beginner {
+    background: #48bb78;
+}
+
+.level-intermediate {
+    background: #ed8936;
+}
+
+.level-advanced {
+    background: #f56565;
+}
+
+.created-date {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.course-content {
+    padding: 20px 0;
+}
+
+.content-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 24px;
+}
+
+.content-section h2 {
+    color: #2d3748;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.description {
+    line-height: 1.7;
+    color: #4a5568;
+    font-size: 1.1rem;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag {
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid #e2e8f0;
+}
+
+.course-navigation {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.nav-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.nav-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: #667eea;
+}
+
+.nav-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.nav-card h3 {
+    color: #2d3748;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.nav-card p {
+    color: #718096;
+    line-height: 1.5;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: #4299e1;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #3182ce;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e0;
+}
+
+.btn-danger {
+    background: #f56565;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #e53e3e;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #4299e1;
+    color: #4299e1;
+}
+
+.btn-outline:hover {
+    background: #4299e1;
+    color: white;
+}
+
+/* 加载和错误状态 */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 1.2rem;
+    color: #718096;
+}
+
+.error-message {
+    background: #fed7d7;
+    color: #c53030;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .course-navigation {
+        grid-template-columns: 1fr;
+    }
+
+    .content-section {
+        padding: 20px;
+    }
+}
+
+/* 添加到 Course.css 文件末尾 */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.level-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.level-beginner {
+    background: #48bb78;
+    color: white;
+}
+
+.level-intermediate {
+    background: #ed8936;
+    color: white;
+}
+
+.level-advanced {
+    background: #f56565;
+    color: white;
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+.empty-state p {
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+/* 课程卡片美化 */
+.course-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.course-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.course-title {
+    color: #2d3748;
+    margin: 0 10px 0 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.course-description {
+    color: #718096;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.course-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.course-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.course-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-card-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .course-title {
+        margin-right: 0;
+    }
+
+    .course-links {
+        flex-direction: column;
+    }
+}
+
+/* 测验列表样式 */
+.quizzes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.quiz-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.quiz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.quiz-card h3 {
+    color: #2d3748;
+    margin: 0 0 12px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.quiz-card p {
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* 测验详情样式 */
+.quiz-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.question-card {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.question-card:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.question-type {
+    background: #4299e1;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.options {
+    margin-top: 15px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.option:hover {
+    border-color: #cbd5e0;
+    background-color: #f7fafc;
+}
+
+.option.selected {
+    border-color: #4299e1;
+    background-color: #ebf8ff;
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(66, 153, 225, 0.2);
+}
+
+.option.selected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid #4299e1;
+    border-radius: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+}
+
+.option-label {
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 20px;
+}
+
+/* 测验结果样式 */
+.quiz-result {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.result-summary {
+    text-align: center;
+    padding: 30px 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 30px;
+}
+
+.score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.score-value {
+    color: #4299e1;
+}
+
+.score-total {
+    color: #a0aec0;
+}
+
+.result-details .question-result {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.result-details .question-result.correct {
+    background-color: #f0fff4;
+    border: 1px solid #9ae6b4;
+}
+
+.result-details .question-result.incorrect {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+}
+
+.question-result .option {
+    cursor: default;
+    margin-bottom: 5px;
+    position: relative;
+    padding: 12px 15px 12px 45px;
+}
+
+.question-result .option .option-indicator {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.question-result .option.correct {
+    border: 2px solid #48bb78;
+    background-color: #f0fff4;
+    box-shadow: 0 0 0 1px #9ae6b4;
+}
+
+.question-result .option.incorrect {
+    border: 2px solid #f56565;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 1px #fed7d7;
+}
+
+.question-result .option.missing {
+    border: 2px solid #4299e1;
+    background-color: #ebf8ff;
+    box-shadow: 0 0 0 1px #90cdf4;
+}
+
+.feedback {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.correct-label {
+    color: #38a169;
+    font-weight: bold;
+    background-color: #c6f6d5;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.incorrect-label {
+    color: #e53e3e;
+    font-weight: bold;
+    background-color: #fed7d7;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.points {
+    color: #718096;
+}
+
+/* 创建/编辑测验样式 */
+.questions-section h3 {
+    margin: 30px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.question-form {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.question-header h4 {
+    margin: 0;
+}
+
+.option-input {
+    display: flex;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.option-input .form-control {
+    flex: 1;
+}
+
+.option-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.answer-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .quizzes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-actions {
+        flex-direction: column;
+    }
+
+    .option-input {
+        flex-direction: column;
+    }
+
+    .option-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* 选项指示器样式 */
+.option-indicator {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e0;
+    border-radius: 4px; /* 方形边框 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    background-color: white; /* 默认背景色 */
+}
+
+.option.selected .option-indicator {
+    border-color: #4299e1;
+    background-color: #4299e1; /* 选中时的背景色 */
+    transform: scale(1.1);
+}
+
+.selected-dot {
+    width: 12px;
+    height: 12px;
+    background-color: white; /* 对勾符号的颜色 */
+    clip-path: polygon(25% 40%, 41% 55%, 75% 25%, 85% 35%, 41% 75%, 15% 50%);
+}
+
+/* 答案指示器 */
+.your-answer-indicator {
+    margin-left: 10px;
+    color: #e53e3e;
+    font-weight: bold;
+    background-color: #fed7d7;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.correct-answer-indicator,
+.correct-indicator {
+    margin-left: 10px;
+    color: #38a169;
+    font-weight: bold;
+    background-color: #c6f6d5;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* 结果页的状态指示器 */
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-indicator.correct {
+    background-color: #c6f6d5;
+    color: #2d7d32;
+}
+
+.status-indicator.incorrect {
+    background-color: #fed7d7;
+    color: #c53030;
+}

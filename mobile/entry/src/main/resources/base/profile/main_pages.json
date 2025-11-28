@@ -1,0 +1,16 @@
+{
+  "src": [
+    "pages/Login",
+    "pages/Register",
+    "pages/CourseList",
+    "pages/CreateCourse",
+    "pages/CourseDetail",
+    "pages/EditCourse",
+    "pages/NoteList",
+    "pages/GraphView",
+    "pages/QuizList",
+    "pages/QuizDetail",
+    "pages/CreateQuiz",
+    "pages/EditQuiz"
+  ]
+}
