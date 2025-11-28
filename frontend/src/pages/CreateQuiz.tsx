@@ -135,7 +135,6 @@ const CreateQuiz: React.FC = () => {
                 }))
             };
 
-            // @ts-ignore
             await quizAPI.createQuiz(Number(courseId), quizData);
             navigate(`/courses/${courseId}/quizzes`);
         } catch (err: any) {

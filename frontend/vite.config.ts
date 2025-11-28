@@ -3,7 +3,10 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()], // 确保这行存在
+<<<<<<< HEAD
   base: './',
+=======
+>>>>>>> 48f166dbb3d90e8ea4023d022aee3928b93eb945
   server: {
     port: 3000,
     proxy: {

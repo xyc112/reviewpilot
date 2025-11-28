@@ -43,7 +43,7 @@ export const authAPI = {
 export const courseAPI = {
     getCourses: () => api.get('/api/courses'),
     getCourse: (id: number) => api.get(`/api/courses/${id}`),
-    createCourse: (courseData: { title: string; description: string; tags: string[]; level: string }) => api.post('/api/courses', courseData),
+    createCourse: (courseData: Partial<Course>) => api.post('/api/courses', courseData),
     updateCourse: (id: number, courseData: Partial<Course>) =>
         api.put(`/api/courses/${id}`, courseData),
     deleteCourse: (id: number) => api.delete(`/api/courses/${id}`),
