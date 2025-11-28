@@ -55,12 +55,14 @@ const CourseList: React.FC = () => {
     return (
         <div className="container">
             <div className="page-header">
-                <h1>课程列表</h1>
-                {isAdmin && (
-                    <Link to="/courses/new" className="btn btn-primary">
-                        + 创建新课程
-                    </Link>
-                )}
+                <div className="header-content">
+                    <h1>课程列表</h1>
+                    {isAdmin && (
+                        <Link to="/courses/new" className="btn btn-primary">
+                            + 创建新课程
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {courses.length === 0 ? (

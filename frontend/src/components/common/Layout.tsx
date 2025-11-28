@@ -1,11 +1,12 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/Auth.css';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
         logout();
@@ -23,9 +24,9 @@ const Layout: React.FC = () => {
                 </div>
 
                 <nav className="nav-center">
-                    <Link to="/courses" className="nav-item">课程</Link>
+                    <Link to="/courses" className={`nav-item ${location.pathname === '/courses' ? 'active' : ''}`}>课程</Link>
                     {user?.role === 'ADMIN' &&
-                        <Link to="/admin" className="nav-item">管理</Link>
+                        <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>管理</Link>
                     }
                 </nav>
 
