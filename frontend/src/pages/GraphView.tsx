@@ -138,26 +138,26 @@ const GraphView: React.FC = () => {
                         返回课程
                     </Link>
                     {isAdmin && (
-                        <>
+                        <div className="admin-buttons">
                             <button
                                 onClick={() => setShowNodeForm(true)}
-                                className="btn btn-primary"
+                                className="btn btn-primary btn-small"
                             >
                                 添加节点
                             </button>
                             <button
                                 onClick={() => setShowRelationForm(true)}
-                                className="btn btn-primary"
+                                className="btn btn-primary btn-small"
                             >
                                 添加关系
                             </button>
-                        </>
+                        </div>
                     )}
                     <button
                         onClick={() => setShowGroupPanel(!showGroupPanel)}
-                        className="btn btn-secondary"
+                        className="btn btn-secondary btn-small"
                     >
-                        {showGroupPanel ? '隐藏分组面板' : '📦 分组管理'}
+                        {showGroupPanel ? '隐藏分组' : '📦 分组'}
                     </button>
                 </div>
             </div>

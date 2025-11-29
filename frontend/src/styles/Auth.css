@@ -173,9 +173,10 @@
 /* 内容区域 */
 .main-content {
     padding: 30px;
-    background: #f8f9fa;
+    background: transparent !important; /* ← 核心 */
     min-height: calc(100vh - 70px);
 }
+
 
 /* 动画 */
 @keyframes fadeIn {

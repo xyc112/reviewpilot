@@ -86,42 +86,43 @@ const CourseDetail: React.FC = () => {
     return (
         <div className="container">
             <div className="course-detail">
-                <div className="page-header">
-                    <div className="header-content">
-                        <h1>{course.title}</h1>
-                        <div className="header-actions">
-                            {canEdit && (
-                                <>
-                                    <Link
-                                        to={`/courses/edit/${course.id}`}
-                                        className="btn btn-primary"
-                                    >
-                                        编辑课程
-                                    </Link>
-                                    <button
-                                        onClick={handleDelete}
-                                        className="btn btn-danger"
-                                    >
-                                        删除课程
-                                    </button>
-                                </>
-                            )}
-                            <Link to="/courses" className="btn btn-secondary">
-                                返回列表
-                            </Link>
+                <div className="course-content">
+                    <div className="content-section">
+                        <div className="header-content">
+                            <h1>{course.title}</h1>
+                            <div className="header-actions">
+                                {canEdit && (
+                                    <>
+                                        <Link
+                                            to={`/courses/edit/${course.id}`}
+                                            className="btn btn-primary"
+                                        >
+                                            编辑课程
+                                        </Link>
+                                        <button
+                                            onClick={handleDelete}
+                                            className="btn btn-danger"
+                                        >
+                                            删除课程
+                                        </button>
+                                    </>
+                                )}
+                                <Link to="/courses" className="btn btn-secondary">
+                                    返回列表
+                                </Link>
+                            </div>
+                        </div>
+                        
+                        <div className="course-meta">
+                            <span className={`level-badge level-${course.level.toLowerCase()}`}>
+                                {getLevelText(course.level)}
+                            </span>
+                            <span className="created-date">
+                                创建于 {formatDate(course.createdAt)}
+                            </span>
                         </div>
                     </div>
-                    <div className="course-meta">
-                        <span className={`level-badge level-${course.level.toLowerCase()}`}>
-                            {getLevelText(course.level)}
-                        </span>
-                        <span className="created-date">
-                            创建于 {formatDate(course.createdAt)}
-                        </span>
-                    </div>
-                </div>
 
-                <div className="course-content">
                     <div className="content-section">
                         <h2>课程描述</h2>
                         <p className="description">{course.description || '暂无描述'}</p>

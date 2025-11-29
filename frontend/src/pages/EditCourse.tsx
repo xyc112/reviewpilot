@@ -113,11 +113,11 @@ const EditCourse: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <h1>编辑课程</h1>
-            </div>
-
             <div className="content-section">
+                <div className="header-content">
+                    <h1>编辑课程</h1>
+                </div>
+                
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="title">课程标题 *</label>

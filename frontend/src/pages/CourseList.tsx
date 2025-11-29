@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import '../styles/CourseUI.css';
 import '../styles/Course.css';
+import backgroundImage from '../images/background.png';
 
 const CourseList: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([]);
@@ -53,18 +55,9 @@ const CourseList: React.FC = () => {
     );
 
     return (
-        <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <h1>课程列表</h1>
-                    {isAdmin && (
-                        <Link to="/courses/new" className="btn btn-primary">
-                            + 创建新课程
-                        </Link>
-                    )}
-                </div>
-            </div>
-
+        <div
+            className="container"
+        >
             {courses.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-state-icon">📚</div>

@@ -760,6 +760,12 @@ button:disabled {
     font-size: 0.875rem;
 }
 
+/* 更新 btn-small 样式以匹配新设计 */
+.btn.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
 .loading {
     text-align: center;
     padding: 2rem;
