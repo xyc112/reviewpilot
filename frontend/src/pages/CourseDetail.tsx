@@ -1,9 +1,9 @@
-// src/pages/CourseDetail.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { Edit, Trash2, Calendar, User, BarChart, ArrowLeft } from 'lucide-react';
 import '../styles/Course.css';
 
 const CourseDetail: React.FC = () => {
@@ -85,6 +85,13 @@ const CourseDetail: React.FC = () => {
 
     return (
         <div className="container">
+            <div className="mb-6">
+                <Link to="/courses" className="btn btn-outline btn-small inline-flex items-center gap-2">
+                    <ArrowLeft size={16} />
+                    返回课程列表
+                </Link>
+            </div>
+
             <div className="course-detail">
                 <div className="course-content">
                     <div className="content-section">
@@ -95,68 +102,54 @@ const CourseDetail: React.FC = () => {
                                     <>
                                         <Link
                                             to={`/courses/edit/${course.id}`}
-                                            className="btn btn-primary"
+                                            className="btn btn-secondary"
                                         >
+                                            <Edit size={16} />
                                             编辑课程
                                         </Link>
                                         <button
                                             onClick={handleDelete}
-                                            className="btn btn-danger"
+                                            className="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
                                         >
+                                            <Trash2 size={16} />
                                             删除课程
                                         </button>
                                     </>
                                 )}
-                                <Link to="/courses" className="btn btn-secondary">
-                                    返回列表
-                                </Link>
                             </div>
                         </div>
-                        
-                        <div className="course-meta">
-                            <span className={`level-badge level-${course.level.toLowerCase()}`}>
-                                {getLevelText(course.level)}
-                            </span>
-                            <span className="created-date">
-                                创建于 {formatDate(course.createdAt)}
-                            </span>
+
+                        <div className="course-meta mb-6">
+                            <div className="flex items-center gap-2">
+                                <BarChart size={16} />
+                                <span className={`level-badge level-${course.level.toLowerCase()}`}>
+                                    {getLevelText(course.level)}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Calendar size={16} />
+                                <span>{formatDate(course.createdAt)}</span>
+                            </div>
+                            {course.authorId && (
+                                <div className="flex items-center gap-2">
+                                    <User size={16} />
+                                    <span>作者 ID: {course.authorId}</span>
+                                </div>
+                            )}
                         </div>
-                    </div>
 
-                    <div className="content-section">
-                        <h2>课程描述</h2>
-                        <p className="description">{course.description || '暂无描述'}</p>
-                    </div>
+                        <div className="description mb-6">
+                            <h3 className="text-lg font-semibold mb-2 text-stone-800">课程简介</h3>
+                            <p>{course.description || '暂无描述'}</p>
+                        </div>
 
-                    {course.tags.length > 0 && (
-                        <div className="content-section">
-                            <h2>课程标签</h2>
+                        {course.tags.length > 0 && (
                             <div className="tags-container">
                                 {course.tags.map(tag => (
-                                    <span key={tag} className="tag">
-                                        {tag}
-                                    </span>
+                                    <span key={tag} className="tag">{tag}</span>
                                 ))}
                             </div>
-                        </div>
-                    )}
-
-                    <div className="course-navigation">
-                        <Link to={`/courses/${course.id}/graph`} className="nav-card">
-                            <div className="nav-icon">📊</div>
-                            <h3>知识图谱</h3>
-                            <p>可视化课程知识点关系</p>
-                        </Link>
-                        <Link to={`/courses/${course.id}/notes`} className="nav-card">
-                            <div className="nav-icon">📝</div>
-                            <h3>课程笔记</h3>
-                            <p>查看和创建学习笔记</p>
-                        </Link>
-                        <Link to={`/courses/${course.id}/quizzes`} className="nav-card">
-                            <div className="nav-icon">🧩</div>
-                            <h3>课程测验</h3>
-                            <p>测试学习成果</p>
-                        </Link>
+                        )}
                     </div>
                 </div>
             </div>

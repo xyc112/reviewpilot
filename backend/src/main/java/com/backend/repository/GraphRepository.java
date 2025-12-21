@@ -30,13 +30,29 @@ class GraphRepositoryImpl implements GraphRepositoryCustom {
 
     @Override
     public Graph getOrCreate(Long courseId) {
+        // First try to find existing graph
         Graph g = em.find(Graph.class, courseId);
         if (g != null) return g;
-        Graph newG = Graph.builder().courseId(courseId).nodes(null).relations(null).build();
-        em.persist(newG);
-        // flush to ensure entity managed and visible
-        em.flush();
-        return newG;
+        
+        // Double-check with a query to handle any caching issues
+        List<Graph> existing = em.createQuery("SELECT g FROM Graph g WHERE g.courseId = :courseId", Graph.class)
+                .setParameter("courseId", courseId)
+                .getResultList();
+        if (!existing.isEmpty()) {
+            return existing.get(0);
+        }
+        
+        // Create new graph only if it truly doesn't exist
+        try {
+            Graph newG = Graph.builder().courseId(courseId).nodes(null).relations(null).build();
+            em.persist(newG);
+            em.flush();
+            return newG;
+        } catch (Exception e) {
+            // If persist fails due to duplicate key, fetch the existing one
+            em.clear();
+            return em.find(Graph.class, courseId);
+        }
     }
 
     @Override

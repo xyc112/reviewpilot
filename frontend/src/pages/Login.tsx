@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/api';
+import { User, Lock, ArrowRight } from 'lucide-react';
 import '../styles/Auth.css';
 
 const Login: React.FC = () => {
@@ -14,7 +15,6 @@ const Login: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        // 用户开始输入时清除错误信息
         if (error) setError('');
     };
 
@@ -29,11 +29,9 @@ const Login: React.FC = () => {
             login(user);
             navigate('/');
         } catch (err: any) {
-            // 清除可能存在的错误token
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             
-            // 优先显示后端返回的详细错误信息
             const errorMessage = err.response?.data?.message 
                 || err.response?.data?.error 
                 || err.message 
@@ -53,44 +51,57 @@ const Login: React.FC = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>用户名</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            className="input-box"
-                            required
-                        />
+                        <label className="form-label">用户名</label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                className="form-input pl-10"
+                                placeholder="请输入用户名"
+                                required
+                            />
+                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400" size={18} />
+                        </div>
                     </div>
 
                     <div className="form-group">
-                        <label>密码</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="input-box"
-                            required
-                        />
+                        <label className="form-label">密码</label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="form-input pl-10"
+                                placeholder="请输入密码"
+                                required
+                            />
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400" size={18} />
+                        </div>
                     </div>
 
-                    {error && <div className="error-box">{error}</div>}
+                    {error && <div className="error-message">{error}</div>}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="auth-btn primary"
+                        className="auth-btn flex justify-center items-center gap-2"
                     >
-                        {loading ? '登录中...' : '登录'}
+                        {loading ? '登录中...' : (
+                            <>
+                                登录
+                                <ArrowRight size={16} />
+                            </>
+                        )}
                     </button>
                 </form>
 
-                <p className="auth-footer">
+                <div className="auth-footer">
                     没有账号？
-                    <Link to="/register">立即注册</Link>
-                </p>
+                    <Link to="/register" className="auth-link">立即注册</Link>
+                </div>
             </div>
         </div>
     );

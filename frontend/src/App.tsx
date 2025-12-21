@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/common/Toast';
 import Layout from './components/common/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,7 +11,6 @@ import GraphView from './pages/GraphView';
 import NoteList from './pages/NoteList';
 import QuizList from './pages/QuizList';
 import ProtectedRoute from './components/common/ProtectedRoute';
-// 在 import 部分添加
 import CreateCourse from './pages/CreateCourse';
 import EditCourse from './pages/EditCourse';
 import CreateQuiz from './pages/CreateQuiz';
@@ -20,6 +20,7 @@ import QuizDetail from './pages/QuizDetail';
 const App: React.FC = () => {
     return (
         <AuthProvider>
+            <ToastProvider>
             <Router>
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -45,6 +46,7 @@ const App: React.FC = () => {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </Router>
+            </ToastProvider>
         </AuthProvider>
     );
 };

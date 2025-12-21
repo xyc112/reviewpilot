@@ -1,10 +1,9 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { BookOpen, Settings, PlusCircle, LogOut, User, LayoutDashboard } from 'lucide-react';
 import '../../styles/Auth.css';
-import '../../styles/CourseUI.css'; // ⬅ 确保包含 layout-container 样式
-
-
+import '../../styles/CourseUI.css';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();
@@ -17,42 +16,53 @@ const Layout: React.FC = () => {
     };
 
     return (
-        // ⬅⬅⬅ 新增 layout-container：全局虚化背景层
         <div className="layout-container">
 
-            {/* 顶部导航：保持白色悬浮风 */}
+            {/* Navbar */}
             <header className="navbar-card">
                 <div className="brand">
-                    <Link to="/" className="brand">学习辅助系统</Link>
+                    <Link to="/" className="brand">
+                        <LayoutDashboard size={24} strokeWidth={1.5} />
+                        <span>ReviewPilot</span>
+                    </Link>
                 </div>
 
                 <nav className="nav-center">
                     <Link to="/courses"
                           className={`nav-item ${location.pathname === '/courses' ? 'active' : ''}`}>
-                        课程
+                        <BookOpen size={18} strokeWidth={1.5} />
+                        <span>课程</span>
                     </Link>
 
                     {user?.role === 'ADMIN' && (
                         <Link to="/admin"
                               className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>
-                            管理
+                            <Settings size={18} strokeWidth={1.5} />
+                            <span>管理</span>
                         </Link>
                     )}
                     
                     {user?.role === 'ADMIN' && (
                         <Link to="/courses/new" className="nav-item">
-                            + 创建课程
+                            <PlusCircle size={18} strokeWidth={1.5} />
+                            <span>创建课程</span>
                         </Link>
                     )}
                 </nav>
 
                 <div className="nav-right">
-                    <span className="user-name">你好，{user?.username}</span>
-                    <button className="logout-btn" onClick={handleLogout}>退出</button>
+                    <div className="flex items-center gap-2 text-sm text-stone-600">
+                        <User size={16} strokeWidth={1.5} />
+                        <span className="user-name">{user?.username}</span>
+                    </div>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        <LogOut size={16} strokeWidth={1.5} />
+                        <span>退出</span>
+                    </button>
                 </div>
             </header>
 
-            {/* 主内容区：白色卡片容器层 */}
+            {/* Main Content */}
             <main className="main-wrapper">
                 <div className="main-inner">
                     <Outlet />
