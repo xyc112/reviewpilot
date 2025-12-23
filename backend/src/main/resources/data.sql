@@ -3,18 +3,17 @@
 -- H2 数据库 MySQL 模式
 -- =========================================
 
--- 插入初始用户
 -- 密码都是 "123456"，使用 BCrypt 加密
--- BCrypt hash for "123456": $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+-- BCrypt hash for "123456": $2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.
 INSERT INTO account (id, username, password, role) VALUES
-(1, 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN'),
-(2, '胡久鸣', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(3, '蔡烨培', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(4, '吴迪', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(5, '居远谋', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(6, '钟定博', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(7, '杨舒文', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER'),
-(8, '谢宇成', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER');
+(1, 'admin', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'ADMIN'),
+(2, '胡久鸣', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(3, '蔡烨培', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(4, '吴迪', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(5, '居远谋', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(6, '钟定博', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(7, '杨舒文', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
+(8, '谢宇成', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER');
 
 -- 插入示例课程
 INSERT INTO course (id, title, description, level, author_id, created_at) VALUES
