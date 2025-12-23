@@ -54,10 +54,10 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post does not belong to this course");
         }
 
-        boolean isAdmin = user.getRole() == User.Role.ADMIN;
+        // 只有作者可以修改帖子
         boolean isOwner = Objects.equals(existing.getAuthorId(), user.getId());
-        if (!isAdmin && !isOwner) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not post owner or admin");
+        if (!isOwner) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only post owner can update");
         }
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -78,6 +78,7 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post does not belong to this course");
         }
 
+        // 作者和管理员都可以删除帖子
         boolean isAdmin = user.getRole() == User.Role.ADMIN;
         boolean isOwner = Objects.equals(existing.getAuthorId(), user.getId());
         if (!isAdmin && !isOwner) {
