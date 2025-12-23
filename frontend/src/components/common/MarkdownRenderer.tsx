@@ -9,10 +9,13 @@ interface MarkdownRendererProps {
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className = '' }) => {
+    // 将 \n 转换为实际的换行符，以便 Markdown 正确渲染
+    const processedContent = content.replace(/\\n/g, '\n');
+    
     return (
         <div className={`markdown-content ${className}`}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content}
+                {processedContent}
             </ReactMarkdown>
         </div>
     );

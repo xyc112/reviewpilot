@@ -230,9 +230,9 @@ const NoteList: React.FC = () => {
                                     </span>
                                 </div>
                                 <div className="note-card-content">
-                                    {note.content.length > 150
+                                    {(note.content.length > 150
                                         ? note.content.substring(0, 150) + '...'
-                                        : note.content}
+                                        : note.content).replace(/\\n/g, ' ')}
                                 </div>
                                 <div className="note-card-footer">
                                     <span className="note-date">

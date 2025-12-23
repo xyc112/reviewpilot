@@ -54,10 +54,11 @@ export interface Quiz {
 
 export interface Question {
     id: string;
-    type: 'single' | 'multiple' | 'short';
+    type: 'single' | 'multiple' | 'truefalse';
     question: string;
     options?: string[];
     answer?: number[];
+    explanation?: string; // 题目解析
 }
 
 export interface QuizAttempt {

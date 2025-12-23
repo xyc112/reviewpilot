@@ -192,7 +192,7 @@ public class QuizService {
                 continue;
             }
             boolean correct = false;
-            if ("single".equalsIgnoreCase(q.getType()) || "multiple".equalsIgnoreCase(q.getType())) {
+            if ("single".equalsIgnoreCase(q.getType()) || "multiple".equalsIgnoreCase(q.getType()) || "truefalse".equalsIgnoreCase(q.getType())) {
                 List<Integer> correctAnswer = q.getAnswer() == null ? List.of() : q.getAnswer();
                 List<Integer> provided = a.getAnswer() == null ? List.of() : a.getAnswer();
                 // require exact match (order-insensitive)
@@ -204,7 +204,7 @@ public class QuizService {
                 r.put("correct", correct);
                 r.put("score", score);
             } else {
-                // short answer: not auto-graded
+                // unknown type: not auto-graded
                 r.put("correct", false);
                 r.put("score", 0);
             }

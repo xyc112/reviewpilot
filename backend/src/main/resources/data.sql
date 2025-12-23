@@ -52,11 +52,12 @@ INSERT INTO note (id, course_id, title, content, author_id, visibility, created_
 
 -- 插入示例测验
 -- 注意：JSON 字符串需要正确转义，每个题目需要唯一的 id
+-- 题目类型：single(单选题), multiple(多选题), truefalse(判断题)
 INSERT INTO quiz (id, course_id, title, questions, author_id, created_at, updated_at) VALUES
 ('quiz1', 1, 'Java 基础测验', 
-'[{"id":"quiz1-q1","type":"single","question":"Java中哪种数据类型占用8个字节？","options":["int","long","double","float"],"answer":[2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"short","question":"什么是Java中的封装？","options":[],"answer":[]}]',
+'[{"id":"quiz1-q1","type":"single","question":"Java中哪种数据类型占用8个字节？","options":["int","long","double","float"],"answer":[2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"truefalse","question":"Java是一种面向对象的编程语言","options":["正确","错误"],"answer":[0]}]',
 1, '2024-01-18 10:00:00', '2024-01-18 10:00:00'),
 ('quiz2', 2, 'Spring Boot 入门测验',
-'[{"id":"quiz2-q1","type":"single","question":"Spring Boot的默认端口是多少？","options":["8080","3000","5000","7000"],"answer":[0]},{"id":"quiz2-q2","type":"short","question":"简述Spring Boot的优势","options":[],"answer":[]}]',
+'[{"id":"quiz2-q1","type":"single","question":"Spring Boot的默认端口是多少？","options":["8080","3000","5000","7000"],"answer":[0]},{"id":"quiz2-q2","type":"truefalse","question":"Spring Boot可以自动配置应用程序","options":["正确","错误"],"answer":[0]}]',
 1, '2024-01-22 15:00:00', '2024-01-22 15:00:00');
 

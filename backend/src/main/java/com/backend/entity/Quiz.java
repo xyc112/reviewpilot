@@ -49,7 +49,7 @@ public class Quiz {
     @Builder
     public static class Question {
         private String id; // e.g. q10-1
-        private String type; // single|multiple|short
+        private String type; // single|multiple|truefalse
         private String question;
         private List<String> options;
         /**

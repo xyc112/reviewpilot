@@ -44,8 +44,8 @@ const QuizDetail: React.FC = () => {
         setAnswers(prev => {
             const currentAnswers = prev[questionId] || [];
 
-            if (questionType === 'single') {
-                // 单选题，直接替换答案
+            if (questionType === 'single' || questionType === 'truefalse') {
+                // 单选题和判断题，直接替换答案
                 return {
                     ...prev,
                     [questionId]: [optionIndex]
@@ -112,84 +112,131 @@ const QuizDetail: React.FC = () => {
     if (!quiz) return <div className="error-message">测验不存在</div>;
 
     if (attempt) {
+        const scorePercentage = Math.round((attempt.score / attempt.total) * 100);
+        const isPassed = scorePercentage >= 60;
+        
         return (
             <div className="container">
                 <div className="page-header">
-                    <h1>{quiz.title} - 结果</h1>
+                    <h1>{quiz.title} - 测验结果</h1>
                 </div>
 
                 <div className="quiz-result">
-                    <div className="result-summary">
-                        <h2>测验结果</h2>
-                        <div className="score">
-                            <span className="score-value">{attempt.score}</span>
-                            <span className="score-total">/ {attempt.total}</span>
+                    <div className={`result-summary ${isPassed ? 'passed' : 'failed'}`}>
+                        <div className="result-icon">
+                            {isPassed ? '🎉' : '📝'}
                         </div>
-                        <p>得分率: {Math.round((attempt.score / attempt.total) * 100)}%</p>
+                        <h2>测验完成</h2>
+                        <div className="score-display">
+                            <div className="score-main">
+                                <span className="score-value">{attempt.score}</span>
+                                <span className="score-separator">/</span>
+                                <span className="score-total">{attempt.total}</span>
+                            </div>
+                            <div className={`score-percentage ${isPassed ? 'passed' : 'failed'}`}>
+                                {scorePercentage}%
+                            </div>
+                        </div>
+                        <p className="result-message">
+                            {isPassed 
+                                ? `恭喜！您通过了本次测验` 
+                                : `还需要继续努力，建议重新学习相关内容`}
+                        </p>
                     </div>
 
                     <div className="result-details">
-                        <h3>题目详情</h3>
+                        <h3>题目解析</h3>
                         {quiz.questions.map((question, index) => {
                             const result = attempt.results.find(r => r.questionId === question.id);
                             const userAnswer = answers[question.id] || [];
                             const isCorrect = result?.correct || false;
+                            const correctAnswerIndices = question.answer || [];
 
                             return (
                                 <div
                                     key={question.id}
-                                    className={`question-result ${isCorrect ? 'correct' : 'incorrect'}`}
+                                    className={`question-result-card ${isCorrect ? 'correct' : 'incorrect'}`}
                                 >
-                                    <div className="question-header">
-                                        <h4>题目 {index + 1}: {question.question}</h4>
-                                        <div className={`status-indicator ${isCorrect ? 'correct' : 'incorrect'}`}>
-                                            {isCorrect ? '✓ 正确' : '✗ 错误'}
+                                    <div className="question-result-header">
+                                        <div className="question-number">题目 {index + 1}</div>
+                                        <div className={`result-badge ${isCorrect ? 'correct' : 'incorrect'}`}>
+                                            {isCorrect ? (
+                                                <>
+                                                    <span className="badge-icon">✓</span>
+                                                    <span>回答正确</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="badge-icon">✗</span>
+                                                    <span>回答错误</span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="options">
+                                    
+                                    <div className="question-text-result">
+                                        {question.question}
+                                        {question.type === 'multiple' && <span className="question-type-badge">[多选]</span>}
+                                        {question.type === 'truefalse' && <span className="question-type-badge">[判断]</span>}
+                                    </div>
+
+                                    <div className="options-result">
                                         {question.options?.map((option, optIndex) => {
                                             const isSelected = userAnswer.includes(optIndex);
-                                            const isCorrectAnswer = question.answer?.includes(optIndex);
+                                            const isCorrectAnswer = correctAnswerIndices.includes(optIndex);
 
-                                            let optionClass = "option";
+                                            let optionClass = "option-result";
                                             if (isSelected && isCorrectAnswer) {
-                                                optionClass += " correct";
+                                                optionClass += " correct-selected";
                                             } else if (isSelected && !isCorrectAnswer) {
-                                                optionClass += " incorrect";
+                                                optionClass += " incorrect-selected";
                                             } else if (!isSelected && isCorrectAnswer) {
-                                                optionClass += " missing";
+                                                optionClass += " correct-missing";
                                             }
 
                                             return (
                                                 <div key={optIndex} className={optionClass}>
-                                                    <span className="option-indicator">
-                                                        {isSelected && <span className="selected-dot"></span>}
-                                                    </span>
-                                                    <span className="option-label">
-                                                        {String.fromCharCode(65 + optIndex)}.
-                                                    </span>
-                                                    <span className="option-text">{option}</span>
-                                                    {isSelected && !isCorrectAnswer && (
-                                                        <span className="your-answer-indicator">(你的答案)</span>
+                                                    <div className="option-result-content">
+                                                        <span className="option-result-indicator">
+                                                            {isCorrectAnswer && (
+                                                                <span className="correct-mark">✓</span>
+                                                            )}
+                                                            {isSelected && !isCorrectAnswer && (
+                                                                <span className="incorrect-mark">✗</span>
+                                                            )}
+                                                            {!isSelected && !isCorrectAnswer && (
+                                                                <span className="option-circle"></span>
+                                                            )}
+                                                        </span>
+                                                        <span className="option-result-label">
+                                                            {String.fromCharCode(65 + optIndex)}.
+                                                        </span>
+                                                        <span className="option-result-text">{option}</span>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <span className="answer-tag your-answer-tag">你的答案</span>
                                                     )}
-                                                    {!isSelected && isCorrectAnswer && (
-                                                        <span className="correct-answer-indicator">(正确答案)</span>
-                                                    )}
-                                                    {isSelected && isCorrectAnswer && (
-                                                        <span className="correct-indicator">(正确答案)</span>
+                                                    {isCorrectAnswer && (
+                                                        <span className="answer-tag correct-answer-tag">正确答案</span>
                                                     )}
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                    {result && (
-                                        <div className="feedback">
-                                            <span className={isCorrect ? "correct-label" : "incorrect-label"}>
-                                                {isCorrect ? "✓ 正确" : "✗ 错误"}
-                                            </span>
-                                            <span className="points">得分: {result.score}</span>
+
+                                    {question.explanation && (
+                                        <div className="question-explanation">
+                                            <div className="explanation-header">📖 解析</div>
+                                            <div className="explanation-content">{question.explanation}</div>
                                         </div>
                                     )}
+
+                                    <div className="question-score">
+                                        <span className="score-label">本题得分：</span>
+                                        <span className={`score-value ${isCorrect ? 'correct' : 'incorrect'}`}>
+                                            {result?.score || 0} / {Math.round(100 / quiz.questions.length)}
+                                        </span>
+                                    </div>
                                 </div>
                             );
                         })}
@@ -224,6 +271,7 @@ const QuizDetail: React.FC = () => {
                         <h3>
                             题目 {index + 1}: {question.question}
                             {question.type === 'multiple' && <span className="question-type">[多选]</span>}
+                            {question.type === 'truefalse' && <span className="question-type">[判断]</span>}
                         </h3>
 
                         <div className="options">

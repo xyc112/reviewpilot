@@ -214,6 +214,7 @@ const CreateQuiz: React.FC = () => {
                                     >
                                         <option value="single">单选题</option>
                                         <option value="multiple">多选题</option>
+                                        <option value="truefalse">判断题</option>
                                     </select>
                                 </div>
 
@@ -239,9 +240,10 @@ const CreateQuiz: React.FC = () => {
                                                 className="form-control"
                                                 placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
                                                 required
+                                                disabled={question.type === 'truefalse'}
                                             />
                                             <div className="option-actions">
-                                                {question.options.length > 2 && (
+                                                {question.options.length > 2 && question.type !== 'truefalse' && (
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveOption(qIndex, oIndex)}
@@ -252,7 +254,7 @@ const CreateQuiz: React.FC = () => {
                                                 )}
                                                 <label className="answer-checkbox">
                                                     <input
-                                                        type={question.type === 'single' ? 'radio' : 'checkbox'}
+                                                        type={question.type === 'single' || question.type === 'truefalse' ? 'radio' : 'checkbox'}
                                                         name={`answer-${qIndex}`}
                                                         checked={question.answer.includes(oIndex)}
                                                         onChange={() => handleAnswerChange(qIndex, oIndex)}
@@ -262,13 +264,18 @@ const CreateQuiz: React.FC = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleAddOption(qIndex)}
-                                        className="btn btn-outline"
-                                    >
-                                        + 添加选项
-                                    </button>
+                                    {question.type !== 'truefalse' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddOption(qIndex)}
+                                            className="btn btn-outline"
+                                        >
+                                            + 添加选项
+                                        </button>
+                                    )}
+                                    {question.type === 'truefalse' && (
+                                        <p className="form-hint">判断题固定为"正确"和"错误"两个选项</p>
+                                    )}
                                 </div>
                             </div>
                         ))}
