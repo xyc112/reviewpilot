@@ -75,8 +75,17 @@ const ReviewPlanPage: React.FC = () => {
 
     const handleDateClick = (date: Date) => {
         setSelectedDate(date);
-        const dateStr = date.toISOString().split('T')[0];
-        setFormData(prev => ({ ...prev, planDate: dateStr }));
+        // 点击日期时只选中日期，不自动打开表单
+        setShowPlanForm(false);
+        setEditingPlan(null);
+    };
+
+    const handleStartNewPlan = () => {
+        // 如果有选中的日期，使用选中日期，否则使用今天
+        const dateToUse = selectedDate || new Date();
+        const dateStr = dateToUse.toISOString().split('T')[0];
+        setSelectedDate(dateToUse);
+        setFormData({ title: '', description: '', type: 'plan', planDate: dateStr });
         setShowPlanForm(true);
         setEditingPlan(null);
     };
@@ -98,6 +107,11 @@ const ReviewPlanPage: React.FC = () => {
             success('复习计划创建成功');
             setShowPlanForm(false);
             setFormData({ title: '', description: '', type: 'plan', planDate: '' });
+            // 如果创建的计划日期被选中，刷新选中日期的显示
+            if (formData.planDate) {
+                const planDate = new Date(formData.planDate);
+                setSelectedDate(planDate);
+            }
             await fetchPlans();
         } catch (err: any) {
             showError('创建复习计划失败: ' + (err.response?.data?.message || '未知错误'));
@@ -132,6 +146,13 @@ const ReviewPlanPage: React.FC = () => {
             setShowPlanForm(false);
             setEditingPlan(null);
             setFormData({ title: '', description: '', type: 'plan', planDate: '' });
+            // 刷新选中日期的显示
+            if (selectedDate) {
+                const dateStr = selectedDate.toISOString().split('T')[0];
+                if (dateStr === formData.planDate || dateStr === editingPlan.planDate) {
+                    // 如果更新后的日期仍然是选中日期，保持选中
+                }
+            }
             await fetchPlans();
         } catch (err: any) {
             showError('更新复习计划失败: ' + (err.response?.data?.message || '未知错误'));
@@ -206,21 +227,6 @@ const ReviewPlanPage: React.FC = () => {
 
     return (
         <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-                <button
-                    onClick={() => {
-                        const today = new Date();
-                        setSelectedDate(today);
-                        setFormData(prev => ({ ...prev, planDate: today.toISOString().split('T')[0] }));
-                        setShowPlanForm(true);
-                        setEditingPlan(null);
-                    }}
-                    className="btn btn-primary"
-                >
-                    <Plus size={18} />
-                    新建计划
-                </button>
-            </div>
 
             <ConfirmDialog
                 isOpen={deleteConfirm.isOpen}
@@ -234,7 +240,7 @@ const ReviewPlanPage: React.FC = () => {
             />
 
             {/* 日历和计划列表 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '1.5rem', alignItems: 'start' }}>
                 {/* 日历 */}
                 <div className="content-section">
                     <div style={{ padding: '1rem' }}>
@@ -342,10 +348,143 @@ const ReviewPlanPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* 右侧：选中日期的计划和即将到来的计划 */}
+                {/* 右侧：新建计划表单、选中日期的计划和即将到来的计划 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {/* 新建/编辑计划表单 */}
+                    {showPlanForm && (
+                        <div className="content-section">
+                            <div style={{ padding: '1rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>
+                                        {editingPlan ? '编辑计划' : '新建计划'}
+                                    </h3>
+                                    <button
+                                        onClick={() => {
+                                            setShowPlanForm(false);
+                                            setEditingPlan(null);
+                                            setFormData({ title: '', description: '', type: 'plan', planDate: '' });
+                                        }}
+                                        className="btn btn-outline btn-small"
+                                        title="关闭"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                            标题 *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.title}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                border: '1px solid #e7e5e4',
+                                                borderRadius: '0.5rem',
+                                                fontSize: '0.875rem',
+                                            }}
+                                            placeholder="输入计划标题"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                            日期 *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={formData.planDate}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, planDate: e.target.value }))}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                border: '1px solid #e7e5e4',
+                                                borderRadius: '0.5rem',
+                                                fontSize: '0.875rem',
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                            类型 *
+                                        </label>
+                                        <select
+                                            value={formData.type}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'plan' | 'exam' }))}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                border: '1px solid #e7e5e4',
+                                                borderRadius: '0.5rem',
+                                                fontSize: '0.875rem',
+                                            }}
+                                        >
+                                            <option value="plan">计划</option>
+                                            <option value="exam">考试</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                            描述
+                                        </label>
+                                        <textarea
+                                            value={formData.description}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                border: '1px solid #e7e5e4',
+                                                borderRadius: '0.5rem',
+                                                fontSize: '0.875rem',
+                                                minHeight: '80px',
+                                                resize: 'vertical',
+                                            }}
+                                            placeholder="输入计划描述（可选）"
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                                        <button
+                                            onClick={() => {
+                                                setShowPlanForm(false);
+                                                setEditingPlan(null);
+                                                setFormData({ title: '', description: '', type: 'plan', planDate: '' });
+                                            }}
+                                            className="btn btn-outline btn-small"
+                                        >
+                                            取消
+                                        </button>
+                                        <button
+                                            onClick={editingPlan ? handleUpdatePlan : handleCreatePlan}
+                                            className="btn btn-primary btn-small"
+                                        >
+                                            {editingPlan ? '更新' : '创建'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 如果没有显示表单，显示新建计划按钮 */}
+                    {!showPlanForm && (
+                        <div className="content-section">
+                            <div style={{ padding: '1rem' }}>
+                                <button
+                                    onClick={handleStartNewPlan}
+                                    className="btn btn-primary"
+                                    style={{ width: '100%' }}
+                                >
+                                    <Plus size={18} />
+                                    新建计划
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* 选中日期的计划 */}
-                    {selectedDate && (
+                    {selectedDate && !showPlanForm && (
                         <div className="content-section">
                             <div style={{ padding: '1rem' }}>
                                 <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600 }}>
@@ -436,10 +575,11 @@ const ReviewPlanPage: React.FC = () => {
                                         return (
                                             <div
                                                 key={plan.id}
-                                                onClick={() => {
-                                                    setSelectedDate(planDate);
-                                                    setFormData(prev => ({ ...prev, planDate: plan.planDate }));
-                                                }}
+                                        onClick={() => {
+                                            setSelectedDate(planDate);
+                                            setShowPlanForm(false);
+                                            setEditingPlan(null);
+                                        }}
                                                 style={{
                                                     padding: '0.75rem',
                                                     border: '1px solid #e7e5e4',
@@ -480,135 +620,6 @@ const ReviewPlanPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 计划表单模态框 */}
-            {showPlanForm && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000,
-                }} onClick={() => {
-                    setShowPlanForm(false);
-                    setEditingPlan(null);
-                    setFormData({ title: '', description: '', type: 'plan', planDate: '' });
-                }}>
-                    <div
-                        style={{
-                            background: 'white',
-                            borderRadius: '0.5rem',
-                            padding: '1.5rem',
-                            width: '90%',
-                            maxWidth: '500px',
-                            maxHeight: '90vh',
-                            overflow: 'auto',
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.25rem', fontWeight: 600 }}>
-                            {editingPlan ? '编辑计划' : '新建计划'}
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
-                                    标题 *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #e7e5e4',
-                                        borderRadius: '0.5rem',
-                                        fontSize: '0.875rem',
-                                    }}
-                                    placeholder="输入计划标题"
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
-                                    日期 *
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formData.planDate}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, planDate: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #e7e5e4',
-                                        borderRadius: '0.5rem',
-                                        fontSize: '0.875rem',
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
-                                    类型 *
-                                </label>
-                                <select
-                                    value={formData.type}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'plan' | 'exam' }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #e7e5e4',
-                                        borderRadius: '0.5rem',
-                                        fontSize: '0.875rem',
-                                    }}
-                                >
-                                    <option value="plan">计划</option>
-                                    <option value="exam">考试</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
-                                    描述
-                                </label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #e7e5e4',
-                                        borderRadius: '0.5rem',
-                                        fontSize: '0.875rem',
-                                        minHeight: '100px',
-                                        resize: 'vertical',
-                                    }}
-                                    placeholder="输入计划描述（可选）"
-                                />
-                            </div>
-                            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                                <button
-                                    onClick={() => {
-                                        setShowPlanForm(false);
-                                        setEditingPlan(null);
-                                        setFormData({ title: '', description: '', type: 'plan', planDate: '' });
-                                    }}
-                                    className="btn btn-outline"
-                                >
-                                    取消
-                                </button>
-                                <button
-                                    onClick={editingPlan ? handleUpdatePlan : handleCreatePlan}
-                                    className="btn btn-primary"
-                                >
-                                    {editingPlan ? '更新' : '创建'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

@@ -326,16 +326,6 @@ const Community: React.FC = () => {
             />
 
             <div className="community-page">
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-                    <button
-                        onClick={() => setShowCreatePost(!showCreatePost)}
-                        className="btn btn-primary"
-                    >
-                        <Plus size={18} />
-                        {showCreatePost ? '取消' : '发布新帖'}
-                    </button>
-                </div>
-
                 {error && <div className="error-message mb-4">{error}</div>}
 
                 {/* 搜索栏 */}
@@ -365,45 +355,71 @@ const Community: React.FC = () => {
                             <kbd>Ctrl</kbd> + <kbd>K</kbd>
                         </span>
                     </div>
+
+                    <button
+                        onClick={() => setShowCreatePost(!showCreatePost)}
+                        className="btn btn-primary"
+                    >
+                        <Plus size={18} />
+                        {showCreatePost ? '取消发布' : '发布新帖'}
+                    </button>
                 </div>
 
                 {showCreatePost && (
-                    <div className="post-form card mb-6">
-                        <h3 className="text-lg font-semibold mb-4">发布新帖</h3>
-                        <div className="form-group">
-                            <label className="form-label">标题</label>
-                            <input
-                                type="text"
-                                value={newPost.title}
-                                onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                                placeholder="输入帖子标题..."
-                                className="form-input"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">内容</label>
-                            <textarea
-                                value={newPost.content}
-                                onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                                placeholder="输入帖子内容（支持Markdown）..."
-                                rows={8}
-                                className="form-textarea"
-                            />
-                        </div>
-                        <div className="form-actions">
-                            <button onClick={handleCreatePost} className="btn btn-primary">
-                                <Send size={16} />
-                                发布
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowCreatePost(false);
-                                    setNewPost({ title: '', content: '' });
+                    <div className="content-section" style={{ marginBottom: '2rem' }}>
+                        <div className="note-edit-page">
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleCreatePost();
                                 }}
-                                className="btn btn-outline"
+                                className="note-edit-form"
                             >
-                                取消
-                            </button>
+                                <div className="form-group">
+                                    <label>标题:</label>
+                                    <input
+                                        type="text"
+                                        value={newPost.title}
+                                        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                                        required
+                                        placeholder="输入帖子标题"
+                                        className="form-input"
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>内容:</label>
+                                    <textarea
+                                        value={newPost.content}
+                                        onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                                        rows={15}
+                                        required
+                                        placeholder="输入帖子内容，支持 Markdown 格式"
+                                        className="form-input"
+                                    />
+                                </div>
+
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowCreatePost(false);
+                                            setNewPost({ title: '', content: '' });
+                                        }}
+                                        className="btn btn-outline"
+                                    >
+                                        <X size={18} />
+                                        取消
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
+                                    >
+                                        <Send size={18} />
+                                        发布
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )}
