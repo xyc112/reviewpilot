@@ -35,6 +35,17 @@ const WrongQuestionBook: React.FC = () => {
         fetchStats();
     }, [course, navigate, filter]);
 
+    // 当错题列表更新时，重新获取统计信息
+    useEffect(() => {
+        if (course && !loading) {
+            // 延迟一下，确保数据已更新
+            const timer = setTimeout(() => {
+                fetchStats();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [wrongQuestions.length, course, loading]);
+
     const fetchWrongQuestions = async () => {
         if (!course) return;
         try {
@@ -53,9 +64,14 @@ const WrongQuestionBook: React.FC = () => {
         if (!course) return;
         try {
             const response = await wrongQuestionAPI.getStats(course.id);
-            setStats(response.data);
+            setStats({
+                total: response.data.total || 0,
+                mastered: response.data.mastered || 0,
+                notMastered: response.data.notMastered || 0
+            });
         } catch (err: any) {
             console.error('Failed to fetch stats:', err);
+            setStats({ total: 0, mastered: 0, notMastered: 0 });
         }
     };
 
@@ -243,21 +259,36 @@ const WrongQuestionBook: React.FC = () => {
                                 const isSelected = (practiceAnswers[practicingQuestion.questionId] || []).includes(optIndex);
                                 const showResult = showPracticeResult[practicingQuestion.questionId];
                                 const isCorrect = practicingQuestion.question?.answer?.includes(optIndex);
+                                const isCorrectlySelected = isSelected && isCorrect;
+                                const isIncorrectlySelected = isSelected && !isCorrect;
                                 
                                 return (
                                     <div
                                         key={optIndex}
-                                        className={`option-item ${isSelected ? 'selected' : ''} ${showResult && isCorrect ? 'correct' : ''} ${showResult && isSelected && !isCorrect ? 'incorrect' : ''}`}
-                                        onClick={() => !showResult && handlePracticeOptionSelect(
-                                            practicingQuestion.questionId,
-                                            optIndex,
-                                            practicingQuestion.question.type
-                                        )}
+                                        className={`option-item ${isSelected ? 'selected' : ''} ${showResult && isCorrectlySelected ? 'correct' : ''} ${showResult && isIncorrectlySelected ? 'incorrect' : ''} ${showResult && !isSelected && isCorrect ? 'correct' : ''}`}
+                                        style={{ cursor: showResult ? 'default' : 'pointer' }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (!showResult) {
+                                                handlePracticeOptionSelect(
+                                                    practicingQuestion.questionId,
+                                                    optIndex,
+                                                    practicingQuestion.question.type
+                                                );
+                                            }
+                                        }}
                                     >
-                                        <span className="option-label">
+                                        <span className="option-label" style={{ fontWeight: 600, minWidth: '1.5rem' }}>
                                             {String.fromCharCode(65 + optIndex)}.
                                         </span>
-                                        <span className="option-text">{option}</span>
+                                        <span className="option-text" style={{ flex: 1 }}>{option}</span>
+                                        {showResult && isCorrect && (
+                                            <span style={{ color: '#10b981', fontWeight: 700, marginLeft: '0.5rem' }}>✓</span>
+                                        )}
+                                        {showResult && isIncorrectlySelected && (
+                                            <span style={{ color: '#ef4444', fontWeight: 700, marginLeft: '0.5rem' }}>✗</span>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -296,13 +327,19 @@ const WrongQuestionBook: React.FC = () => {
             )}
 
             <div className="wrong-questions-list">
-                {wrongQuestions.length === 0 ? (
+                {!loading && wrongQuestions.length === 0 ? (
                     <div className="empty-state">
                         <BookOpen size={48} className="text-stone-400 mb-4" />
                         <p className="text-lg font-semibold mb-2">暂无错题</p>
-                        <p className="text-stone-500">完成测验后，错题会自动添加到错题本</p>
+                        <p className="text-stone-500">
+                            {filter === 'mastered' 
+                                ? '暂无已掌握的错题' 
+                                : filter === 'notMastered' 
+                                ? '暂无未掌握的错题' 
+                                : '完成测验后，错题会自动添加到错题本'}
+                        </p>
                     </div>
-                ) : (
+                ) : wrongQuestions.length > 0 ? (
                     wrongQuestions.map(wq => (
                         <div key={wq.id} className="wrong-question-card card mb-4">
                             <div className="flex justify-between items-start mb-2">
@@ -352,7 +389,7 @@ const WrongQuestionBook: React.FC = () => {
                             </div>
                         </div>
                     ))
-                )}
+                ) : null}
             </div>
         </div>
     );

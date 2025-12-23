@@ -88,6 +88,35 @@ const QuizDetail: React.FC = () => {
             if (!selectedCourse) return;
             const response = await quizAPI.submitAttempt(selectedCourse.id, quiz.id, submitData);
             setAttempt(response.data);
+            
+            // 自动添加错题到错题本
+            if (response.data?.results) {
+                const wrongQuestions: Array<{ questionEntityId: number; userAnswer: number[]; questionId: string }> = [];
+                response.data.results.forEach((result: any) => {
+                    if (!result.correct && result.questionEntityId) {
+                        const questionId = result.questionId;
+                        const userAnswer = answers[questionId] || [];
+                        wrongQuestions.push({
+                            questionEntityId: result.questionEntityId,
+                            userAnswer: userAnswer,
+                            questionId: questionId
+                        });
+                    }
+                });
+                
+                // 批量添加错题
+                for (const wq of wrongQuestions) {
+                    try {
+                        await wrongQuestionAPI.addWrongQuestion(selectedCourse.id, wq.questionEntityId, wq.userAnswer);
+                    } catch (err: any) {
+                        console.error('Failed to add wrong question:', err);
+                    }
+                }
+                
+                if (wrongQuestions.length > 0) {
+                    success(`已自动添加 ${wrongQuestions.length} 道错题到错题本`);
+                }
+            }
         } catch (err: any) {
             setError('提交测验失败: ' + (err.response?.data?.message || '未知错误'));
         } finally {
@@ -221,13 +250,13 @@ const QuizDetail: React.FC = () => {
                                                 <div key={optIndex} className={optionClass}>
                                                     <div className="option-result-content">
                                                         <span className="option-result-indicator">
-                                                            {isCorrectAnswer && (
+                                                            {isCorrectlySelected ? (
                                                                 <span className="correct-mark">✓</span>
-                                                            )}
-                                                            {isIncorrectlySelected && (
+                                                            ) : isIncorrectlySelected ? (
                                                                 <span className="incorrect-mark">✗</span>
-                                                            )}
-                                                            {!isSelected && !isCorrectAnswer && (
+                                                            ) : isCorrectAnswer ? (
+                                                                <span className="correct-mark">✓</span>
+                                                            ) : (
                                                                 <span className="option-circle"></span>
                                                             )}
                                                         </span>
