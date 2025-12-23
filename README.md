@@ -15,24 +15,6 @@ ReviewPilot 是一个前后端分离的学习管理系统，后端采用 Spring 
 - **Node.js**: 建议使用 Node.js 18+ 或更高版本
 - **npm**: 随 Node.js 一起安装
 
-## 项目结构
-
-```
-reviewpilot/
-├── backend/              # Spring Boot 后端项目
-│   ├── src/
-│   │   └── main/
-│   │       ├── java/     # Java 源代码
-│   │       └── resources/
-│   │           └── application.yml  # 后端配置文件
-│   └── pom.xml          # Maven 依赖配置
-├── frontend/            # React 前端项目
-│   ├── src/             # React 源代码
-│   ├── package.json     # 前端依赖配置
-│   └── vite.config.ts   # Vite 配置文件
-└── README.md           # 项目说明文档
-```
-
 ## 系统配置
 
 ### 后端配置
@@ -42,6 +24,8 @@ reviewpilot/
 - **应用名称**: backend
 - **数据库**: H2 内存数据库（`jdbc:h2:mem:testdb;MODE=MySQL`）
 - **默认端口**: 8080
+- **H2 控制台**: 启用，访问路径 `/h2-console`
+- **数据初始化**: 自动执行 `data.sql` 初始化数据
 
 ### 前端配置
 
@@ -64,7 +48,7 @@ mvn spring-boot:run
 
 后端服务将在 `http://localhost:8080` 启动。
 
-**注意**: 首次运行时会自动下载 Maven 依赖，可能需要一些时间。
+**注意**: 首次运行时会自动下载 Maven 依赖，可能需要一些时间。应用启动时会自动执行 `data.sql` 初始化数据。
 
 ### 2. 启动前端服务
 
@@ -87,25 +71,17 @@ npm run dev
 
 - **前端应用**: http://localhost:3000
 - **后端 API**: http://localhost:8080/api
+- **H2 数据库控制台**: http://localhost:8080/h2-console
+  - JDBC URL: `jdbc:h2:mem:testdb`
+  - 用户名: `sa`
+  - 密码: （空）
 
-## 技术栈
+## 初始账户
 
-### 后端
-- Spring Boot 3.5.6
-- Spring Security（JWT 认证）
-- Spring Data JPA
-- H2 数据库
-- Java 21
+系统初始化时会创建以下测试账户（密码均为 `123456`）：
 
-### 前端
-- React 19.2.0
-- TypeScript
-- Vite 7.1.10
-- React Router 6.26.0
-- Tailwind CSS 4.1.18
-- Axios 1.7.8
-- D3.js 7.9.0
-- Lucide React 0.562.0
+- **管理员**: `admin` (ADMIN 角色)
+- **普通用户**: `胡久鸣`, `蔡烨培`, `吴迪`, `居远谋`, `钟定博`, `杨舒文`, `谢宇成` (USER 角色)
 
 ## 常见问题
 
@@ -148,7 +124,7 @@ npm run dev
 ## 注意事项
 
 1. **运行顺序**: 建议先启动后端服务，再启动前端服务
-2. **数据库**: 使用 H2 内存数据库，重启后端后数据会清空
+2. **数据库**: 使用 H2 内存数据库，重启后端后数据会清空，但会重新执行 `data.sql` 初始化
 3. **跨域**: 前端已配置代理，无需额外处理跨域问题
 4. **依赖安装**: 首次运行前端时务必执行 `npm i` 安装依赖
 
@@ -163,4 +139,3 @@ npm run dev
 - `npm run dev` - 启动开发服务器
 - `npm run build` - 构建生产版本
 - `npm run preview` - 预览生产构建
-

@@ -1067,3 +1067,942 @@ type   可选，关系类型过滤
   "timestamp": "..."
 }
 ```
+
+# 六、社区模块
+
+## 概述
+
+社区模块提供课程相关的帖子（Post）和评论（Comment）功能。所有接口必须携带 JWT，HTTP 头 `Authorization: Bearer <token>`。帖子/评论的创建者或 `ADMIN` 可修改/删除自己的内容。
+
+数据模型（必要字段）
+- Post
+  - id number（服务器生成）
+  - courseId number 必填
+  - authorId number（创建者用户 id）
+  - title string 必填
+  - content string 必填（支持 Markdown）
+  - createdAt string
+  - updatedAt string 可选
+- Comment
+  - id number（服务器生成）
+  - postId number 必填
+  - authorId number（创建者用户 id）
+  - content string 必填（支持 Markdown）
+  - parentId number 可选（用于回复评论，形成嵌套结构）
+  - createdAt string
+  - updatedAt string 可选
+
+通用约定
+- `Content-Type: application/json`
+- 写操作返回创建或更新后的完整对象；删除成功返回 `204`。
+- 常见错误：`401` 未认证、`403` 无权限、`400` 参数校验、`404` 未找到。
+
+## 1. 列出课程下的所有帖子
+
+**EndPoint**: `GET /api/courses/{courseId}/posts`
+
+**描述**: 返回该课程全部帖子（不分页）。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "courseId": 123,
+    "authorId": 45,
+    "authorUsername": "张三",
+    "title": "Java多态问题",
+    "content": "最近在学习Java的面向对象编程...",
+    "createdAt": "2025-11-19T10:30:00Z",
+    "updatedAt": "2025-11-19T10:30:00Z"
+  }
+]
+```
+
+## 2. 获取单个帖子
+
+**EndPoint**: `GET /api/courses/{courseId}/posts/{postId}`
+
+**描述**: 返回帖子详细信息。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "courseId": 123,
+  "authorId": 45,
+  "authorUsername": "张三",
+  "title": "Java多态问题",
+  "content": "详细内容...",
+  "createdAt": "2025-11-19T10:30:00Z",
+  "updatedAt": "2025-11-19T10:30:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Post not found",
+  "timestamp": "..."
+}
+```
+
+## 3. 创建帖子
+
+**EndPoint**: `POST /api/courses/{courseId}/posts`
+
+**权限**: 任何已认证用户可创建帖子
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**
+
+```json
+{
+  "title": "我的问题标题",
+  "content": "帖子内容，支持 Markdown 格式"
+}
+```
+
+**成功响应（201）**
+
+```json
+{
+  "id": 10,
+  "courseId": 123,
+  "authorId": 45,
+  "authorUsername": "张三",
+  "title": "我的问题标题",
+  "content": "帖子内容",
+  "createdAt": "2025-11-19T13:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "title and content are required",
+  "timestamp": "..."
+}
+```
+
+## 4. 更新帖子
+
+**EndPoint**: `PUT /api/courses/{courseId}/posts/{postId}`
+
+**权限**: 帖子作者或 `ADMIN`
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**：字段可部分提供
+
+```json
+{
+  "title": "更新后的标题",
+  "content": "更新内容"
+}
+```
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "title": "更新后的标题",
+  "updatedAt": "2025-11-19T14:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 403,
+  "error": "Forbidden",
+  "message": "Not post owner or admin",
+  "timestamp": "..."
+}
+```
+
+## 5. 删除帖子
+
+**EndPoint**: `DELETE /api/courses/{courseId}/posts/{postId}`
+
+**权限**: 帖子作者或 `ADMIN`
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）**
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Post not found",
+  "timestamp": "..."
+}
+```
+
+## 6. 列出帖子下的所有评论
+
+**EndPoint**: `GET /api/courses/{courseId}/posts/{postId}/comments`
+
+**描述**: 返回该帖子全部评论（包括嵌套回复）。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "postId": 1,
+    "authorId": 46,
+    "authorUsername": "李四",
+    "content": "这是一个评论",
+    "parentId": null,
+    "createdAt": "2025-11-19T11:00:00Z",
+    "updatedAt": "2025-11-19T11:00:00Z"
+  },
+  {
+    "id": 2,
+    "postId": 1,
+    "authorId": 45,
+    "authorUsername": "张三",
+    "content": "回复评论",
+    "parentId": 1,
+    "createdAt": "2025-11-19T11:30:00Z",
+    "updatedAt": "2025-11-19T11:30:00Z"
+  }
+]
+```
+
+## 7. 获取单个评论
+
+**EndPoint**: `GET /api/courses/{courseId}/posts/{postId}/comments/{commentId}`
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "postId": 1,
+  "authorId": 46,
+  "authorUsername": "李四",
+  "content": "评论内容",
+  "parentId": null,
+  "createdAt": "2025-11-19T11:00:00Z"
+}
+```
+
+## 8. 创建评论
+
+**EndPoint**: `POST /api/courses/{courseId}/posts/{postId}/comments`
+
+**权限**: 任何已认证用户可创建评论
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**
+
+```json
+{
+  "content": "评论内容，支持 Markdown",
+  "parentId": 1
+}
+```
+
+**说明**: `parentId` 可选，如果提供则表示回复某个评论，形成嵌套结构。
+
+**成功响应（201）**
+
+```json
+{
+  "id": 10,
+  "postId": 1,
+  "authorId": 45,
+  "authorUsername": "张三",
+  "content": "评论内容",
+  "parentId": 1,
+  "createdAt": "2025-11-19T13:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "content is required",
+  "timestamp": "..."
+}
+```
+
+## 9. 更新评论
+
+**EndPoint**: `PUT /api/courses/{courseId}/posts/{postId}/comments/{commentId}`
+
+**权限**: 评论作者或 `ADMIN`
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**：字段可部分提供
+
+```json
+{
+  "content": "更新后的评论内容"
+}
+```
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "content": "更新后的评论内容",
+  "updatedAt": "2025-11-19T14:00:00Z"
+}
+```
+
+## 10. 删除评论
+
+**EndPoint**: `DELETE /api/courses/{courseId}/posts/{postId}/comments/{commentId}`
+
+**权限**: 评论作者或 `ADMIN`
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）**
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Comment not found",
+  "timestamp": "..."
+}
+```
+
+# 七、复习计划模块
+
+## 概述
+
+复习计划模块允许用户创建和管理学习计划及考试安排。所有接口必须携带 JWT，HTTP 头 `Authorization: Bearer <token>`。用户只能管理自己的复习计划。
+
+数据模型（必要字段）
+- ReviewPlan
+  - id number（服务器生成）
+  - userId number（用户 id）
+  - planDate string 必填（日期格式：YYYY-MM-DD）
+  - title string 必填
+  - description string 可选
+  - type string 必填（"plan" | "exam"）
+  - completed boolean 默认 false
+  - createdAt string
+  - updatedAt string 可选
+
+通用约定
+- `Content-Type: application/json`
+- 写操作返回创建或更新后的完整对象；删除成功返回 `204`。
+- 常见错误：`401` 未认证、`403` 无权限、`400` 参数校验、`404` 未找到。
+
+## 1. 列出用户的所有复习计划
+
+**EndPoint**: `GET /api/review-plans`
+
+**描述**: 返回当前用户的所有复习计划，按日期升序排列。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "userId": 2,
+    "planDate": "2025-12-25",
+    "title": "复习Java基础语法",
+    "description": "回顾变量、数据类型、控制结构等基础知识",
+    "type": "plan",
+    "completed": false,
+    "createdAt": "2025-12-20T10:00:00Z",
+    "updatedAt": "2025-12-20T10:00:00Z"
+  }
+]
+```
+
+## 2. 按日期范围获取复习计划
+
+**EndPoint**: `GET /api/review-plans/date-range?startDate=2025-11-01&endDate=2025-12-31`
+
+**描述**: 返回指定日期范围内的复习计划。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**查询参数**:
+- `startDate`: 必填，起始日期（ISO 8601 格式：YYYY-MM-DD）
+- `endDate`: 必填，结束日期（ISO 8601 格式：YYYY-MM-DD）
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "planDate": "2025-12-25",
+    "title": "复习Java基础语法",
+    "type": "plan",
+    "completed": false
+  }
+]
+```
+
+## 3. 按日期获取复习计划
+
+**EndPoint**: `GET /api/review-plans/date/{date}`
+
+**描述**: 返回指定日期的所有复习计划。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**路径参数**:
+- `date`: 日期（ISO 8601 格式：YYYY-MM-DD）
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "planDate": "2025-12-25",
+    "title": "复习Java基础语法",
+    "type": "plan",
+    "completed": false
+  }
+]
+```
+
+## 4. 获取单个复习计划
+
+**EndPoint**: `GET /api/review-plans/{id}`
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "userId": 2,
+  "planDate": "2025-12-25",
+  "title": "复习Java基础语法",
+  "description": "回顾变量、数据类型、控制结构等基础知识",
+  "type": "plan",
+  "completed": false,
+  "createdAt": "2025-12-20T10:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Review plan not found",
+  "timestamp": "..."
+}
+```
+
+## 5. 创建复习计划
+
+**EndPoint**: `POST /api/review-plans`
+
+**权限**: 任何已认证用户可创建自己的复习计划
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**
+
+```json
+{
+  "planDate": "2025-12-25",
+  "title": "复习Java基础语法",
+  "description": "回顾变量、数据类型、控制结构等基础知识",
+  "type": "plan",
+  "completed": false
+}
+```
+
+**成功响应（201）**
+
+```json
+{
+  "id": 10,
+  "userId": 2,
+  "planDate": "2025-12-25",
+  "title": "复习Java基础语法",
+  "description": "回顾变量、数据类型、控制结构等基础知识",
+  "type": "plan",
+  "completed": false,
+  "createdAt": "2025-12-20T10:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "title is required",
+  "timestamp": "..."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "planDate is required",
+  "timestamp": "..."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "type must be 'plan' or 'exam'",
+  "timestamp": "..."
+}
+```
+
+## 6. 更新复习计划
+
+**EndPoint**: `PUT /api/review-plans/{id}`
+
+**权限**: 计划所有者
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**：字段可部分提供
+
+```json
+{
+  "title": "更新后的标题",
+  "description": "更新后的描述",
+  "planDate": "2025-12-26",
+  "type": "exam",
+  "completed": true
+}
+```
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "title": "更新后的标题",
+  "updatedAt": "2025-12-20T14:00:00Z"
+}
+```
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Review plan not found",
+  "timestamp": "..."
+}
+```
+
+## 7. 删除复习计划
+
+**EndPoint**: `DELETE /api/review-plans/{id}`
+
+**权限**: 计划所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）**
+
+**错误示例**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Review plan not found",
+  "timestamp": "..."
+}
+```
+
+# 八、学习进度模块
+
+## 概述
+
+学习进度模块记录用户的学习成果，包括测验完成情况和统计信息。所有接口必须携带 JWT，HTTP 头 `Authorization: Bearer <token>`。用户只能查看自己的学习进度。
+
+数据模型
+- Progress
+  - id number（服务器生成）
+  - userId number（用户 id）
+  - courseId number 必填
+  - quizId string 可选（如果为空则表示课程级别的统计）
+  - score number 可选（0-100）
+  - totalScore number 可选（通常为100）
+  - completed boolean 必填
+  - completedAt string 可选
+  - lastAccessedAt string 可选
+
+通用约定
+- `Content-Type: application/json`
+- 常见错误：`401` 未认证、`404` 未找到。
+
+## 1. 获取总体学习统计
+
+**EndPoint**: `GET /api/progress/overall`
+
+**描述**: 返回用户的总体学习统计。如果用户设置了当前学习课程，则只统计该课程；否则统计所有选择的课程。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "totalCourses": 5,
+  "completedCourses": 2,
+  "totalQuizzes": 20,
+  "completedQuizzes": 8,
+  "averageScore": 85.5,
+  "totalStudyTime": 3600
+}
+```
+
+## 2. 获取所有课程的进度列表
+
+**EndPoint**: `GET /api/progress/courses`
+
+**描述**: 返回用户在所有课程的进度列表。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "courseId": 1,
+    "courseTitle": "Java 编程基础",
+    "totalQuizzes": 3,
+    "completedQuizzes": 2,
+    "averageScore": 90.0,
+    "completed": false
+  }
+]
+```
+
+## 3. 获取某门课程的详细进度
+
+**EndPoint**: `GET /api/progress/courses/{courseId}`
+
+**描述**: 返回用户在某门课程的详细进度。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "courseId": 1,
+  "courseTitle": "Java 编程基础",
+  "totalQuizzes": 3,
+  "completedQuizzes": 2,
+  "averageScore": 90.0,
+  "completed": false,
+  "quizProgress": [
+    {
+      "quizId": "quiz1",
+      "quizTitle": "Java 数据类型与变量",
+      "score": 95,
+      "completed": true,
+      "completedAt": "2025-11-18T10:00:00Z"
+    }
+  ]
+}
+```
+
+# 九、错题模块
+
+## 概述
+
+错题模块允许用户收集和管理做错的题目，支持练习和掌握状态跟踪。所有接口必须携带 JWT，HTTP 头 `Authorization: Bearer <token>`。用户只能管理自己的错题。
+
+数据模型（必要字段）
+- WrongQuestion
+  - id number（服务器生成）
+  - userId number（用户 id）
+  - courseId number 必填
+  - questionId number 必填（题目 id）
+  - quizId string 必填（测验 id）
+  - userAnswer array 必填（用户答案，选项索引列表）
+  - mastered boolean 默认 false
+  - addedAt string
+  - lastPracticedAt string 可选
+  - practiceCount number 默认 0
+
+通用约定
+- `Content-Type: application/json`
+- 写操作返回创建或更新后的完整对象；删除成功返回 `204`。
+- 常见错误：`401` 未认证、`404` 未找到、`400` 参数校验。
+
+## 1. 列出错题
+
+**EndPoint**: `GET /api/courses/{courseId}/wrong-questions?mastered=false`
+
+**描述**: 返回该课程的错题列表。可通过 `mastered` 参数过滤。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**查询参数**:
+- `mastered`: 可选，boolean，过滤已掌握/未掌握的错题
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "id": 1,
+    "userId": 2,
+    "courseId": 1,
+    "questionId": 1,
+    "quizId": "quiz1",
+    "userAnswer": [0],
+    "mastered": false,
+    "addedAt": "2025-11-19T10:00:00Z",
+    "lastPracticedAt": "2025-11-19T10:00:00Z",
+    "practiceCount": 1
+  }
+]
+```
+
+## 2. 添加错题
+
+**EndPoint**: `POST /api/courses/{courseId}/wrong-questions`
+
+**权限**: 任何已认证用户可添加错题
+
+**请求头**: `Content-Type: application/json` 以及 `Authorization: Bearer <token>`
+
+**请求体**
+
+```json
+{
+  "questionId": 1,
+  "userAnswer": [0]
+}
+```
+
+**成功响应（200）**
+
+```json
+{
+  "id": 10,
+  "userId": 2,
+  "courseId": 1,
+  "questionId": 1,
+  "quizId": "quiz1",
+  "userAnswer": [0],
+  "mastered": false,
+  "addedAt": "2025-11-19T13:00:00Z",
+  "practiceCount": 0
+}
+```
+
+## 3. 标记为已掌握
+
+**EndPoint**: `PUT /api/courses/{courseId}/wrong-questions/{wrongQuestionId}/mastered`
+
+**权限**: 错题所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "mastered": true,
+  "updatedAt": "2025-11-19T14:00:00Z"
+}
+```
+
+## 4. 删除错题
+
+**EndPoint**: `DELETE /api/courses/{courseId}/wrong-questions/{wrongQuestionId}`
+
+**权限**: 错题所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）**
+
+## 5. 练习错题（增加练习次数）
+
+**EndPoint**: `POST /api/courses/{courseId}/wrong-questions/{wrongQuestionId}/practice`
+
+**权限**: 错题所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "id": 1,
+  "practiceCount": 2,
+  "lastPracticedAt": "2025-11-19T15:00:00Z"
+}
+```
+
+## 6. 获取错题统计
+
+**EndPoint**: `GET /api/courses/{courseId}/wrong-questions/stats`
+
+**描述**: 返回该课程的错题统计信息。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "total": 10,
+  "mastered": 3,
+  "notMastered": 7
+}
+```
+
+# 十、用户课程模块
+
+## 概述
+
+用户课程模块管理用户选择的课程和当前学习的课程。所有接口必须携带 JWT，HTTP 头 `Authorization: Bearer <token>`。用户只能管理自己的课程选择。
+
+数据模型
+- UserCourse
+  - userId number（用户 id）
+  - courseId number 必填
+  - isCurrentStudying boolean 默认 false
+
+通用约定
+- `Content-Type: application/json`
+- 常见错误：`401` 未认证、`404` 未找到。
+
+## 1. 获取用户选择的所有课程
+
+**EndPoint**: `GET /api/user-courses`
+
+**描述**: 返回当前用户选择的所有课程。
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+[
+  {
+    "courseId": 1,
+    "courseTitle": "Java 编程基础",
+    "isCurrentStudying": true
+  },
+  {
+    "courseId": 2,
+    "courseTitle": "Spring Boot 实战",
+    "isCurrentStudying": false
+  }
+]
+```
+
+## 2. 添加课程到学习列表
+
+**EndPoint**: `POST /api/user-courses/{courseId}`
+
+**权限**: 任何已认证用户
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+## 3. 从学习列表中移除课程
+
+**EndPoint**: `DELETE /api/user-courses/{courseId}`
+
+**权限**: 课程所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）`
+
+## 4. 设置当前学习的课程
+
+**EndPoint**: `PUT /api/user-courses/{courseId}/current-studying`
+
+**权限**: 课程所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+**说明**: 设置某个课程为当前学习课程，同一时间只能有一个当前学习课程。
+
+## 5. 取消当前学习的课程
+
+**EndPoint**: `DELETE /api/user-courses/current-studying`
+
+**权限**: 课程所有者
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（204）`
+
+## 6. 获取当前学习的课程ID
+
+**EndPoint**: `GET /api/user-courses/current-studying`
+
+**请求头**: `Authorization: Bearer <token>`
+
+**成功响应（200）**
+
+```json
+{
+  "courseId": 1
+}
+```
+
+**说明**: 如果没有当前学习课程，`courseId` 为 `null`。
