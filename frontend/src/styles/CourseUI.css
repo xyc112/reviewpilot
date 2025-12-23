@@ -155,6 +155,13 @@
     animation: fadeIn 0.6s ease-out;
 }
 
+/* 全屏页面（图谱、进度）移除padding */
+.main-wrapper:has(.graph-view-fullscreen),
+.main-wrapper:has(.progress-container-fullscreen) {
+    padding: 0;
+    max-width: 100%;
+}
+
 .main-inner {
     width: 100%;
 }

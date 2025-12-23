@@ -837,6 +837,14 @@ button:disabled, .btn:disabled {
     height: 100%;
 }
 
+.graph-view-fullscreen {
+    height: calc(100vh - 70px);
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
 .graph-container {
     display: flex;
     height: calc(100vh - 200px);
@@ -845,20 +853,36 @@ button:disabled, .btn:disabled {
 }
 
 .graph-container-fullscreen {
-    height: calc(100vh - 180px);
+    height: 100%;
+    width: 100%;
     position: relative;
     animation: fadeIn 0.4s ease;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
 .graph-main-fullscreen {
     width: 100%;
     height: 100%;
-    border-radius: 1rem;
+    border-radius: 0;
     background: white;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(102, 126, 234, 0.1);
+    box-shadow: none;
+    border: none;
+}
+
+.progress-container-fullscreen {
+    height: calc(100vh - 70px); /* 减去navbar高度 */
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+    margin: 0;
+    max-width: 100%;
+}
+
+.progress-container-fullscreen .page-header {
+    display: none;
 }
 
 .graph-sidebar {

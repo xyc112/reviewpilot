@@ -78,15 +78,7 @@ const ProgressPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="container">
-                <div className="page-header">
-                    <div className="header-content">
-                        <div>
-                            <h1>学习进度</h1>
-                            <p className="text-stone-500 mt-2">查看您的学习成果和进度统计</p>
-                        </div>
-                    </div>
-                </div>
+            <div className="container progress-container-fullscreen">
                 <SkeletonGrid count={4} />
             </div>
         );
@@ -94,22 +86,14 @@ const ProgressPage: React.FC = () => {
 
     if (error) {
         return (
-            <div className="container">
+            <div className="container progress-container-fullscreen">
                 <div className="error-message">{error}</div>
             </div>
         );
     }
 
     return (
-        <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>学习进度</h1>
-                        <p className="text-stone-500 mt-2">查看您的学习成果和进度统计</p>
-                    </div>
-                </div>
-            </div>
+        <div className="container progress-container-fullscreen">
 
             {/* 总体统计卡片 */}
             {overallStats && (

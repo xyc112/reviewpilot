@@ -224,7 +224,7 @@ const GraphView: React.FC = () => {
     if (error) return <div className="error">{error}</div>;
 
     return (
-        <div className="graph-view">
+        <div className="graph-view-fullscreen">
             <ConfirmDialog
                 isOpen={deleteConfirm.isOpen}
                 title={deleteConfirm.type === 'node' ? '删除节点' : '删除关系'}
@@ -239,15 +239,6 @@ const GraphView: React.FC = () => {
                 onConfirm={confirmDelete}
                 onCancel={() => setDeleteConfirm({ isOpen: false, type: null, id: null })}
             />
-
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>知识图谱</h1>
-                        <p className="text-stone-500 mt-2">{selectedCourse?.title}</p>
-                    </div>
-                </div>
-            </div>
 
             <div className="graph-container-fullscreen">
                 <div className="graph-main-fullscreen">
