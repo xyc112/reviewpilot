@@ -52,7 +52,7 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
     const [tempLine, setTempLine] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
 
     useEffect(() => {
-        if (!svgRef.current || nodes.length === 0) return;
+        if (!svgRef.current) return;
 
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
@@ -71,7 +71,8 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 setTransform({ x: event.transform.x, y: event.transform.y, k: event.transform.k });
             })
             .filter((event) => {
-                // 允许双击和拖拽，但阻止在拖拽节点时缩放
+                // 允许滚轮和拖拽，但阻止在拖拽节点时缩放
+                // 双击事件不在filter中处理，由专门的双击处理器处理
                 return event.type === 'wheel' || (event.type === 'mousedown' && event.button === 0 && !draggingFrom);
             });
 
@@ -79,8 +80,18 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
 
         // 双击创建节点
         if (editable && onNodeCreate) {
-            svg.on('dblclick', function(event) {
+            svg.on('dblclick.create-node', function(event) {
+                // 检查是否点击在节点上
+                const target = event.target as Element;
+                // 如果点击的是节点相关的元素，不创建新节点
+                if (target.classList.contains('node-circle') || 
+                    target.classList.contains('node-group') ||
+                    target.closest('.node-group')) {
+                    return;
+                }
+                
                 event.preventDefault();
+                event.stopPropagation();
                 const [x, y] = d3.pointer(event, svgRef.current);
                 const transform = d3.zoomTransform(svgRef.current!);
                 const worldX = (x - transform.x) / transform.k;
@@ -89,14 +100,25 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             });
         }
 
-        // 转换数据格式
-        const d3Nodes: D3Node[] = nodes.map(node => ({
-            id: node.id!,
-            label: node.label,
-            type: node.type,
-            description: node.description,
-            group: node.type || 'default',
-        }));
+        // 转换数据格式，从meta中读取位置信息
+        const d3Nodes: D3Node[] = nodes.map(node => {
+            const meta = node.meta || {};
+            const d3Node: D3Node = {
+                id: node.id!,
+                label: node.label,
+                type: node.type,
+                description: node.description,
+                group: node.type || 'default',
+            };
+            // 如果meta中有x和y坐标，使用它们
+            if (typeof meta.x === 'number' && typeof meta.y === 'number') {
+                d3Node.x = meta.x;
+                d3Node.y = meta.y;
+                d3Node.fx = meta.x; // 固定位置
+                d3Node.fy = meta.y;
+            }
+            return d3Node;
+        });
 
         const d3Links: D3Link[] = relations.map(rel => ({
             id: rel.id!,
@@ -221,24 +243,40 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             .text(d => d.type || '')
             .style('pointer-events', 'none');
 
-        // 点击节点事件（使用 mousedown 而不是 click，避免与拖拽冲突）
+        // 节点拖拽处理 - 支持拖拽创建关系
+        let dragFromNode: string | null = null;
+        let isDraggingNode = false;
+        
         nodeGroups.on('mousedown', function(event, d) {
             // 如果是右键或中键，不处理
             if (event.button !== 0) return;
             
             event.stopPropagation();
             
+            // 如果按住Ctrl键，准备创建关系
+            if (event.ctrlKey && editable && onRelationCreate) {
+                dragFromNode = d.id;
+                isDraggingNode = false;
+                const node = d3Nodes.find(n => n.id === d.id);
+                if (node && node.x !== undefined && node.y !== undefined) {
+                    setDraggingFrom(d.id);
+                    setTempLine({ x1: node.x, y1: node.y, x2: node.x, y2: node.y });
+                }
+                return;
+            }
+            
             // 延迟处理，如果用户拖拽了节点，则不触发点击逻辑
             let isDragged = false;
             const startTime = Date.now();
             const startPos = { x: event.x, y: event.y };
+            isDraggingNode = true;
             
             const handleMouseUp = (e: MouseEvent) => {
                 const timeDiff = Date.now() - startTime;
                 const posDiff = Math.abs(e.clientX - startPos.x) + Math.abs(e.clientY - startPos.y);
                 
                 // 如果时间很短且位置变化很小，认为是点击而不是拖拽
-                if (timeDiff < 200 && posDiff < 5 && !isDragged) {
+                if (timeDiff < 200 && posDiff < 5 && !isDragged && isDraggingNode) {
                     if (groupMode) {
                         // 分组模式：选择多个节点
                         const newSelected = new Set(selectedNodes);
@@ -254,25 +292,6 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                             .select('circle')
                             .attr('stroke', newSelected.has(d.id) ? '#f39c12' : '#fff')
                             .attr('stroke-width', newSelected.has(d.id) ? 4 : 2);
-                    } else if (editable && onRelationCreate) {
-                        // 编辑模式：点击创建关系
-                        if (!draggingFrom) {
-                            // 开始创建关系
-                            setDraggingFrom(d.id);
-                            const node = d3Nodes.find(n => n.id === d.id);
-                            if (node && node.x !== undefined && node.y !== undefined) {
-                                setTempLine({ x1: node.x, y1: node.y, x2: node.x, y2: node.y });
-                            }
-                        } else if (draggingFrom !== d.id) {
-                            // 点击另一个节点，创建关系
-                            onRelationCreate(draggingFrom, d.id);
-                            setDraggingFrom(null);
-                            setTempLine(null);
-                        } else {
-                            // 点击同一个节点，取消创建关系
-                            setDraggingFrom(null);
-                            setTempLine(null);
-                        }
                     } else {
                         // 普通模式：单击查看详情
                         if (onNodeClick) {
@@ -317,11 +336,21 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 });
         });
 
-        nodeGroups.on('mouseleave', function() {
-            d3.select(this).select('circle')
-                .transition()
-                .duration(200)
-                .attr('r', 20);
+        nodeGroups.on('mouseleave', function(event, d) {
+            if (draggingFrom && draggingFrom !== d.id) {
+                // 恢复目标节点样式
+                d3.select(this).select('circle')
+                    .transition()
+                    .duration(150)
+                    .attr('r', 20)
+                    .attr('stroke', d.id === selectedNodeId ? '#f39c12' : '#fff')
+                    .attr('stroke-width', d.id === selectedNodeId ? 4 : 2);
+            } else {
+                d3.select(this).select('circle')
+                    .transition()
+                    .duration(200)
+                    .attr('r', 20);
+            }
 
             links
                 .transition()
@@ -329,6 +358,33 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 .attr('stroke-opacity', 0.6)
                 .attr('stroke-width', d => (d.weight || 0.5) * 4);
         });
+        
+        // 处理Ctrl+点击创建关系
+        if (editable && onRelationCreate) {
+            nodeGroups.on('mousedown', function(event, d) {
+                if (event.button === 0 && event.ctrlKey) {
+                    event.stopPropagation();
+                    if (!draggingFrom) {
+                        // 开始创建关系
+                        setDraggingFrom(d.id);
+                        const node = d3Nodes.find(n => n.id === d.id);
+                        if (node && node.x !== undefined && node.y !== undefined) {
+                            setTempLine({ x1: node.x, y1: node.y, x2: node.x, y2: node.y });
+                        }
+                    }
+                }
+            });
+            
+            // 在节点上释放鼠标时创建关系
+            nodeGroups.on('mouseup', function(event, d) {
+                if (draggingFrom && draggingFrom !== d.id && event.button === 0 && event.ctrlKey) {
+                    event.stopPropagation();
+                    onRelationCreate(draggingFrom, d.id);
+                    setDraggingFrom(null);
+                    setTempLine(null);
+                }
+            });
+        }
 
         // 更新位置
         function ticked() {
@@ -435,7 +491,7 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
         // 清理
         return () => {
             simulation.stop();
-            svg.on('dblclick', null);
+            svg.on('dblclick.create-node', null);
             svg.on('mousemove.temp', null);
             svg.on('click.temp', null);
         };
@@ -520,10 +576,9 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                     {editable && (
                         <>
                             <li>🖱️ 双击画布创建新节点</li>
-                            <li>🔗 点击一个节点，再点击另一个节点创建关系</li>
+                            <li>🔗 Ctrl+点击节点，再点击另一个节点创建关系</li>
                         </>
                     )}
-                    <li>📦 开启分组模式后可选择多个节点</li>
                 </ul>
             </div>
         </div>
