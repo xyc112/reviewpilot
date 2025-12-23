@@ -48,18 +48,18 @@ const Sidebar: React.FC = () => {
             requiresCourse: false,
         },
         {
-            id: 'course-overview',
-            label: '课程概览',
-            icon: Info,
-            path: '/course-overview',
-            requiresCourse: true,
-        },
-        {
             id: 'progress',
             label: '学习进度',
             icon: TrendingUp,
             path: '/progress',
             requiresCourse: false,
+        },
+        {
+            id: 'course-overview',
+            label: '课程概览',
+            icon: Info,
+            path: '/course-overview',
+            requiresCourse: true,
         },
         {
             id: 'graph',

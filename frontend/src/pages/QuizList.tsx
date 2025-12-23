@@ -12,7 +12,8 @@ import '../styles/Course.css';
 
 const QuizList: React.FC = () => {
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { isAdmin } = useAuth();
     const { success, error: showError } = useToast();
 
@@ -25,17 +26,17 @@ const QuizList: React.FC = () => {
     });
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         fetchQuizzes();
-    }, [selectedCourse, navigate]);
+    }, [course, navigate]);
 
     const fetchQuizzes = async () => {
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
-            const response = await quizAPI.getQuizzes(selectedCourse.id);
+            const response = await quizAPI.getQuizzes(course.id);
             setQuizzes(response.data);
         } catch (err: any) {
             setError('获取测验列表失败');
@@ -50,9 +51,9 @@ const QuizList: React.FC = () => {
 
     const confirmDelete = async () => {
         if (!deleteConfirm.quizId) return;
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
-            await quizAPI.deleteQuiz(selectedCourse.id, deleteConfirm.quizId);
+            await quizAPI.deleteQuiz(course.id, deleteConfirm.quizId);
             success('测验删除成功');
             fetchQuizzes();
         } catch (err: any) {
@@ -64,7 +65,7 @@ const QuizList: React.FC = () => {
         }
     };
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>
@@ -84,9 +85,9 @@ const QuizList: React.FC = () => {
                 <div className="header-content">
                     <div>
                         <h1>课程测验</h1>
-                        <p className="text-stone-500 mt-2">{selectedCourse?.title} - 测试您的学习成果</p>
+                        <p className="text-stone-500 mt-2">{course?.title} - 测试您的学习成果</p>
                     </div>
-                    {selectedCourse && (
+                    {course && (
                         <div className="header-actions">
                             {isAdmin && (
                                 <Link
@@ -123,7 +124,7 @@ const QuizList: React.FC = () => {
                         <p className="text-stone-500 mb-4">
                             {isAdmin ? '立即创建第一个测验吧！' : '请等待管理员创建测验。'}
                         </p>
-                        {isAdmin && selectedCourse && (
+                        {isAdmin && course && (
                             <Link to="/quizzes/new" className="btn btn-primary">
                                 <Plus size={18} />
                                 创建新测验

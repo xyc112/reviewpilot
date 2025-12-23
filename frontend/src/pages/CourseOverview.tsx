@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Course, CourseProgress } from '../types';
-import { courseAPI, progressAPI, noteAPI, quizAPI, postAPI } from '../services/api';
+import { Course } from '../types';
+import { courseAPI, noteAPI, quizAPI, postAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
 import { Edit, Trash2, Calendar, User, BarChart, FileText, ClipboardList, MessageSquare, BookOpen } from 'lucide-react';
@@ -15,7 +15,6 @@ const CourseOverview: React.FC = () => {
     const { currentStudyingCourse } = useCourse();
     const { success, error: showError } = useToast();
     const [course, setCourse] = useState<Course | null>(null);
-    const [courseProgress, setCourseProgress] = useState<CourseProgress | null>(null);
     const [stats, setStats] = useState<{
         noteCount: number;
         quizCount: number;
@@ -34,13 +33,8 @@ const CourseOverview: React.FC = () => {
     const fetchCourseData = async (courseId: number) => {
         try {
             setLoading(true);
-            const [courseRes, progressRes] = await Promise.all([
-                courseAPI.getCourse(courseId),
-                progressAPI.getCourseProgress(courseId).catch(() => null),
-            ]);
-            
+            const courseRes = await courseAPI.getCourse(courseId);
             setCourse(courseRes.data);
-            setCourseProgress(progressRes?.data || null);
 
             // 获取统计信息
             try {
@@ -192,7 +186,11 @@ const CourseOverview: React.FC = () => {
 
                         <div className="description mb-6">
                             <h3 className="text-lg font-semibold mb-2 text-stone-800">课程简介</h3>
-                            <p>{course.description || '暂无描述'}</p>
+                            <div className="prose max-w-none">
+                                <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">
+                                    {course.description || '暂无描述'}
+                                </p>
+                            </div>
                         </div>
 
                         {course.tags.length > 0 && (
@@ -243,76 +241,6 @@ const CourseOverview: React.FC = () => {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* 学习进度 */}
-                        {courseProgress && (
-                            <div className="card p-6 mb-6">
-                                <h3 className="text-lg font-semibold mb-4 text-stone-800">学习进度</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm text-stone-600">测验完成率</span>
-                                            <span className="text-sm font-semibold text-stone-800">
-                                                {courseProgress.completedQuizzes} / {courseProgress.totalQuizzes}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-stone-200 rounded-full h-2">
-                                            <div
-                                                className="bg-blue-600 h-2 rounded-full transition-all"
-                                                style={{ width: `${courseProgress.completionRate}%` }}
-                                            />
-                                        </div>
-                                        <p className="text-xs text-stone-500 mt-1">
-                                            完成率: {courseProgress.completionRate}%
-                                        </p>
-                                    </div>
-                                    {courseProgress.averageScore !== null && (
-                                        <div className="flex items-center gap-2">
-                                            <BarChart size={16} className="text-stone-500" />
-                                            <span className="text-sm text-stone-600">平均分: </span>
-                                            <span className="text-lg font-semibold text-stone-800">
-                                                {courseProgress.averageScore} 分
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 快速导航 */}
-                        <div className="mt-6 pt-6 border-t border-stone-200">
-                            <h3 className="text-lg font-semibold mb-4 text-stone-800">快速导航</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                <Link
-                                    to="/graph"
-                                    className="btn btn-outline flex items-center gap-2 justify-center"
-                                >
-                                    <BarChart size={18} />
-                                    知识图谱
-                                </Link>
-                                <Link
-                                    to="/notes"
-                                    className="btn btn-outline flex items-center gap-2 justify-center"
-                                >
-                                    <FileText size={18} />
-                                    笔记
-                                </Link>
-                                <Link
-                                    to="/quizzes"
-                                    className="btn btn-outline flex items-center gap-2 justify-center"
-                                >
-                                    <ClipboardList size={18} />
-                                    测验
-                                </Link>
-                                <Link
-                                    to={`/courses/${course.id}/community`}
-                                    className="btn btn-outline flex items-center gap-2 justify-center"
-                                >
-                                    <MessageSquare size={18} />
-                                    社区
-                                </Link>
                             </div>
                         </div>
                     </div>

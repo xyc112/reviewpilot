@@ -10,7 +10,8 @@ import { useToast } from '../components/common/Toast';
 
 const NoteList: React.FC = () => {
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
 
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
@@ -26,18 +27,18 @@ const NoteList: React.FC = () => {
     const { success, error: showError } = useToast();
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         fetchNotes();
-    }, [selectedCourse, navigate]);
+    }, [course, navigate]);
 
     const fetchNotes = async () => {
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
             setLoading(true);
-            const response = await noteAPI.getNotes(selectedCourse.id);
+            const response = await noteAPI.getNotes(course.id);
             setNotes(response.data);
         } catch (err: any) {
             setError('获取笔记列表失败: ' + (err.response?.data?.message || err.message));
@@ -54,9 +55,9 @@ const NoteList: React.FC = () => {
 
     const confirmDelete = async () => {
         if (!deleteConfirm.noteId) return;
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
-            await noteAPI.deleteNote(selectedCourse.id, deleteConfirm.noteId);
+            await noteAPI.deleteNote(course.id, deleteConfirm.noteId);
             success('笔记删除成功');
             fetchNotes();
         } catch (err: any) {
@@ -95,7 +96,7 @@ const NoteList: React.FC = () => {
         });
     }, [notes, searchQuery, visibilityFilter]);
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>
@@ -114,9 +115,9 @@ const NoteList: React.FC = () => {
                 <div className="header-content">
                     <div>
                         <h1>课程笔记</h1>
-                        <p className="text-stone-500 mt-2">{selectedCourse?.title} - 管理和查看您的学习笔记</p>
+                        <p className="text-stone-500 mt-2">{course?.title} - 管理和查看您的学习笔记</p>
                     </div>
-                    {selectedCourse && (
+                    {course && (
                         <div className="header-actions">
                             <Link
                                 to="/notes/new"

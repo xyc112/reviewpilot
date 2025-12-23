@@ -11,7 +11,8 @@ import { Edit2, X, Trash2 } from 'lucide-react';
 
 const GraphView: React.FC = () => {
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
 
     const [nodes, setNodes] = useState<Node[]>([]);
     const [relations, setRelations] = useState<Relation[]>([]);
@@ -39,20 +40,20 @@ const GraphView: React.FC = () => {
     });
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         fetchGraphData();
-    }, [selectedCourse, navigate]);
+    }, [course, navigate]);
 
     const fetchGraphData = async () => {
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
             setLoading(true);
             const [nodesResponse, relationsResponse] = await Promise.all([
-                graphAPI.getNodes(selectedCourse.id),
-                graphAPI.getRelations(selectedCourse.id)
+                graphAPI.getNodes(course.id),
+                graphAPI.getRelations(course.id)
             ]);
             const fetchedNodes = nodesResponse.data;
             const fetchedRelations = relationsResponse.data;
@@ -93,8 +94,8 @@ const GraphView: React.FC = () => {
                 },
             };
 
-            if (!selectedCourse) return;
-            const response = await graphAPI.createNode(selectedCourse.id, nodeData);
+            if (!course) return;
+            const response = await graphAPI.createNode(course.id, nodeData);
             success('节点创建成功，点击节点进行编辑');
             
             await fetchGraphData();
@@ -120,8 +121,8 @@ const GraphView: React.FC = () => {
 
     const handleCreateRelationByNodes = async (from: string, to: string) => {
         try {
-            if (!selectedCourse) return;
-            await graphAPI.createRelation(selectedCourse.id, {
+            if (!course) return;
+            await graphAPI.createRelation(course.id, {
                 from,
                 to,
                 type: 'related',
@@ -145,8 +146,8 @@ const GraphView: React.FC = () => {
         if (!deleteConfirm.id || !deleteConfirm.type) return;
         try {
             if (deleteConfirm.type === 'node') {
-                if (!selectedCourse) return;
-                await graphAPI.deleteNode(selectedCourse.id, deleteConfirm.id);
+                if (!course) return;
+                await graphAPI.deleteNode(course.id, deleteConfirm.id);
                 if (selectedNode?.id === deleteConfirm.id) {
                     setSelectedNode(null);
                     setEditingNode(null);
@@ -178,7 +179,7 @@ const GraphView: React.FC = () => {
     };
 
     const handleSaveEditNode = async () => {
-        if (!editingNode || !selectedCourse) return;
+        if (!editingNode || !course) return;
         
         try {
             const nodeData: Partial<Node> = {
@@ -187,7 +188,7 @@ const GraphView: React.FC = () => {
             if (editNodeForm.type) nodeData.type = editNodeForm.type;
             if (editNodeForm.description) nodeData.description = editNodeForm.description;
 
-            await graphAPI.updateNode(selectedCourse.id, editingNode.id!, nodeData);
+            await graphAPI.updateNode(course.id, editingNode.id!, nodeData);
             success('节点更新成功');
             setEditingNode(null);
             setEditNodeForm({ label: '', type: '', description: '' });
@@ -209,7 +210,7 @@ const GraphView: React.FC = () => {
         return { incoming, outgoing };
     };
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>
@@ -251,11 +252,11 @@ const GraphView: React.FC = () => {
                         selectedNodeId={selectedNode?.id}
                         editable={isAdmin}
                         onNodeUpdate={async (nodeId, position) => {
-                            if (!selectedCourse) return;
+                            if (!course) return;
                             try {
                                 const node = nodes.find(n => n.id === nodeId);
                                 if (node) {
-                                    await graphAPI.updateNode(selectedCourse.id, nodeId, {
+                                    await graphAPI.updateNode(course.id, nodeId, {
                                         ...node,
                                         meta: {
                                             ...node.meta,
