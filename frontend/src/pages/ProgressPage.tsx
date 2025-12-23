@@ -140,31 +140,27 @@ const ProgressPage: React.FC = () => {
                 }}>
                     {/* 左侧：统计卡片 */}
                     <div style={{ gridColumn: 'span 3', display: 'flex', flexDirection: 'column', gap: '0.625rem', minHeight: 0 }}>
-                        {currentProgress && (
-                            <>
-                                <CompactStatCard
-                                    icon={<CheckCircle2 size={18} />}
-                                    title="完成测验"
-                                    value={`${currentProgress.completedQuizzes}/${currentProgress.totalQuizzes}`}
-                                    subtitle={`完成率 ${currentProgress.completionRate}%`}
-                                    color="#22c55e"
-                                />
-                                <CompactStatCard
-                                    icon={<Trophy size={18} />}
-                                    title="平均分数"
-                                    value={currentProgress.averageScore !== null ? currentProgress.averageScore.toString() : '--'}
-                                    subtitle={currentProgress.averageScore !== null ? '分' : '暂无数据'}
-                                    color="#f59e0b"
-                                />
-                                <CompactStatCard
-                                    icon={<FileText size={18} />}
-                                    title="笔记数量"
-                                    value={currentProgress.noteCount.toString()}
-                                    subtitle="篇笔记"
-                                    color="#8b5cf6"
-                                />
-                            </>
-                        )}
+                        <CompactStatCard
+                            icon={<CheckCircle2 size={18} />}
+                            title="完成测验"
+                            value={`${progressData.completedQuizzes}/${progressData.totalQuizzes}`}
+                            subtitle={`完成率 ${progressData.completionRate}%`}
+                            color="#22c55e"
+                        />
+                        <CompactStatCard
+                            icon={<Trophy size={18} />}
+                            title="平均分数"
+                            value={progressData.averageScore !== null ? progressData.averageScore.toString() : '--'}
+                            subtitle={progressData.averageScore !== null ? '分' : '暂无数据'}
+                            color="#f59e0b"
+                        />
+                        <CompactStatCard
+                            icon={<FileText size={18} />}
+                            title="笔记数量"
+                            value={progressData.noteCount.toString()}
+                            subtitle="篇笔记"
+                            color="#8b5cf6"
+                        />
                     </div>
 
                     {/* 中间：进度图表 */}
