@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX, Info } from 'lucide-react';
+import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX, Info, Calendar } from 'lucide-react';
 import { useCourse } from '../../context/CourseContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -42,7 +42,7 @@ const Sidebar: React.FC = () => {
     const menuItems = [
         {
             id: 'courses',
-            label: '课程',
+            label: '课程列表',
             icon: BookOpen,
             path: '/courses',
             requiresCourse: false,
@@ -70,31 +70,38 @@ const Sidebar: React.FC = () => {
         },
         {
             id: 'notes',
-            label: '笔记',
+            label: '笔记模块',
             icon: FileText,
             path: '/notes',
             requiresCourse: true,
         },
         {
             id: 'quizzes',
-            label: '测验',
+            label: '测验模块',
             icon: ClipboardList,
             path: '/quizzes',
             requiresCourse: true,
         },
         {
+            id: 'wrong-questions',
+            label: '错题模块',
+            icon: BookX,
+            path: '/wrong-questions',
+            requiresCourse: true,
+        },
+        {
             id: 'community',
-            label: '社区',
+            label: '社区模块',
             icon: MessageSquare,
             path: '/community',
             requiresCourse: true,
         },
         {
-            id: 'wrong-questions',
-            label: '错题本',
-            icon: BookX,
-            path: '/wrong-questions',
-            requiresCourse: true,
+            id: 'review-plan',
+            label: '复习计划',
+            icon: Calendar,
+            path: '/review-plan',
+            requiresCourse: false,
         },
     ];
 

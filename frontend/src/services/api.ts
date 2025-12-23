@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress, UserCourse, Post, Comment, Question, WrongQuestion } from '../types';
+import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress, UserCourse, Post, Comment, Question, WrongQuestion, ReviewPlan } from '../types';
 
 // 移除硬编码的 baseURL，使用相对路径让Vite代理工作
 const api = axios.create();
@@ -140,6 +140,17 @@ export const wrongQuestionAPI = {
     practiceWrongQuestion: (courseId: number, wrongQuestionId: number) =>
         api.post<WrongQuestion>(`/api/courses/${courseId}/wrong-questions/${wrongQuestionId}/practice`),
     getStats: (courseId: number) => api.get<{ total: number; mastered: number; notMastered: number }>(`/api/courses/${courseId}/wrong-questions/stats`),
+};
+
+export const reviewPlanAPI = {
+    getPlans: () => api.get<ReviewPlan[]>('/api/review-plans'),
+    getPlansByDateRange: (startDate: string, endDate: string) =>
+        api.get<ReviewPlan[]>('/api/review-plans/date-range', { params: { startDate, endDate } }),
+    getPlansByDate: (date: string) => api.get<ReviewPlan[]>(`/api/review-plans/date/${date}`),
+    getPlan: (id: number) => api.get<ReviewPlan>(`/api/review-plans/${id}`),
+    createPlan: (planData: Partial<ReviewPlan>) => api.post<ReviewPlan>('/api/review-plans', planData),
+    updatePlan: (id: number, planData: Partial<ReviewPlan>) => api.put<ReviewPlan>(`/api/review-plans/${id}`, planData),
+    deletePlan: (id: number) => api.delete(`/api/review-plans/${id}`),
 };
 
 export default api;

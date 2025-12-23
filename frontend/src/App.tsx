@@ -25,6 +25,7 @@ import ProgressPage from './pages/ProgressPage';
 import Community from './pages/Community';
 import WrongQuestionBook from './pages/WrongQuestionBook';
 import CourseOverview from './pages/CourseOverview';
+import ReviewPlan from './pages/ReviewPlan';
 
 const App: React.FC = () => {
     return (
@@ -59,6 +60,7 @@ const App: React.FC = () => {
                         <Route path="quizzes/new" element={<CreateQuiz />} />
                         <Route path="quizzes/edit/:quizId" element={<EditQuiz />} />
                         <Route path="quizzes/:quizId" element={<QuizDetail />} />
+                        <Route path="review-plan" element={<ReviewPlan />} />
                     </Route>
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

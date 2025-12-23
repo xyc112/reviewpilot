@@ -338,89 +338,106 @@ const CourseList: React.FC = () => {
                     )}
                 </div>
             ) : (
-                <div className="courses-grid">
+                <div className="courses-list">
                     {filteredCourses.map((course) => (
-                        <div key={course.id} className="course-card">
-                            <div className="course-card-header">
-                                <h3 className="course-title">
-                                    <SearchHighlight text={course.title} searchQuery={searchQuery} />
-                                </h3>
-                                <span className={getLevelClass(course.level)}>
-                                    {getLevelText(course.level)}
-                                </span>
-                            </div>
-                            <p className="course-description">
-                                <SearchHighlight 
-                                    text={course.description || '暂无描述'} 
-                                    searchQuery={searchQuery} 
-                                />
-                            </p>
-
-                            {course.tags.length > 0 && (
-                                <div className="course-tags">
-                                    {course.tags.map(tag => (
-                                        <span key={tag} className="tag">
-                                            <SearchHighlight text={tag} searchQuery={searchQuery} />
+                        <div key={course.id} className="course-list-item">
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1 }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                                        <h3 className="course-title" style={{ margin: 0, fontSize: '1.125rem' }}>
+                                            <SearchHighlight text={course.title} searchQuery={searchQuery} />
+                                        </h3>
+                                        <span className={getLevelClass(course.level)}>
+                                            {getLevelText(course.level)}
                                         </span>
-                                    ))}
+                                        {currentStudyingCourse?.id === course.id && (
+                                            <span style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.25rem',
+                                                padding: '0.25rem 0.5rem',
+                                                background: '#fef3c7',
+                                                color: '#92400e',
+                                                borderRadius: '9999px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                            }}>
+                                                <Star size={12} />
+                                                正在学习
+                                            </span>
+                                        )}
+                                    </div>
+                                    {course.description && (
+                                        <p className="course-description" style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#78716c' }}>
+                                            <SearchHighlight 
+                                                text={course.description} 
+                                                searchQuery={searchQuery} 
+                                            />
+                                        </p>
+                                    )}
+                                    {course.tags.length > 0 && (
+                                        <div className="course-tags" style={{ marginBottom: 0 }}>
+                                            {course.tags.map(tag => (
+                                                <span key={tag} className="tag">
+                                                    <SearchHighlight text={tag} searchQuery={searchQuery} />
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-
-                            <div className="course-actions">
-                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    {(() => {
-                                        const state = getCourseState(course);
-                                        switch (state) {
-                                            case 0: // 未添加到学习
-                                                return (
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                                {(() => {
+                                    const state = getCourseState(course);
+                                    switch (state) {
+                                        case 0: // 未添加到学习
+                                            return (
+                                                <button
+                                                    onClick={() => handleAddToStudyList(course)}
+                                                    className="btn btn-secondary"
+                                                    title="添加到学习列表"
+                                                >
+                                                    <BookOpen size={16} />
+                                                    添加到学习
+                                                </button>
+                                            );
+                                        case 1: // 已添加未开始学习
+                                            return (
+                                                <>
                                                     <button
-                                                        onClick={() => handleAddToStudyList(course)}
-                                                        className="btn btn-secondary"
-                                                        title="添加到学习列表"
-                                                    >
-                                                        <BookOpen size={16} />
-                                                        添加到学习
-                                                    </button>
-                                                );
-                                            case 1: // 已添加未开始学习
-                                                return (
-                                                    <>
-                                                        <button
-                                                            onClick={() => handleSetCurrentStudying(course)}
-                                                            className="btn btn-primary"
-                                                            title="开始学习此课程"
-                                                        >
-                                                            <Star size={16} />
-                                                            开始学习
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleRemoveFromStudyList(course)}
-                                                            className="btn btn-outline"
-                                                            title="从学习列表移除"
-                                                        >
-                                                            <X size={16} />
-                                                            移除
-                                                        </button>
-                                                    </>
-                                                );
-                                            case 2: // 正在学习
-                                                return (
-                                                    <button
-                                                        onClick={() => handleEndStudying(course)}
-                                                        className="btn btn-secondary"
-                                                        title="结束当前学习"
+                                                        onClick={() => handleSetCurrentStudying(course)}
+                                                        className="btn btn-primary"
+                                                        title="开始学习此课程"
                                                     >
                                                         <Star size={16} />
-                                                        结束学习
+                                                        开始学习
                                                     </button>
-                                                );
-                                            default:
-                                                return null;
-                                        }
-                                    })()}
-                                </div>
+                                                    <button
+                                                        onClick={() => handleRemoveFromStudyList(course)}
+                                                        className="btn btn-outline btn-small"
+                                                        title="从学习列表移除"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </>
+                                            );
+                                        case 2: // 正在学习
+                                            return (
+                                                <button
+                                                    onClick={() => handleEndStudying(course)}
+                                                    className="btn btn-secondary"
+                                                    title="结束当前学习"
+                                                >
+                                                    <Star size={16} />
+                                                    结束学习
+                                                </button>
+                                            );
+                                        default:
+                                            return null;
+                                    }
+                                })()}
                                 {isAdmin && (
-                                    <div className="course-admin-actions">
+                                    <>
                                         <button
                                             onClick={() => navigate(`/courses/edit/${course.id}`)}
                                             className="btn btn-outline btn-small"
@@ -435,7 +452,7 @@ const CourseList: React.FC = () => {
                                         >
                                             <Trash2 size={16} />
                                         </button>
-                                    </div>
+                                    </>
                                 )}
                             </div>
                         </div>

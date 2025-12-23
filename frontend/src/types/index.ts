@@ -159,3 +159,15 @@ export interface WrongQuestion {
     practiceCount: number;
     question?: Question; // 关联的题目信息
 }
+
+export interface ReviewPlan {
+    id: number;
+    userId: number;
+    planDate: string; // ISO date string
+    title: string;
+    description?: string;
+    type: 'plan' | 'exam';
+    completed: boolean;
+    createdAt: string;
+    updatedAt?: string;
+}

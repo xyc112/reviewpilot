@@ -399,6 +399,39 @@
     gap: 2rem;
 }
 
+.courses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.course-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: white;
+    border: 1px solid #e7e5e4;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    gap: 1rem;
+}
+
+.course-list-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #a8a29e;
+    transform: translateY(-1px);
+}
+
+[data-theme='dark'] .course-list-item {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .course-list-item:hover {
+    border-color: #6b7280;
+}
+
 /* Buttons (Overrides/Specifics) */
 .btn {
     display: inline-flex;
