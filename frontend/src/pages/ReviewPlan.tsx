@@ -32,6 +32,15 @@ const ReviewPlanPage: React.FC = () => {
         fetchPlans();
     }, []);
 
+    // 当计划加载完成后，如果还没有选中日期，则自动选中今天
+    useEffect(() => {
+        if (!loading && plans.length >= 0 && selectedDate === null) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            setSelectedDate(today);
+        }
+    }, [loading, plans, selectedDate]);
+
     const fetchPlans = async () => {
         try {
             const response = await reviewPlanAPI.getPlans();

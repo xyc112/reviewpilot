@@ -86,8 +86,28 @@ const GraphView: React.FC = () => {
 
     const handleCreateNodeByPosition = async (position: { x: number; y: number }) => {
         try {
+            // 生成唯一的默认节点名称
+            const getUniqueNodeLabel = (): string => {
+                const baseLabel = '新节点';
+                const existingLabels = nodes.map(n => n.label || '').filter(label => label.startsWith(baseLabel));
+                
+                if (existingLabels.length === 0) {
+                    return baseLabel;
+                }
+                
+                // 提取所有数字后缀
+                const numbers = existingLabels.map(label => {
+                    const match = label.match(/^新节点(\d+)$/);
+                    return match ? parseInt(match[1], 10) : 0;
+                });
+                
+                // 找到下一个可用的数字
+                const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+                return `${baseLabel}${maxNumber + 1}`;
+            };
+
             const nodeData: Partial<Node> = {
-                label: '新节点',
+                label: getUniqueNodeLabel(),
                 meta: {
                     x: position.x,
                     y: position.y,
