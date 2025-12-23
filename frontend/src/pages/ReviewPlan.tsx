@@ -72,8 +72,13 @@ const ReviewPlanPage: React.FC = () => {
         return days;
     };
 
+    const formatDateLocal = (date: Date) => {
+        // 使用本地时区格式化为 YYYY-MM-DD，避免 toISOString 带来的时区偏移导致显示前一天
+        return date.toLocaleDateString('en-CA'); // en-CA 区分度低，直接返回 2025-12-23 格式
+    };
+
     const getPlansForDate = (date: Date) => {
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = formatDateLocal(date);
         return plans.filter(plan => plan.planDate === dateStr);
     };
 
@@ -95,7 +100,7 @@ const ReviewPlanPage: React.FC = () => {
     const handleStartNewPlan = () => {
         // 如果有选中的日期，使用选中日期，否则使用今天
         const dateToUse = selectedDate || new Date();
-        const dateStr = dateToUse.toISOString().split('T')[0];
+        const dateStr = formatDateLocal(dateToUse);
         setSelectedDate(dateToUse);
         setFormData({ title: '', description: '', type: 'plan', planDate: dateStr });
         setShowPlanForm(true);
@@ -160,7 +165,7 @@ const ReviewPlanPage: React.FC = () => {
             setFormData({ title: '', description: '', type: 'plan', planDate: '' });
             // 刷新选中日期的显示
             if (selectedDate) {
-                const dateStr = selectedDate.toISOString().split('T')[0];
+                const dateStr = formatDateLocal(selectedDate);
                 if (dateStr === formData.planDate || dateStr === editingPlan.planDate) {
                     // 如果更新后的日期仍然是选中日期，保持选中
                 }
