@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Edit, Trash2, Calendar, User, BarChart, ArrowLeft } from 'lucide-react';
+import { Edit, Trash2, Calendar, User, BarChart, ArrowLeft, MessageSquare } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import '../styles/Course.css';
@@ -169,6 +169,19 @@ const CourseDetail: React.FC = () => {
                                 ))}
                             </div>
                         )}
+
+                        <div className="mt-6 pt-6 border-t border-stone-200">
+                            <Link
+                                to={`/courses/${course.id}/community`}
+                                className="btn btn-primary inline-flex items-center gap-2"
+                            >
+                                <MessageSquare size={18} />
+                                进入课程社区
+                            </Link>
+                            <p className="text-sm text-stone-500 mt-2">
+                                与其他学习者交流讨论，提出问题或分享观点
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

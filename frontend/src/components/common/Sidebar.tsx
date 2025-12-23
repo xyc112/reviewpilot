@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star } from 'lucide-react';
+import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX } from 'lucide-react';
 import { useCourse } from '../../context/CourseContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -75,6 +75,20 @@ const Sidebar: React.FC = () => {
             path: '/quizzes',
             requiresCourse: true,
         },
+        {
+            id: 'community',
+            label: '社区',
+            icon: MessageSquare,
+            path: '/community',
+            requiresCourse: true,
+        },
+        {
+            id: 'wrong-questions',
+            label: '错题本',
+            icon: BookX,
+            path: '/wrong-questions',
+            requiresCourse: true,
+        },
     ];
 
     const handleMenuClick = (item: typeof menuItems[0], e: React.MouseEvent) => {
@@ -82,12 +96,23 @@ const Sidebar: React.FC = () => {
             e.preventDefault();
             // 如果没有正在学习的课程，先导航到课程列表
             navigate('/courses');
+            return;
+        }
+        
+        // 特殊处理社区路由，需要courseId
+        if (item.id === 'community' && currentStudyingCourse) {
+            e.preventDefault();
+            navigate(`/courses/${currentStudyingCourse.id}/community`);
         }
     };
 
     const isActive = (path: string) => {
         if (path === '/courses') {
             return location.pathname === '/courses' || location.pathname === '/';
+        }
+        // 特殊处理社区路由
+        if (path === '/community') {
+            return location.pathname.includes('/community');
         }
         return location.pathname.startsWith(path);
     };

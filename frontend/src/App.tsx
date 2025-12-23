@@ -22,6 +22,8 @@ import CreateQuiz from './pages/CreateQuiz';
 import EditQuiz from './pages/EditQuiz';
 import QuizDetail from './pages/QuizDetail';
 import ProgressPage from './pages/ProgressPage';
+import Community from './pages/Community';
+import WrongQuestionBook from './pages/WrongQuestionBook';
 
 const App: React.FC = () => {
     return (
@@ -40,8 +42,11 @@ const App: React.FC = () => {
                     }>
                         <Route index element={<CourseList />} />
                         <Route path="courses" element={<CourseList />} />
+                        <Route path="courses/:id" element={<CourseDetail />} />
                         <Route path="courses/new" element={<CreateCourse />} />
                         <Route path="courses/edit/:id" element={<EditCourse />} />
+                        <Route path="courses/:courseId/community" element={<Community />} />
+                        <Route path="wrong-questions" element={<WrongQuestionBook />} />
                         <Route path="progress" element={<ProgressPage />} />
                         <Route path="graph" element={<GraphView />} />
                         <Route path="notes" element={<NoteList />} />

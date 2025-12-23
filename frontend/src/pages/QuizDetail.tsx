@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz, QuizAttempt } from '../types';
-import { quizAPI } from '../services/api';
+import { quizAPI, wrongQuestionAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
+import { useToast } from '../components/common/Toast';
+import { BookOpen } from 'lucide-react';
 import '../styles/Course.css';
 
 const QuizDetail: React.FC = () => {
@@ -17,6 +19,8 @@ const QuizDetail: React.FC = () => {
     const [answers, setAnswers] = useState<Record<string, number[]>>({});
     const [submitting, setSubmitting] = useState(false);
     const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
+    const [addingToWrongBook, setAddingToWrongBook] = useState<Set<string>>(new Set());
+    const { success, error: showError } = useToast();
 
     useEffect(() => {
         if (!selectedCourse) {
@@ -94,6 +98,23 @@ const QuizDetail: React.FC = () => {
     const handleReset = () => {
         setAnswers({});
         setAttempt(null);
+        setAddingToWrongBook(new Set());
+    };
+
+    const handleAddToWrongBook = async (questionEntityId: number, userAnswer: number[], questionId: string) => {
+        if (!selectedCourse) return;
+        try {
+            setAddingToWrongBook(prev => new Set(prev).add(questionId));
+            await wrongQuestionAPI.addWrongQuestion(selectedCourse.id, questionEntityId, userAnswer);
+            success('已添加到错题本');
+        } catch (err: any) {
+            showError('添加失败: ' + (err.response?.data?.message || err.message));
+            setAddingToWrongBook(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(questionId);
+                return newSet;
+            });
+        }
     };
 
     if (!selectedCourse) {
@@ -237,6 +258,19 @@ const QuizDetail: React.FC = () => {
                                             {result?.score || 0} / {Math.round(100 / quiz.questions.length) + (index < (100 % quiz.questions.length) ? 1 : 0)}
                                         </span>
                                     </div>
+
+                                    {!isCorrect && result?.questionEntityId && (
+                                        <div className="wrong-question-action mt-3">
+                                            <button
+                                                onClick={() => handleAddToWrongBook(result.questionEntityId!, userAnswer, question.id)}
+                                                disabled={addingToWrongBook.has(question.id)}
+                                                className="btn btn-outline btn-small"
+                                            >
+                                                <BookOpen size={14} />
+                                                {addingToWrongBook.has(question.id) ? '已添加' : '添加到错题本'}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}

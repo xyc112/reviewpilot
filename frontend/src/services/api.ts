@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress, UserCourse } from '../types';
+import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress, UserCourse, Post, Comment, Question, WrongQuestion } from '../types';
 
 // 移除硬编码的 baseURL，使用相对路径让Vite代理工作
 const api = axios.create();
@@ -108,6 +108,38 @@ export const userCourseAPI = {
     setCurrentStudying: (courseId: number) => api.put(`/api/user-courses/${courseId}/current-studying`),
     unsetCurrentStudying: () => api.delete('/api/user-courses/current-studying'),
     getCurrentStudying: () => api.get<{ courseId: number | null }>('/api/user-courses/current-studying'),
+};
+
+export const postAPI = {
+    getPosts: (courseId: number) => api.get<Post[]>(`/api/courses/${courseId}/posts`),
+    getPost: (courseId: number, postId: number) => api.get<Post>(`/api/courses/${courseId}/posts/${postId}`),
+    createPost: (courseId: number, postData: Partial<Post>) => api.post<Post>(`/api/courses/${courseId}/posts`, postData),
+    updatePost: (courseId: number, postId: number, postData: Partial<Post>) => api.put<Post>(`/api/courses/${courseId}/posts/${postId}`, postData),
+    deletePost: (courseId: number, postId: number) => api.delete(`/api/courses/${courseId}/posts/${postId}`),
+};
+
+export const commentAPI = {
+    getComments: (courseId: number, postId: number) => api.get<Comment[]>(`/api/courses/${courseId}/posts/${postId}/comments`),
+    getComment: (courseId: number, postId: number, commentId: number) => api.get<Comment>(`/api/courses/${courseId}/posts/${postId}/comments/${commentId}`),
+    createComment: (courseId: number, postId: number, commentData: Partial<Comment>) => api.post<Comment>(`/api/courses/${courseId}/posts/${postId}/comments`, commentData),
+    updateComment: (courseId: number, postId: number, commentId: number, commentData: Partial<Comment>) => api.put<Comment>(`/api/courses/${courseId}/posts/${postId}/comments/${commentId}`, commentData),
+    deleteComment: (courseId: number, postId: number, commentId: number) => api.delete(`/api/courses/${courseId}/posts/${postId}/comments/${commentId}`),
+};
+
+export const wrongQuestionAPI = {
+    getWrongQuestions: (courseId: number, mastered?: boolean) => {
+        const params = mastered !== undefined ? { mastered } : {};
+        return api.get<WrongQuestion[]>(`/api/courses/${courseId}/wrong-questions`, { params });
+    },
+    addWrongQuestion: (courseId: number, questionId: number, userAnswer: number[]) =>
+        api.post<WrongQuestion>(`/api/courses/${courseId}/wrong-questions`, { questionId, userAnswer }),
+    markAsMastered: (courseId: number, wrongQuestionId: number) =>
+        api.put<WrongQuestion>(`/api/courses/${courseId}/wrong-questions/${wrongQuestionId}/mastered`),
+    removeWrongQuestion: (courseId: number, wrongQuestionId: number) =>
+        api.delete(`/api/courses/${courseId}/wrong-questions/${wrongQuestionId}`),
+    practiceWrongQuestion: (courseId: number, wrongQuestionId: number) =>
+        api.post<WrongQuestion>(`/api/courses/${courseId}/wrong-questions/${wrongQuestionId}/practice`),
+    getStats: (courseId: number) => api.get<{ total: number; mastered: number; notMastered: number }>(`/api/courses/${courseId}/wrong-questions/stats`),
 };
 
 export default api;

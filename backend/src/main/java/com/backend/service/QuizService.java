@@ -1,12 +1,15 @@
 package com.backend.service;
 
+import com.backend.entity.Question;
 import com.backend.entity.Quiz;
 import com.backend.entity.User;
+import com.backend.repository.QuestionRepository;
 import com.backend.repository.QuizRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuizService {
     private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
     private final CourseService courseService;
     private final ProgressService progressService;
 
@@ -111,7 +115,37 @@ public class QuizService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return quizRepository.save(quiz);
+        Quiz savedQuiz = quizRepository.save(quiz);
+        
+        // 同步创建Question实体
+        syncQuestionsToEntity(courseId, id, qs);
+        
+        return savedQuiz;
+    }
+    
+    /**
+     * 将Quiz中的questions同步到Question实体
+     */
+    @Transactional
+    private void syncQuestionsToEntity(Long courseId, String quizId, List<Quiz.Question> questions) {
+        // 删除旧的Question实体
+        questionRepository.deleteByQuizId(quizId);
+        
+        // 创建新的Question实体
+        for (int i = 0; i < questions.size(); i++) {
+            Quiz.Question q = questions.get(i);
+            Question question = Question.builder()
+                    .quizId(quizId)
+                    .courseId(courseId)
+                    .originalId(q.getId()) // 保存原始ID
+                    .type(q.getType())
+                    .question(q.getQuestion())
+                    .options(q.getOptions())
+                    .answer(q.getAnswer())
+                    .orderIndex(i)
+                    .build();
+            questionRepository.save(question);
+        }
     }
 
     public Quiz updateQuiz(Long courseId, String quizId, Quiz request, User currentUser) {
@@ -139,6 +173,9 @@ public class QuizService {
                             .build())
                     .collect(Collectors.toList());
             existing.setQuestions(qs);
+            
+            // 同步更新Question实体
+            syncQuestionsToEntity(courseId, quizId, qs);
         }
 
         return quizRepository.save(existing);
@@ -167,6 +204,16 @@ public class QuizService {
         if (request == null || request.getAnswers() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "answers format invalid");
         }
+
+        // 获取Question实体，建立字符串ID到Long ID的映射
+        List<Question> questionEntities = questionRepository.findByQuizIdOrderByOrderIndexAsc(quizId);
+        Map<String, Long> questionIdMap = questionEntities.stream()
+                .filter(q -> q.getOriginalId() != null)
+                .collect(Collectors.toMap(
+                        Question::getOriginalId, // 使用原始ID
+                        Question::getId,
+                        (existing, replacement) -> existing
+                ));
 
         Map<String, Quiz.Question> qmap = Optional.ofNullable(quiz.getQuestions()).orElse(List.of())
                 .stream().collect(Collectors.toMap(Quiz.Question::getId, q -> q));
@@ -199,6 +246,11 @@ public class QuizService {
             Quiz.Question q = qmap.get(a.getQuestionId());
             Map<String, Object> r = new HashMap<>();
             r.put("questionId", a.getQuestionId());
+            // 添加Question实体的ID，用于错题本
+            Long questionEntityId = questionIdMap.get(a.getQuestionId());
+            if (questionEntityId != null) {
+                r.put("questionEntityId", questionEntityId);
+            }
             if (q == null) {
                 r.put("correct", false);
                 r.put("score", 0);
@@ -235,6 +287,11 @@ public class QuizService {
             if (!alreadyProcessed) {
                 Map<String, Object> r = new HashMap<>();
                 r.put("questionId", q.getId());
+                // 添加Question实体的ID
+                Long questionEntityId = questionIdMap.get(q.getId());
+                if (questionEntityId != null) {
+                    r.put("questionEntityId", questionEntityId);
+                }
                 r.put("correct", false);
                 r.put("score", 0);
                 results.add(r);

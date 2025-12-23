@@ -48,12 +48,12 @@ export interface Quiz {
     id: string;
     courseId: number;
     title: string;
-    questions: Question[];
+    questions: QuizQuestion[];
     authorId: number;
     createdAt: string;
 }
 
-export interface Question {
+export interface QuizQuestion {
     id: string;
     type: 'single' | 'multiple' | 'truefalse';
     question: string;
@@ -73,6 +73,7 @@ export interface QuizAttempt {
 
 export interface AttemptResult {
     questionId: string;
+    questionEntityId?: number; // Question实体的ID，用于错题本
     correct: boolean;
     score: number;
 }
@@ -109,4 +110,52 @@ export interface UserCourse {
     isCurrentStudying: boolean;
     addedAt: string;
     studyingStartedAt: string | null;
+}
+
+export interface Post {
+    id: number;
+    courseId: number;
+    authorId: number;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Comment {
+    id: number;
+    postId: number;
+    authorId: number;
+    content: string;
+    parentId: number | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Question {
+    id: number;
+    quizId: string;
+    courseId: number;
+    originalId: string;
+    type: 'single' | 'multiple' | 'truefalse';
+    question: string;
+    options: string[];
+    answer?: number[];
+    explanation?: string;
+    orderIndex: number;
+    createdAt: string;
+}
+
+export interface WrongQuestion {
+    id: number;
+    userId: number;
+    courseId: number;
+    questionId: number;
+    quizId: string;
+    userAnswer: number[];
+    mastered: boolean;
+    addedAt: string;
+    lastPracticedAt: string | null;
+    practiceCount: number;
+    question?: Question; // 关联的题目信息
 }

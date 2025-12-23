@@ -1,0 +1,362 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { WrongQuestion, Question } from '../types';
+import { wrongQuestionAPI, quizAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
+import { BookOpen, X, CheckCircle, RotateCcw, Trash2, ArrowLeft } from 'lucide-react';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useToast } from '../components/common/Toast';
+import '../styles/Course.css';
+
+const WrongQuestionBook: React.FC = () => {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const { currentStudyingCourse, selectedCourse } = useCourse();
+    const { success, error: showError } = useToast();
+    
+    const course = currentStudyingCourse || selectedCourse;
+    const [wrongQuestions, setWrongQuestions] = useState<WrongQuestion[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [filter, setFilter] = useState<'all' | 'notMastered' | 'mastered'>('all');
+    const [practicingQuestion, setPracticingQuestion] = useState<WrongQuestion | null>(null);
+    const [practiceAnswers, setPracticeAnswers] = useState<Record<number, number[]>>({});
+    const [showPracticeResult, setShowPracticeResult] = useState<Record<number, boolean>>({});
+    const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+    const [stats, setStats] = useState<{ total: number; mastered: number; notMastered: number } | null>(null);
+
+    useEffect(() => {
+        if (!course) {
+            navigate('/courses');
+            return;
+        }
+        fetchWrongQuestions();
+        fetchStats();
+    }, [course, navigate, filter]);
+
+    const fetchWrongQuestions = async () => {
+        if (!course) return;
+        try {
+            setLoading(true);
+            const mastered = filter === 'all' ? undefined : filter === 'mastered';
+            const response = await wrongQuestionAPI.getWrongQuestions(course.id, mastered);
+            setWrongQuestions(response.data);
+        } catch (err: any) {
+            setError('获取错题列表失败: ' + (err.response?.data?.message || err.message));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchStats = async () => {
+        if (!course) return;
+        try {
+            const response = await wrongQuestionAPI.getStats(course.id);
+            setStats(response.data);
+        } catch (err: any) {
+            console.error('Failed to fetch stats:', err);
+        }
+    };
+
+    const handleMarkAsMastered = async (wrongQuestionId: number) => {
+        if (!course) return;
+        try {
+            await wrongQuestionAPI.markAsMastered(course.id, wrongQuestionId);
+            success('已标记为已掌握');
+            fetchWrongQuestions();
+            fetchStats();
+        } catch (err: any) {
+            showError('标记失败: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleRemove = async () => {
+        if (!deleteConfirm || !course) return;
+        try {
+            await wrongQuestionAPI.removeWrongQuestion(course.id, deleteConfirm);
+            success('已从错题本移除');
+            setDeleteConfirm(null);
+            fetchWrongQuestions();
+            fetchStats();
+        } catch (err: any) {
+            showError('移除失败: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleStartPractice = (wrongQuestion: WrongQuestion) => {
+        setPracticingQuestion(wrongQuestion);
+        setPracticeAnswers({});
+        setShowPracticeResult({});
+    };
+
+    const handlePracticeOptionSelect = (questionId: number, optionIndex: number, questionType: string) => {
+        setPracticeAnswers(prev => {
+            const currentAnswers = prev[questionId] || [];
+            if (questionType === 'single' || questionType === 'truefalse') {
+                return { ...prev, [questionId]: [optionIndex] };
+            } else {
+                let newAnswers;
+                if (currentAnswers.includes(optionIndex)) {
+                    newAnswers = currentAnswers.filter(idx => idx !== optionIndex);
+                } else {
+                    newAnswers = [...currentAnswers, optionIndex].sort((a, b) => a - b);
+                }
+                return { ...prev, [questionId]: newAnswers };
+            }
+        });
+    };
+
+    const handleSubmitPractice = async () => {
+        if (!practicingQuestion || !course) return;
+        try {
+            // 增加练习次数
+            await wrongQuestionAPI.practiceWrongQuestion(course.id, practicingQuestion.id);
+            
+            // 检查答案是否正确
+            const userAnswer = practiceAnswers[practicingQuestion.questionId] || [];
+            const correctAnswer = practicingQuestion.question?.answer || [];
+            const isCorrect = JSON.stringify([...userAnswer].sort()) === JSON.stringify([...correctAnswer].sort());
+            
+            setShowPracticeResult({ [practicingQuestion.questionId]: true });
+            
+            if (isCorrect) {
+                success('回答正确！');
+            } else {
+                showError('回答错误，请继续练习');
+            }
+            
+            fetchWrongQuestions();
+        } catch (err: any) {
+            showError('提交失败: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleClosePractice = () => {
+        setPracticingQuestion(null);
+        setPracticeAnswers({});
+        setShowPracticeResult({});
+    };
+
+    if (!course) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="container">
+                <div className="loading">加载中...</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container">
+            <ConfirmDialog
+                isOpen={deleteConfirm !== null}
+                title="移除错题"
+                message="确定要从错题本中移除这道题吗？"
+                confirmText="移除"
+                cancelText="取消"
+                type="danger"
+                onConfirm={handleRemove}
+                onCancel={() => setDeleteConfirm(null)}
+            />
+
+            <div className="page-header">
+                <div className="header-content">
+                    <div>
+                        <h1>错题本</h1>
+                        <p className="text-stone-500 mt-2">
+                            {course.title} - 复习和练习错题
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {stats && (
+                <div className="stats-cards mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                    <div className="card">
+                        <div className="text-sm text-stone-500 mb-1">总错题数</div>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                    </div>
+                    <div className="card">
+                        <div className="text-sm text-stone-500 mb-1">未掌握</div>
+                        <div className="text-2xl font-bold text-red-600">{stats.notMastered}</div>
+                    </div>
+                    <div className="card">
+                        <div className="text-sm text-stone-500 mb-1">已掌握</div>
+                        <div className="text-2xl font-bold text-green-600">{stats.mastered}</div>
+                    </div>
+                </div>
+            )}
+
+            <div className="filter-bar mb-4">
+                <button
+                    onClick={() => setFilter('all')}
+                    className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline'}`}
+                >
+                    全部
+                </button>
+                <button
+                    onClick={() => setFilter('notMastered')}
+                    className={`btn ${filter === 'notMastered' ? 'btn-primary' : 'btn-outline'}`}
+                >
+                    未掌握
+                </button>
+                <button
+                    onClick={() => setFilter('mastered')}
+                    className={`btn ${filter === 'mastered' ? 'btn-primary' : 'btn-outline'}`}
+                >
+                    已掌握
+                </button>
+            </div>
+
+            {error && <div className="error-message mb-4">{error}</div>}
+
+            {practicingQuestion && practicingQuestion.question && (
+                <div className="practice-modal card mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">练习错题</h3>
+                        <button onClick={handleClosePractice} className="btn-icon">
+                            <X size={20} />
+                        </button>
+                    </div>
+                    
+                    <div className="question-practice">
+                        <div className="question-text mb-4">
+                            {practicingQuestion.question.question}
+                            {practicingQuestion.question.type === 'multiple' && (
+                                <span className="question-type-badge">[多选]</span>
+                            )}
+                            {practicingQuestion.question.type === 'truefalse' && (
+                                <span className="question-type-badge">[判断]</span>
+                            )}
+                        </div>
+
+                        <div className="options-practice mb-4">
+                            {practicingQuestion.question.options?.map((option, optIndex) => {
+                                const isSelected = (practiceAnswers[practicingQuestion.questionId] || []).includes(optIndex);
+                                const showResult = showPracticeResult[practicingQuestion.questionId];
+                                const isCorrect = practicingQuestion.question?.answer?.includes(optIndex);
+                                
+                                return (
+                                    <div
+                                        key={optIndex}
+                                        className={`option-item ${isSelected ? 'selected' : ''} ${showResult && isCorrect ? 'correct' : ''} ${showResult && isSelected && !isCorrect ? 'incorrect' : ''}`}
+                                        onClick={() => !showResult && handlePracticeOptionSelect(
+                                            practicingQuestion.questionId,
+                                            optIndex,
+                                            practicingQuestion.question.type
+                                        )}
+                                    >
+                                        <span className="option-label">
+                                            {String.fromCharCode(65 + optIndex)}.
+                                        </span>
+                                        <span className="option-text">{option}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {showPracticeResult[practicingQuestion.questionId] && (
+                            <div className="practice-result mb-4">
+                                <div className="text-sm text-stone-600 mb-2">正确答案：</div>
+                                <div className="correct-answers">
+                                    {practicingQuestion.question.answer?.map(idx => 
+                                        String.fromCharCode(65 + idx)
+                                    ).join(', ')}
+                                </div>
+                                {practicingQuestion.question.explanation && (
+                                    <div className="explanation mt-4">
+                                        <div className="text-sm font-semibold mb-2">解析：</div>
+                                        <div className="text-sm text-stone-600">{practicingQuestion.question.explanation}</div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="form-actions">
+                            {!showPracticeResult[practicingQuestion.questionId] ? (
+                                <button onClick={handleSubmitPractice} className="btn btn-primary">
+                                    提交答案
+                                </button>
+                            ) : (
+                                <button onClick={handleClosePractice} className="btn btn-outline">
+                                    关闭
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="wrong-questions-list">
+                {wrongQuestions.length === 0 ? (
+                    <div className="empty-state">
+                        <BookOpen size={48} className="text-stone-400 mb-4" />
+                        <p className="text-lg font-semibold mb-2">暂无错题</p>
+                        <p className="text-stone-500">完成测验后，错题会自动添加到错题本</p>
+                    </div>
+                ) : (
+                    wrongQuestions.map(wq => (
+                        <div key={wq.id} className="wrong-question-card card mb-4">
+                            <div className="flex justify-between items-start mb-2">
+                                <div className="flex-1">
+                                    <div className="question-text mb-2">
+                                        {wq.question?.question || '题目加载中...'}
+                                    </div>
+                                    <div className="wrong-question-meta text-sm text-stone-500">
+                                        <span>来自测验: {wq.quizId}</span>
+                                        <span className="ml-4">练习次数: {wq.practiceCount}</span>
+                                        <span className="ml-4">添加时间: {new Date(wq.addedAt).toLocaleDateString('zh-CN')}</span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    {wq.mastered ? (
+                                        <span className="badge badge-success">已掌握</span>
+                                    ) : (
+                                        <span className="badge badge-warning">未掌握</span>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="wrong-question-actions flex gap-2">
+                                <button
+                                    onClick={() => handleStartPractice(wq)}
+                                    className="btn btn-primary btn-small"
+                                >
+                                    <RotateCcw size={14} />
+                                    重新练习
+                                </button>
+                                {!wq.mastered && (
+                                    <button
+                                        onClick={() => handleMarkAsMastered(wq.id)}
+                                        className="btn btn-outline btn-small"
+                                    >
+                                        <CheckCircle size={14} />
+                                        标记为已掌握
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setDeleteConfirm(wq.id)}
+                                    className="btn btn-outline btn-small text-red-600"
+                                >
+                                    <Trash2 size={14} />
+                                    移除
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default WrongQuestionBook;
+
