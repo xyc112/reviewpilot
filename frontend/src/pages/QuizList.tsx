@@ -85,7 +85,6 @@ const QuizList: React.FC = () => {
                 <div className="header-content">
                     <div>
                         <h1>课程测验</h1>
-                        <p className="text-stone-500 mt-2">{course?.title} - 测试您的学习成果</p>
                     </div>
                     {course && (
                         <div className="header-actions">
@@ -132,47 +131,56 @@ const QuizList: React.FC = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="notes-grid">
+                    <div className="quizzes-list">
                         {quizzes.map((quiz) => (
-                            <div key={quiz.id} className="note-card">
-                                <div className="note-card-header">
-                                    <h3>{quiz.title}</h3>
-                                    <span className="visibility-badge public">
-                                        {quiz.questions.length} 题
-                                    </span>
-                                </div>
-                                <div className="note-card-content">
-                                    <p className="text-stone-600">
-                                        包含 {quiz.questions.length} 道题目，测试您对课程知识的掌握程度
-                                    </p>
-                                </div>
-                                <div className="note-card-footer">
-                                    <div className="flex gap-2">
-                                        <Link
-                                            to={`/quizzes/${quiz.id}`}
-                                            className="btn btn-primary btn-small"
-                                        >
-                                            开始测验
-                                        </Link>
-                                        {isAdmin && (
-                                            <>
-                                                <button
-                                                    onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
-                                                    className="btn btn-outline btn-small"
-                                                    title="编辑测验"
-                                                >
-                                                    <Edit size={14} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(quiz.id)}
-                                                    className="btn btn-outline btn-small text-red-600"
-                                                    title="删除测验"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </>
-                                        )}
+                            <div key={quiz.id} className="quiz-list-item">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#1c1917' }}>
+                                                {quiz.title}
+                                            </h3>
+                                            <span style={{
+                                                padding: '0.25rem 0.75rem',
+                                                borderRadius: '9999px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                                background: '#dbeafe',
+                                                color: '#1e40af',
+                                            }}>
+                                                {quiz.questions.length} 题
+                                            </span>
+                                        </div>
+                                        <p style={{ margin: 0, fontSize: '0.875rem', color: '#78716c' }}>
+                                            包含 {quiz.questions.length} 道题目，测试您对课程知识的掌握程度
+                                        </p>
                                     </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                                    <Link
+                                        to={`/quizzes/${quiz.id}`}
+                                        className="btn btn-primary"
+                                    >
+                                        开始测验
+                                    </Link>
+                                    {isAdmin && (
+                                        <>
+                                            <button
+                                                onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
+                                                className="btn btn-outline btn-small"
+                                                title="编辑测验"
+                                            >
+                                                <Edit size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(quiz.id)}
+                                                className="btn btn-danger btn-small"
+                                                title="删除测验"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))}

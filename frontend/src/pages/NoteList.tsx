@@ -115,7 +115,6 @@ const NoteList: React.FC = () => {
                 <div className="header-content">
                     <div>
                         <h1>课程笔记</h1>
-                        <p className="text-stone-500 mt-2">{course?.title} - 管理和查看您的学习笔记</p>
                     </div>
                     {course && (
                         <div className="header-actions">
@@ -217,30 +216,42 @@ const NoteList: React.FC = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="notes-grid">
+                    <div className="notes-list">
                         {filteredNotes.map((note) => (
-                            <Link
-                                key={note.id}
-                                to={`/notes/${note.id}`}
-                                className="note-card"
-                            >
-                                <div className="note-card-header">
-                                    <h3>{note.title}</h3>
-                                    <span className={`visibility-badge ${note.visibility}`}>
-                                        {note.visibility === 'public' ? '公开' : '私有'}
-                                    </span>
-                                </div>
-                                <div className="note-card-content">
-                                    {note.summary || (note.content.length > 150
-                                        ? note.content.substring(0, 150) + '...'
-                                        : note.content).replace(/\\n/g, ' ')}
-                                </div>
-                                <div className="note-card-footer">
-                                    <span className="note-date">
-                                        {formatDate(note.createdAt)}
-                                    </span>
-                                </div>
-                            </Link>
+                            <div key={note.id} className="note-list-item">
+                                <Link
+                                    to={`/notes/${note.id}`}
+                                    style={{ flex: 1, textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1 }}>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                                                <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#1c1917' }}>
+                                                    {note.title}
+                                                </h3>
+                                                <span className={`visibility-badge ${note.visibility}`} style={{
+                                                    padding: '0.25rem 0.75rem',
+                                                    borderRadius: '9999px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 600,
+                                                    background: note.visibility === 'public' ? '#dbeafe' : '#f5f5f4',
+                                                    color: note.visibility === 'public' ? '#1e40af' : '#57534e',
+                                                }}>
+                                                    {note.visibility === 'public' ? '公开' : '私有'}
+                                                </span>
+                                            </div>
+                                            <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#78716c', lineHeight: 1.5 }}>
+                                                {note.summary || (note.content.length > 150
+                                                    ? note.content.substring(0, 150) + '...'
+                                                    : note.content).replace(/\\n/g, ' ')}
+                                            </p>
+                                            <span style={{ fontSize: '0.8125rem', color: '#a8a29e' }}>
+                                                {formatDate(note.createdAt)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
                         ))}
                     </div>
                 )}

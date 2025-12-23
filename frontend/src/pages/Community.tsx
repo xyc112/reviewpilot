@@ -212,7 +212,7 @@ const Community: React.FC = () => {
                 {filteredComments.map(comment => (
                     <div key={comment.id} className="comment-item">
                         <div className="comment-header">
-                            <span className="comment-author">用户 {comment.authorId}</span>
+                            <span className="comment-author">{comment.authorUsername || `用户 ${comment.authorId}`}</span>
                             <span className="comment-date">{formatDate(comment.createdAt)}</span>
                             {(isAdmin || user?.id === comment.authorId) && (
                                 <button
@@ -316,9 +316,6 @@ const Community: React.FC = () => {
                     <div className="header-content">
                         <div>
                             <h1>课程社区</h1>
-                            <p className="text-stone-500 mt-2">
-                                {course?.title || currentStudyingCourse?.title || selectedCourse?.title || '课程'} - 与其他学习者交流讨论
-                            </p>
                         </div>
                         <button
                             onClick={() => setShowCreatePost(!showCreatePost)}
@@ -387,7 +384,7 @@ const Community: React.FC = () => {
                                     <div className="post-title-section">
                                         <h3 className="post-title">{post.title}</h3>
                                         <div className="post-meta">
-                                            <span className="post-author">用户 {post.authorId}</span>
+                                            <span className="post-author">{post.authorUsername || `用户 ${post.authorId}`}</span>
                                             <span className="post-date">{formatDate(post.createdAt)}</span>
                                         </div>
                                     </div>

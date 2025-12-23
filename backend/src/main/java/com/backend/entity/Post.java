@@ -32,6 +32,9 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
+    @Transient
+    private String authorUsername;
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {

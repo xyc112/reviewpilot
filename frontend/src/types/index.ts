@@ -120,6 +120,7 @@ export interface Post {
     content: string;
     createdAt: string;
     updatedAt: string;
+    authorUsername?: string;
 }
 
 export interface Comment {
@@ -130,6 +131,7 @@ export interface Comment {
     parentId: number | null;
     createdAt: string;
     updatedAt: string;
+    authorUsername?: string;
 }
 
 export interface Question {
