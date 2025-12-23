@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Course } from '../types';
-import { courseAPI } from '../services/api';
+import { courseAPI, userCourseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { Book, Plus, Search, Filter, X, Edit, Trash2, Check } from 'lucide-react';
+import { Book, Plus, Search, Filter, X, Edit, Trash2, BookOpen, Star } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import { SkeletonGrid } from '../components/common/Skeleton';
@@ -25,7 +25,7 @@ const CourseList: React.FC = () => {
         courseId: null,
     });
     const { isAdmin } = useAuth();
-    const { selectedCourse, setSelectedCourse } = useCourse();
+    const { currentStudyingCourse, selectedCourseIds, refreshUserCourses } = useCourse();
     const { success, error: showError } = useToast();
 
     useEffect(() => {
@@ -43,9 +43,58 @@ const CourseList: React.FC = () => {
         }
     };
 
-    const handleSelectCourse = (course: Course) => {
-        setSelectedCourse(course);
-        success(`已选择课程: ${course.title}`);
+    const handleAddToStudyList = async (course: Course) => {
+        try {
+            await userCourseAPI.addCourse(course.id);
+            success(`已将 "${course.title}" 添加到学习列表`);
+            await refreshUserCourses();
+        } catch (err: any) {
+            const errorMsg = '添加到学习列表失败: ' + (err.response?.data?.message || '未知错误');
+            showError(errorMsg);
+        }
+    };
+
+    const handleRemoveFromStudyList = async (course: Course) => {
+        try {
+            await userCourseAPI.removeCourse(course.id);
+            success(`已将 "${course.title}" 从学习列表移除`);
+            await refreshUserCourses();
+        } catch (err: any) {
+            const errorMsg = '移除课程失败: ' + (err.response?.data?.message || '未知错误');
+            showError(errorMsg);
+        }
+    };
+
+    const handleSetCurrentStudying = async (course: Course) => {
+        try {
+            await userCourseAPI.setCurrentStudying(course.id);
+            success(`已将 "${course.title}" 设置为当前学习课程`);
+            await refreshUserCourses();
+        } catch (err: any) {
+            const errorMsg = '设置当前学习课程失败: ' + (err.response?.data?.message || '未知错误');
+            showError(errorMsg);
+        }
+    };
+
+    const handleEndStudying = async (course: Course) => {
+        try {
+            await userCourseAPI.unsetCurrentStudying();
+            success(`已结束学习 "${course.title}"`);
+            await refreshUserCourses();
+        } catch (err: any) {
+            const errorMsg = '结束学习失败: ' + (err.response?.data?.message || '未知错误');
+            showError(errorMsg);
+        }
+    };
+    
+    // 判断课程状态：0-未添加到学习，1-已添加未开始，2-正在学习
+    const getCourseState = (course: Course): number => {
+        if (currentStudyingCourse?.id === course.id) {
+            return 2; // 正在学习
+        } else if (selectedCourseIds.has(course.id)) {
+            return 1; // 已添加到学习列表但未开始
+        }
+        return 0; // 未添加到学习
     };
 
     const handleDeleteCourse = (courseId: number) => {
@@ -57,10 +106,8 @@ const CourseList: React.FC = () => {
         try {
             await courseAPI.deleteCourse(deleteConfirm.courseId);
             success('课程删除成功');
-            // 如果删除的是当前选中的课程，清除选择
-            if (selectedCourse?.id === deleteConfirm.courseId) {
-                setSelectedCourse(null);
-            }
+            // 删除课程后刷新用户课程列表
+            await refreshUserCourses();
             fetchCourses();
         } catch (err: any) {
             const errorMsg = '删除课程失败: ' + (err.response?.data?.message || '未知错误');
@@ -159,11 +206,13 @@ const CourseList: React.FC = () => {
                 <div className="header-content">
                     <div>
                         <h1>课程列表</h1>
-                        <p className="text-stone-500 mt-2">选择课程以访问知识图谱、笔记和测验</p>
-                        {selectedCourse && (
-                            <div className="selected-course-badge">
-                                <Check size={16} />
-                                <span>当前选择: {selectedCourse.title}</span>
+                        <p className="text-stone-500 mt-2">添加课程到学习列表，开始您的学习之旅</p>
+                        {currentStudyingCourse && (
+                            <div style={{ marginTop: '0.75rem' }}>
+                                <div className="selected-course-badge" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
+                                    <Star size={16} />
+                                    <span>正在学习: {currentStudyingCourse.title}</span>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -318,13 +367,58 @@ const CourseList: React.FC = () => {
                             )}
 
                             <div className="course-actions">
-                                <button
-                                    onClick={() => handleSelectCourse(course)}
-                                    className={`btn ${selectedCourse?.id === course.id ? 'btn-primary' : 'btn-secondary'}`}
-                                >
-                                    <Check size={16} />
-                                    {selectedCourse?.id === course.id ? '已选择' : '选择课程'}
-                                </button>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {(() => {
+                                        const state = getCourseState(course);
+                                        switch (state) {
+                                            case 0: // 未添加到学习
+                                                return (
+                                                    <button
+                                                        onClick={() => handleAddToStudyList(course)}
+                                                        className="btn btn-secondary"
+                                                        title="添加到学习列表"
+                                                    >
+                                                        <BookOpen size={16} />
+                                                        添加到学习
+                                                    </button>
+                                                );
+                                            case 1: // 已添加未开始学习
+                                                return (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleSetCurrentStudying(course)}
+                                                            className="btn btn-primary"
+                                                            title="开始学习此课程"
+                                                        >
+                                                            <Star size={16} />
+                                                            开始学习
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleRemoveFromStudyList(course)}
+                                                            className="btn btn-outline"
+                                                            title="从学习列表移除"
+                                                        >
+                                                            <X size={16} />
+                                                            移除
+                                                        </button>
+                                                    </>
+                                                );
+                                            case 2: // 正在学习
+                                                return (
+                                                    <button
+                                                        onClick={() => handleEndStudying(course)}
+                                                        className="btn btn-secondary"
+                                                        title="结束当前学习"
+                                                    >
+                                                        <Star size={16} />
+                                                        结束学习
+                                                    </button>
+                                                );
+                                            default:
+                                                return null;
+                                        }
+                                    })()}
+                                </div>
                                 {isAdmin && (
                                     <div className="course-admin-actions">
                                         <button

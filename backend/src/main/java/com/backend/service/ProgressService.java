@@ -58,15 +58,25 @@ public class ProgressService {
     }
 
     /**
-     * 获取用户的总体学习统计
+     * 获取用户的总体学习统计（基于选择的课程）
      */
-    public OverallStatsDTO getOverallStats(Long userId) {
-        List<Progress> allProgress = progressRepository.findByUserId(userId);
+    public OverallStatsDTO getOverallStats(Long userId, List<Long> courseIdsParam) {
+        List<Long> courseIds;
+        if (courseIdsParam == null || courseIdsParam.isEmpty()) {
+            // 如果没有指定课程，使用所有有进度的课程
+            List<Progress> allProgress = progressRepository.findByUserId(userId);
+            courseIds = allProgress.stream()
+                    .map(Progress::getCourseId)
+                    .distinct()
+                    .collect(Collectors.toList());
+        } else {
+            courseIds = courseIdsParam;
+        }
         
-        // 获取所有课程ID
-        Set<Long> courseIds = allProgress.stream()
-                .map(Progress::getCourseId)
-                .collect(Collectors.toSet());
+        // 只统计指定课程的进度
+        List<Progress> allProgress = progressRepository.findByUserId(userId).stream()
+                .filter(p -> courseIds.contains(p.getCourseId()))
+                .collect(Collectors.toList());
 
         // 统计各课程的测验数量
         Map<Long, Long> quizCountsByCourse = new HashMap<>();
@@ -163,8 +173,22 @@ public class ProgressService {
     }
 
     /**
-     * 获取用户在所有课程的进度列表
+     * 根据课程ID列表获取用户在这些课程的进度列表
      */
+    public List<CourseProgressDTO> getCourseProgressByCourseIds(Long userId, List<Long> courseIds) {
+        if (courseIds == null || courseIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        
+        return courseIds.stream()
+                .map(courseId -> getCourseProgress(userId, courseId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取用户在所有课程的进度列表（已废弃，保留兼容性）
+     */
+    @Deprecated
     public List<CourseProgressDTO> getAllCourseProgress(Long userId) {
         List<Progress> allProgress = progressRepository.findByUserId(userId);
         

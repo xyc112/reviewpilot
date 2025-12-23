@@ -102,3 +102,11 @@ export interface QuizProgress {
     totalScore: number | null;
     completedAt: string;
 }
+
+export interface UserCourse {
+    courseId: number;
+    courseTitle: string | null;
+    isCurrentStudying: boolean;
+    addedAt: string;
+    studyingStartedAt: string | null;
+}

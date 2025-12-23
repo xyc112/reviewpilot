@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import com.backend.entity.User;
 import com.backend.service.ProgressService;
+import com.backend.service.UserCourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProgressController {
     private final ProgressService progressService;
+    private final UserCourseService userCourseService;
 
     private User currentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -24,12 +26,24 @@ public class ProgressController {
     }
 
     /**
-     * 获取用户的总体学习统计
+     * 获取用户的总体学习统计（基于选择的课程或当前学习课程）
      */
     @GetMapping("/overall")
     public ResponseEntity<ProgressService.OverallStatsDTO> getOverallStats() {
         User user = currentUser();
-        ProgressService.OverallStatsDTO stats = progressService.getOverallStats(user.getId());
+        // 获取当前学习的课程ID
+        java.util.Optional<Long> currentStudyingId = userCourseService.getCurrentStudyingCourseId(user.getId());
+        
+        List<Long> courseIds;
+        if (currentStudyingId.isPresent()) {
+            // 如果有当前学习的课程，只统计该课程
+            courseIds = java.util.Collections.singletonList(currentStudyingId.get());
+        } else {
+            // 否则统计所有选择的课程
+            courseIds = userCourseService.getUserSelectedCourseIds(user.getId());
+        }
+        
+        ProgressService.OverallStatsDTO stats = progressService.getOverallStats(user.getId(), courseIds);
         return ResponseEntity.ok(stats);
     }
 

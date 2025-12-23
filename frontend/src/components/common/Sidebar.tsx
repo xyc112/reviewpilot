@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp } from 'lucide-react';
+import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star } from 'lucide-react';
 import { useCourse } from '../../context/CourseContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -8,7 +8,7 @@ import './Sidebar.css';
 const Sidebar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { selectedCourse, clearSelectedCourse } = useCourse();
+    const { currentStudyingCourse } = useCourse();
     const { isAdmin } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -78,9 +78,9 @@ const Sidebar: React.FC = () => {
     ];
 
     const handleMenuClick = (item: typeof menuItems[0], e: React.MouseEvent) => {
-        if (item.requiresCourse && !selectedCourse) {
+        if (item.requiresCourse && !currentStudyingCourse) {
             e.preventDefault();
-            // 如果没有选中课程，先导航到课程列表
+            // 如果没有正在学习的课程，先导航到课程列表
             navigate('/courses');
         }
     };
@@ -110,19 +110,12 @@ const Sidebar: React.FC = () => {
             <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`} aria-label="主导航">
                 <div className="sidebar-header">
                     <h2>导航</h2>
-                    {selectedCourse && (
+                    {currentStudyingCourse && (
                         <div className="selected-course-info">
-                            <div className="selected-course-title" title={selectedCourse.title}>
-                                {selectedCourse.title}
+                            <div className="selected-course-title" title={currentStudyingCourse.title}>
+                                <Star size={14} style={{ marginRight: '0.25rem', display: 'inline-block', verticalAlign: 'middle' }} />
+                                {currentStudyingCourse.title}
                             </div>
-                            <button
-                                className="clear-course-btn"
-                                onClick={clearSelectedCourse}
-                                title="取消选择课程"
-                                aria-label="取消选择课程"
-                            >
-                                ×
-                            </button>
                         </div>
                     )}
                 </div>
@@ -130,7 +123,7 @@ const Sidebar: React.FC = () => {
                 <nav className="sidebar-nav" role="navigation" aria-label="主菜单">
                     {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const disabled = item.requiresCourse && !selectedCourse;
+                        const disabled = item.requiresCourse && !currentStudyingCourse;
                         const active = isActive(item.path);
 
                         return (
@@ -139,13 +132,13 @@ const Sidebar: React.FC = () => {
                                 to={item.path}
                                 onClick={(e) => handleMenuClick(item, e)}
                                 className={`sidebar-item ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
-                                title={disabled ? '请先选择一个课程' : item.label}
+                                title={disabled ? '请先开始学习一门课程' : item.label}
                                 aria-current={active ? 'page' : undefined}
                                 aria-disabled={disabled}
                             >
                                 <Icon size={20} aria-hidden="true" />
                                 <span>{item.label}</span>
-                                {disabled && <span className="disabled-hint">（需选择课程）</span>}
+                                {disabled && <span className="disabled-hint">（需开始学习）</span>}
                             </Link>
                         );
                     })}

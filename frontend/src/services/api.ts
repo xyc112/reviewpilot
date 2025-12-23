@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress } from '../types';
+import { Course, Node, Relation, Note, Quiz, OverallStats, CourseProgress, UserCourse } from '../types';
 
 // 移除硬编码的 baseURL，使用相对路径让Vite代理工作
 const api = axios.create();
@@ -99,6 +99,15 @@ export const progressAPI = {
     getOverallStats: () => api.get<OverallStats>('/api/progress/overall'),
     getAllCourseProgress: () => api.get<CourseProgress[]>('/api/progress/courses'),
     getCourseProgress: (courseId: number) => api.get<CourseProgress>(`/api/progress/courses/${courseId}`),
+};
+
+export const userCourseAPI = {
+    getUserCourses: () => api.get<UserCourse[]>('/api/user-courses'),
+    addCourse: (courseId: number) => api.post(`/api/user-courses/${courseId}`),
+    removeCourse: (courseId: number) => api.delete(`/api/user-courses/${courseId}`),
+    setCurrentStudying: (courseId: number) => api.put(`/api/user-courses/${courseId}/current-studying`),
+    unsetCurrentStudying: () => api.delete('/api/user-courses/current-studying'),
+    getCurrentStudying: () => api.get<{ courseId: number | null }>('/api/user-courses/current-studying'),
 };
 
 export default api;

@@ -874,11 +874,11 @@ button:disabled, .btn:disabled {
 }
 
 .progress-container-fullscreen {
-    height: calc(100vh - 70px); /* 减去navbar高度 */
-    overflow-y: auto;
-    padding: 1.5rem 2rem;
-    margin: 0;
-    max-width: 100%;
+    height: calc(100vh - 70px) !important; /* 减去navbar高度 */
+    margin: 0 !important;
+    max-width: 100% !important;
+    /* padding 和 overflow 由内联样式控制，但确保不会自动滚动 */
+    overflow: hidden !important;
 }
 
 .progress-container-fullscreen .page-header {
