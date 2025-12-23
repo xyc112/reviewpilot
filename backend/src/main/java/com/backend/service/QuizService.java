@@ -207,6 +207,13 @@ public class QuizService {
 
         // 获取Question实体，建立字符串ID到Long ID的映射
         List<Question> questionEntities = questionRepository.findByQuizIdOrderByOrderIndexAsc(quizId);
+        
+        // 如果Question实体不存在，自动创建它们（兼容旧数据）
+        if (questionEntities.isEmpty() && quiz.getQuestions() != null && !quiz.getQuestions().isEmpty()) {
+            syncQuestionsToEntity(courseId, quizId, quiz.getQuestions());
+            questionEntities = questionRepository.findByQuizIdOrderByOrderIndexAsc(quizId);
+        }
+        
         Map<String, Long> questionIdMap = questionEntities.stream()
                 .filter(q -> q.getOriginalId() != null)
                 .collect(Collectors.toMap(

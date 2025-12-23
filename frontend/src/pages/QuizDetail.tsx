@@ -205,11 +205,13 @@ const QuizDetail: React.FC = () => {
                                         {question.options?.map((option, optIndex) => {
                                             const isSelected = userAnswer.includes(optIndex);
                                             const isCorrectAnswer = correctAnswerIndices.includes(optIndex);
+                                            const isCorrectlySelected = isSelected && isCorrectAnswer;
+                                            const isIncorrectlySelected = isSelected && !isCorrectAnswer;
 
                                             let optionClass = "option-result";
-                                            if (isSelected && isCorrectAnswer) {
+                                            if (isCorrectlySelected) {
                                                 optionClass += " correct-selected";
-                                            } else if (isSelected && !isCorrectAnswer) {
+                                            } else if (isIncorrectlySelected) {
                                                 optionClass += " incorrect-selected";
                                             } else if (!isSelected && isCorrectAnswer) {
                                                 optionClass += " correct-missing";
@@ -222,7 +224,7 @@ const QuizDetail: React.FC = () => {
                                                             {isCorrectAnswer && (
                                                                 <span className="correct-mark">✓</span>
                                                             )}
-                                                            {isSelected && !isCorrectAnswer && (
+                                                            {isIncorrectlySelected && (
                                                                 <span className="incorrect-mark">✗</span>
                                                             )}
                                                             {!isSelected && !isCorrectAnswer && (
@@ -234,12 +236,16 @@ const QuizDetail: React.FC = () => {
                                                         </span>
                                                         <span className="option-result-text">{option}</span>
                                                     </div>
-                                                    {isSelected && (
-                                                        <span className="answer-tag your-answer-tag">你的答案</span>
-                                                    )}
-                                                    {isCorrectAnswer && (
-                                                        <span className="answer-tag correct-answer-tag">正确答案</span>
-                                                    )}
+                                                    <div className="answer-tags">
+                                                        {isSelected && (
+                                                            <span className={`answer-tag ${isCorrectlySelected ? 'correct-answer-tag' : 'your-answer-tag'}`}>
+                                                                {isCorrectlySelected ? '你的答案（正确）' : '你的答案'}
+                                                            </span>
+                                                        )}
+                                                        {!isSelected && isCorrectAnswer && (
+                                                            <span className="answer-tag correct-answer-tag">正确答案</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             );
                                         })}

@@ -75,31 +75,72 @@ INSERT INTO note (id, course_id, title, content, summary, author_id, visibility,
 -- 插入示例测验
 -- 注意：JSON 字符串需要正确转义，每个题目需要唯一的 id
 -- 题目类型：single(单选题), multiple(多选题), truefalse(判断题)
+-- 每门课程至少两份测试，每份测试围绕一个主题
+
+-- 课程1: Java 编程基础
 INSERT INTO quiz (id, course_id, title, questions, author_id, created_at, updated_at) VALUES
-('quiz1', 1, 'Java 基础测验', 
-'[{"id":"quiz1-q1","type":"multiple","question":"Java中哪些数据类型占用8个字节？","options":["int","long","double","float"],"answer":[1,2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"truefalse","question":"Java是一种面向对象的编程语言","options":["正确","错误"],"answer":[0]},{"id":"quiz1-q4","type":"single","question":"Java中哪个关键字用于实现继承？","options":["extends","implements","super","this"],"answer":[0]},{"id":"quiz1-q5","type":"truefalse","question":"Java支持多重继承","options":["正确","错误"],"answer":[1]}]',
+('quiz1', 1, 'Java 数据类型与变量', 
+'[{"id":"quiz1-q1","type":"single","question":"Java中哪个基本数据类型占用4个字节？","options":["byte","short","int","long"],"answer":[2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"single","question":"Java中char类型占用几个字节？","options":["1","2","4","8"],"answer":[1]},{"id":"quiz1-q4","type":"truefalse","question":"Java中boolean类型只有true和false两个值","options":["正确","错误"],"answer":[0]},{"id":"quiz1-q5","type":"single","question":"Java中浮点数默认类型是什么？","options":["float","double","BigDecimal","不确定"],"answer":[1]}]',
 1, '2024-01-18 10:00:00', '2024-01-18 10:00:00'),
-('quiz2', 2, 'Spring Boot 入门测验',
-'[{"id":"quiz2-q1","type":"single","question":"Spring Boot的默认端口是多少？","options":["8080","3000","5000","7000"],"answer":[0]},{"id":"quiz2-q2","type":"truefalse","question":"Spring Boot可以自动配置应用程序","options":["正确","错误"],"answer":[0]},{"id":"quiz2-q3","type":"single","question":"Spring Boot中哪个注解用于启动类？","options":["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@Configuration"],"answer":[0]}]',
+('quiz1-2', 1, 'Java 面向对象编程',
+'[{"id":"quiz1-2-q1","type":"single","question":"Java中哪个关键字用于实现继承？","options":["extends","implements","super","this"],"answer":[0]},{"id":"quiz1-2-q2","type":"truefalse","question":"Java支持多重继承","options":["正确","错误"],"answer":[1]},{"id":"quiz1-2-q3","type":"multiple","question":"面向对象编程的三大特性包括哪些？","options":["封装","继承","多态","抽象"],"answer":[0,1,2]},{"id":"quiz1-2-q4","type":"single","question":"Java中哪个关键字用于调用父类的方法？","options":["this","super","extends","implements"],"answer":[1]},{"id":"quiz1-2-q5","type":"truefalse","question":"Java是一种纯面向对象的编程语言","options":["正确","错误"],"answer":[1]}]',
+1, '2024-01-19 14:00:00', '2024-01-19 14:00:00'),
+
+-- 课程2: Spring Boot 实战
+('quiz2', 2, 'Spring Boot 基础配置',
+'[{"id":"quiz2-q1","type":"single","question":"Spring Boot的默认端口是多少？","options":["8080","3000","5000","7000"],"answer":[0]},{"id":"quiz2-q2","type":"truefalse","question":"Spring Boot可以自动配置应用程序","options":["正确","错误"],"answer":[0]},{"id":"quiz2-q3","type":"single","question":"Spring Boot中哪个注解用于启动类？","options":["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@Configuration"],"answer":[0]},{"id":"quiz2-q4","type":"multiple","question":"Spring Boot的配置文件格式包括哪些？","options":["application.properties","application.yml","application.json","application.xml"],"answer":[0,1]}]',
 1, '2024-01-22 15:00:00', '2024-01-22 15:00:00'),
-('quiz3', 3, '数据结构基础测验',
-'[{"id":"quiz3-q1","type":"single","question":"栈的数据结构特点是什么？","options":["先进先出","后进先出","随机存取","双向存取"],"answer":[1]},{"id":"quiz3-q2","type":"single","question":"下列哪种排序算法的时间复杂度是O(nlogn)？","options":["冒泡排序","选择排序","快速排序","插入排序"],"answer":[2]},{"id":"quiz3-q3","type":"multiple","question":"以下哪些是线性数据结构？","options":["数组","链表","栈","树"],"answer":[0,1,2]},{"id":"quiz3-q4","type":"truefalse","question":"二叉搜索树的中序遍历可以得到有序序列","options":["正确","错误"],"answer":[0]},{"id":"quiz3-q5","type":"single","question":"哈希表查找的平均时间复杂度是多少？","options":["O(1)","O(n)","O(logn)","O(n²)"],"answer":[0]}]',
+('quiz2-2', 2, 'Spring Boot RESTful API',
+'[{"id":"quiz2-2-q1","type":"single","question":"RESTful API中，GET请求通常用于什么操作？","options":["创建资源","查询资源","更新资源","删除资源"],"answer":[1]},{"id":"quiz2-2-q2","type":"single","question":"Spring Boot中哪个注解用于定义REST控制器？","options":["@Controller","@RestController","@Service","@Repository"],"answer":[1]},{"id":"quiz2-2-q3","type":"multiple","question":"HTTP状态码2xx表示什么？","options":["成功","重定向","客户端错误","服务器错误"],"answer":[0]},{"id":"quiz2-2-q4","type":"truefalse","question":"RESTful API应该使用名词而不是动词来命名资源","options":["正确","错误"],"answer":[0]}]',
+1, '2024-01-23 10:00:00', '2024-01-23 10:00:00'),
+
+-- 课程3: 数据结构与算法
+('quiz3', 3, '线性数据结构',
+'[{"id":"quiz3-q1","type":"single","question":"栈的数据结构特点是什么？","options":["先进先出","后进先出","随机存取","双向存取"],"answer":[1]},{"id":"quiz3-q2","type":"single","question":"队列的数据结构特点是什么？","options":["先进先出","后进先出","随机存取","双向存取"],"answer":[0]},{"id":"quiz3-q3","type":"multiple","question":"以下哪些是线性数据结构？","options":["数组","链表","栈","树"],"answer":[0,1,2]},{"id":"quiz3-q4","type":"truefalse","question":"链表在内存中必须是连续存储的","options":["正确","错误"],"answer":[1]}]',
 1, '2024-02-05 10:00:00', '2024-02-05 10:00:00'),
-('quiz4', 3, '算法复杂度分析',
-'[{"id":"quiz4-q1","type":"single","question":"二分查找算法的时间复杂度是多少？","options":["O(1)","O(n)","O(logn)","O(n²)"],"answer":[2]},{"id":"quiz4-q2","type":"truefalse","question":"动态规划算法通常用于解决最优化问题","options":["正确","错误"],"answer":[0]},{"id":"quiz4-q3","type":"multiple","question":"以下哪些算法的时间复杂度是O(n²)？","options":["冒泡排序","快速排序（最坏情况）","归并排序","选择排序"],"answer":[0,1,3]}]',
+('quiz4', 3, '排序与查找算法',
+'[{"id":"quiz4-q1","type":"single","question":"二分查找算法的时间复杂度是多少？","options":["O(1)","O(n)","O(logn)","O(n²)"],"answer":[2]},{"id":"quiz4-q2","type":"single","question":"下列哪种排序算法的时间复杂度是O(nlogn)？","options":["冒泡排序","选择排序","快速排序","插入排序"],"answer":[2]},{"id":"quiz4-q3","type":"multiple","question":"以下哪些算法的时间复杂度是O(n²)？","options":["冒泡排序","快速排序（最坏情况）","归并排序","选择排序"],"answer":[0,1,3]},{"id":"quiz4-q4","type":"single","question":"哈希表查找的平均时间复杂度是多少？","options":["O(1)","O(n)","O(logn)","O(n²)"],"answer":[0]},{"id":"quiz4-q5","type":"truefalse","question":"快速排序是稳定的排序算法","options":["正确","错误"],"answer":[1]}]',
 1, '2024-02-06 14:00:00', '2024-02-06 14:00:00'),
-('quiz5', 5, '数据库基础测验',
+
+-- 课程4: React 前端开发
+('quiz4-1', 4, 'React 基础概念',
+'[{"id":"quiz4-1-q1","type":"single","question":"React中用于创建组件的函数是什么？","options":["createComponent","React.createElement","JSX","render"],"answer":[1]},{"id":"quiz4-1-q2","type":"truefalse","question":"React组件名称必须以大写字母开头","options":["正确","错误"],"answer":[0]},{"id":"quiz4-1-q3","type":"multiple","question":"React的核心概念包括哪些？","options":["组件","状态","属性","生命周期"],"answer":[0,1,2,3]},{"id":"quiz4-1-q4","type":"single","question":"React中用于更新组件状态的Hook是什么？","options":["useState","useEffect","useContext","useReducer"],"answer":[0]}]',
+1, '2024-02-11 09:00:00', '2024-02-11 09:00:00'),
+('quiz4-2', 4, 'React Hooks 与状态管理',
+'[{"id":"quiz4-2-q1","type":"single","question":"useEffect Hook在什么时候执行？","options":["组件挂载时","组件更新时","组件卸载时","以上都是"],"answer":[3]},{"id":"quiz4-2-q2","type":"multiple","question":"React Hooks的规则包括哪些？","options":["只能在函数组件中使用","只能在顶层调用","可以在条件语句中使用","可以嵌套调用"],"answer":[0,1]},{"id":"quiz4-2-q3","type":"truefalse","question":"useState可以返回多个状态值","options":["正确","错误"],"answer":[0]}]',
+1, '2024-02-12 14:00:00', '2024-02-12 14:00:00'),
+
+-- 课程5: 数据库设计与优化
+('quiz5', 5, 'SQL 基础语法',
 '[{"id":"quiz5-q1","type":"single","question":"SQL中用于查询的关键字是什么？","options":["SELECT","FROM","WHERE","JOIN"],"answer":[0]},{"id":"quiz5-q2","type":"multiple","question":"以下哪些是SQL事务的ACID特性？","options":["原子性","一致性","隔离性","持久性"],"answer":[0,1,2,3]},{"id":"quiz5-q3","type":"truefalse","question":"主键约束可以包含NULL值","options":["正确","错误"],"answer":[1]},{"id":"quiz5-q4","type":"single","question":"SQL中哪个关键字用于删除表中的数据？","options":["DELETE","DROP","TRUNCATE","REMOVE"],"answer":[0]}]',
 1, '2024-02-18 09:00:00', '2024-02-18 09:00:00'),
-('quiz6', 6, '操作系统基础测验',
+('quiz5-2', 5, '数据库索引与优化',
+'[{"id":"quiz5-2-q1","type":"single","question":"数据库索引的主要作用是什么？","options":["加快查询速度","减少存储空间","提高数据完整性","简化SQL语句"],"answer":[0]},{"id":"quiz5-2-q2","type":"multiple","question":"以下哪些情况适合创建索引？","options":["经常用于WHERE子句的列","经常用于JOIN的列","经常更新的列","小表中的所有列"],"answer":[0,1]},{"id":"quiz5-2-q3","type":"truefalse","question":"索引越多，查询性能越好","options":["正确","错误"],"answer":[1]},{"id":"quiz5-2-q4","type":"single","question":"B+树索引最适用于什么类型的查询？","options":["等值查询","范围查询","模糊查询","全表扫描"],"answer":[1]}]',
+1, '2024-02-19 10:00:00', '2024-02-19 10:00:00'),
+
+-- 课程6: 操作系统原理
+('quiz6', 6, '进程与线程管理',
 '[{"id":"quiz6-q1","type":"single","question":"进程和线程的主要区别是什么？","options":["进程是资源分配单位，线程是CPU调度单位","进程是CPU调度单位，线程是资源分配单位","没有区别","进程比线程更轻量"],"answer":[0]},{"id":"quiz6-q2","type":"multiple","question":"死锁产生的必要条件包括哪些？","options":["互斥条件","请求与保持","不可剥夺","循环等待"],"answer":[0,1,2,3]},{"id":"quiz6-q3","type":"truefalse","question":"虚拟内存技术允许程序使用超过物理内存大小的地址空间","options":["正确","错误"],"answer":[0]},{"id":"quiz6-q4","type":"single","question":"页面置换算法中，哪个算法会产生Belady异常？","options":["FIFO","LRU","OPT","CLOCK"],"answer":[0]}]',
 1, '2024-02-23 10:00:00', '2024-02-23 10:00:00'),
-('quiz7', 7, '计算机网络基础',
+('quiz6-2', 6, '内存管理与文件系统',
+'[{"id":"quiz6-2-q1","type":"single","question":"分页存储管理的主要优点是什么？","options":["实现简单","内存利用率高","支持虚拟内存","以上都是"],"answer":[3]},{"id":"quiz6-2-q2","type":"multiple","question":"文件系统的功能包括哪些？","options":["文件存储","文件访问","文件保护","文件共享"],"answer":[0,1,2,3]},{"id":"quiz6-2-q3","type":"truefalse","question":"FAT32文件系统支持大于4GB的单个文件","options":["正确","错误"],"answer":[1]}]',
+1, '2024-02-24 14:00:00', '2024-02-24 14:00:00'),
+
+-- 课程7: 计算机网络
+('quiz7', 7, 'TCP/IP 协议栈',
 '[{"id":"quiz7-q1","type":"single","question":"TCP协议的特点是什么？","options":["无连接、不可靠","面向连接、可靠","无连接、可靠","面向连接、不可靠"],"answer":[1]},{"id":"quiz7-q2","type":"multiple","question":"以下哪些是应用层协议？","options":["HTTP","TCP","FTP","SMTP"],"answer":[0,2,3]},{"id":"quiz7-q3","type":"truefalse","question":"UDP协议提供可靠的数据传输","options":["正确","错误"],"answer":[1]},{"id":"quiz7-q4","type":"single","question":"HTTP协议默认使用的端口号是多少？","options":["80","443","8080","21"],"answer":[0]},{"id":"quiz7-q5","type":"single","question":"IP地址192.168.1.1属于哪个地址类别？","options":["A类","B类","C类","D类"],"answer":[2]}]',
 1, '2024-02-28 14:00:00', '2024-02-28 14:00:00'),
-('quiz8', 8, '计算机组成原理测验',
+('quiz7-2', 7, 'HTTP 与网络安全',
+'[{"id":"quiz7-2-q1","type":"single","question":"HTTPS协议使用的默认端口是多少？","options":["80","443","8080","8443"],"answer":[1]},{"id":"quiz7-2-q2","type":"multiple","question":"HTTP状态码4xx表示什么？","options":["成功","重定向","客户端错误","服务器错误"],"answer":[2]},{"id":"quiz7-2-q3","type":"truefalse","question":"HTTPS = HTTP + SSL/TLS","options":["正确","错误"],"answer":[0]},{"id":"quiz7-2-q4","type":"single","question":"三次握手的目的是什么？","options":["建立连接","断开连接","数据传输","错误恢复"],"answer":[0]}]',
+1, '2024-02-29 10:00:00', '2024-02-29 10:00:00'),
+
+-- 课程8: 计算机组成原理
+('quiz8', 8, 'CPU 与指令系统',
 '[{"id":"quiz8-q1","type":"single","question":"CPU的三级缓存中，哪个缓存速度最快？","options":["L1缓存","L2缓存","L3缓存","主存"],"answer":[0]},{"id":"quiz8-q2","type":"truefalse","question":"多核CPU需要维护缓存一致性","options":["正确","错误"],"answer":[0]},{"id":"quiz8-q3","type":"multiple","question":"以下哪些是CPU的组成部分？","options":["ALU（算术逻辑单元）","控制单元","寄存器","缓存"],"answer":[0,1,2,3]},{"id":"quiz8-q4","type":"single","question":"指令周期包括哪些阶段？","options":["取指、译码、执行","取指、执行、写回","取指、译码、执行、写回","译码、执行、写回"],"answer":[2]}]',
-1, '2024-03-03 09:00:00', '2024-03-03 09:00:00');
+1, '2024-03-03 09:00:00', '2024-03-03 09:00:00'),
+('quiz8-2', 8, '存储系统与总线',
+'[{"id":"quiz8-2-q1","type":"single","question":"RAM和ROM的主要区别是什么？","options":["RAM可读写，ROM只读","RAM只读，ROM可读写","没有区别","RAM速度更快"],"answer":[0]},{"id":"quiz8-2-q2","type":"multiple","question":"存储器的层次结构包括哪些？","options":["寄存器","缓存","主存","外存"],"answer":[0,1,2,3]},{"id":"quiz8-2-q3","type":"truefalse","question":"总线是计算机各部件之间传输信息的公共通道","options":["正确","错误"],"answer":[0]}]',
+1, '2024-03-04 14:00:00', '2024-03-04 14:00:00');
 
 -- 注意：Question实体会在应用启动时通过QuizService自动创建
 -- 以下数据假设Question已经存在（通过Quiz自动创建）
