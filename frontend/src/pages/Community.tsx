@@ -4,7 +4,7 @@ import { Post, Comment, Course } from '../types';
 import { postAPI, commentAPI, courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { Plus, MessageSquare, Edit, Trash2, Send, X, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, MessageSquare, Edit, Trash2, Send, X, ChevronDown, ChevronUp } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import MarkdownRenderer from '../components/common/MarkdownRenderer';
@@ -310,13 +310,6 @@ const Community: React.FC = () => {
                 }}
                 onCancel={() => setDeleteConfirm(null)}
             />
-
-            <div className="mb-6">
-                <Link to={`/courses/${courseId}`} className="btn btn-outline btn-small inline-flex items-center gap-2">
-                    <ArrowLeft size={16} />
-                    返回课程详情
-                </Link>
-            </div>
 
             <div className="community-page">
                 <div className="page-header">

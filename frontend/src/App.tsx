@@ -24,6 +24,7 @@ import QuizDetail from './pages/QuizDetail';
 import ProgressPage from './pages/ProgressPage';
 import Community from './pages/Community';
 import WrongQuestionBook from './pages/WrongQuestionBook';
+import CourseOverview from './pages/CourseOverview';
 
 const App: React.FC = () => {
     return (
@@ -43,6 +44,7 @@ const App: React.FC = () => {
                         <Route index element={<CourseList />} />
                         <Route path="courses" element={<CourseList />} />
                         <Route path="courses/:id" element={<CourseDetail />} />
+                        <Route path="courses/:id/overview" element={<CourseOverview />} />
                         <Route path="courses/new" element={<CreateCourse />} />
                         <Route path="courses/edit/:id" element={<EditCourse />} />
                         <Route path="courses/:courseId/community" element={<Community />} />

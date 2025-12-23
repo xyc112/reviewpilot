@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX } from 'lucide-react';
+import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX, Info } from 'lucide-react';
 import { useCourse } from '../../context/CourseContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -46,6 +46,13 @@ const Sidebar: React.FC = () => {
             icon: BookOpen,
             path: '/courses',
             requiresCourse: false,
+        },
+        {
+            id: 'course-overview',
+            label: '课程概览',
+            icon: Info,
+            path: '/course-overview',
+            requiresCourse: true,
         },
         {
             id: 'progress',
@@ -104,6 +111,12 @@ const Sidebar: React.FC = () => {
             e.preventDefault();
             navigate(`/courses/${currentStudyingCourse.id}/community`);
         }
+        
+        // 特殊处理课程概览路由，需要courseId
+        if (item.id === 'course-overview' && currentStudyingCourse) {
+            e.preventDefault();
+            navigate(`/courses/${currentStudyingCourse.id}/overview`);
+        }
     };
 
     const isActive = (path: string) => {
@@ -113,6 +126,10 @@ const Sidebar: React.FC = () => {
         // 特殊处理社区路由
         if (path === '/community') {
             return location.pathname.includes('/community');
+        }
+        // 特殊处理课程概览路由
+        if (path === '/course-overview') {
+            return location.pathname.includes('/overview');
         }
         return location.pathname.startsWith(path);
     };

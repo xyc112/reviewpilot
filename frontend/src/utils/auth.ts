@@ -1,11 +1,13 @@
 // 认证工具函数
 
 /**
- * 清除所有认证信息
+ * 清除所有认证信息和用户相关的数据
  */
 export const clearAuthData = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    // 清除用户选择的课程，避免切换用户时保留上一个用户的选择
+    localStorage.removeItem('selectedCourse');
 };
 
 /**
