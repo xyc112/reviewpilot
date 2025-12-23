@@ -1016,6 +1016,10 @@
     min-width: 1.5rem;
 }
 
+[data-theme='dark'] .option-result-label {
+    color: #d1d5db;
+}
+
 .option-result-text {
     flex: 1;
     color: #1c1917;
@@ -1066,6 +1070,10 @@
     white-space: pre-wrap;
 }
 
+[data-theme='dark'] .explanation-content {
+    color: #f9fafb;
+}
+
 .question-score {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -1078,6 +1086,10 @@
 .score-label {
     font-size: 0.875rem;
     color: #78716c;
+}
+
+[data-theme='dark'] .score-label {
+    color: #9ca3af;
 }
 
 .question-score .score-value {
