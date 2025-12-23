@@ -58,6 +58,18 @@ const Register: React.FC = () => {
         e.preventDefault();
         
         // 验证所有字段
+        if (!formData.username || formData.username.trim().length === 0) {
+            setErrors({ username: '用户名不能为空' });
+            setTouched({ username: true, password: true });
+            return;
+        }
+        
+        if (!formData.password || formData.password.length === 0) {
+            setErrors({ password: '密码不能为空' });
+            setTouched({ username: true, password: true });
+            return;
+        }
+        
         const usernameError = validateUsername(formData.username);
         const passwordError = validatePassword(formData.password);
         
@@ -152,8 +164,7 @@ const Register: React.FC = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     className={`form-input ${errors.username ? 'form-input-error' : ''}`}
-                                    placeholder="请输入用户名（3-20个字符，仅字母、数字、下划线）"
-                                    required
+                                    placeholder="请输入用户名"
                                     aria-invalid={!!errors.username}
                                     aria-describedby={errors.username ? 'username-error' : undefined}
                                 />
@@ -179,8 +190,7 @@ const Register: React.FC = () => {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     className={`form-input ${errors.password ? 'form-input-error' : ''}`}
-                                    placeholder="请输入密码（至少6个字符）"
-                                    required
+                                    placeholder="请输入密码"
                                     aria-invalid={!!errors.password}
                                     aria-describedby={errors.password ? 'password-error' : undefined}
                                 />

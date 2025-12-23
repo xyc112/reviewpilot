@@ -175,12 +175,25 @@ public class QuizService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quiz has no questions");
         }
 
-        int totalScore = 0;
         int maxScore = 100;
-        int perQuestion = maxScore / totalQuestions;
+        // 计算每道题的基础分数和余数，确保总分正好是100
+        int baseScore = maxScore / totalQuestions;
+        int remainder = maxScore % totalQuestions;
+        
+        // 为每道题分配分数：前remainder道题多1分，确保总分正好是100
+        // 按照题目在列表中的顺序分配分数
+        List<Quiz.Question> questionList = Optional.ofNullable(quiz.getQuestions()).orElse(List.of());
+        Map<String, Integer> questionScoreMap = new HashMap<>();
+        for (int i = 0; i < questionList.size(); i++) {
+            Quiz.Question q = questionList.get(i);
+            int score = baseScore + (i < remainder ? 1 : 0);
+            questionScoreMap.put(q.getId(), score);
+        }
 
+        int totalScore = 0;
         List<Map<String, Object>> results = new ArrayList<>();
 
+        // 处理用户提交的答案
         for (AttemptRequest.Answer a : request.getAnswers()) {
             Quiz.Question q = qmap.get(a.getQuestionId());
             Map<String, Object> r = new HashMap<>();
@@ -191,7 +204,10 @@ public class QuizService {
                 results.add(r);
                 continue;
             }
+            
             boolean correct = false;
+            int questionScore = questionScoreMap.getOrDefault(a.getQuestionId(), baseScore);
+            
             if ("single".equalsIgnoreCase(q.getType()) || "multiple".equalsIgnoreCase(q.getType()) || "truefalse".equalsIgnoreCase(q.getType())) {
                 List<Integer> correctAnswer = q.getAnswer() == null ? List.of() : q.getAnswer();
                 List<Integer> provided = a.getAnswer() == null ? List.of() : a.getAnswer();
@@ -199,7 +215,7 @@ public class QuizService {
                 Set<Integer> ca = new HashSet<>(correctAnswer);
                 Set<Integer> pa = new HashSet<>(provided);
                 correct = ca.equals(pa);
-                int score = correct ? perQuestion : 0;
+                int score = correct ? questionScore : 0;
                 totalScore += score;
                 r.put("correct", correct);
                 r.put("score", score);
@@ -210,8 +226,21 @@ public class QuizService {
             }
             results.add(r);
         }
+        
+        // 处理用户未回答的题目
+        for (Quiz.Question q : questionList) {
+            boolean alreadyProcessed = results.stream()
+                    .anyMatch(r -> q.getId().equals(r.get("questionId")));
+            if (!alreadyProcessed) {
+                Map<String, Object> r = new HashMap<>();
+                r.put("questionId", q.getId());
+                r.put("correct", false);
+                r.put("score", 0);
+                results.add(r);
+            }
+        }
 
-        // ensure total is at most maxScore (due to integer division)
+        // 确保总分不超过maxScore（理论上应该正好等于maxScore）
         int computed = Math.min(totalScore, maxScore);
 
         Map<String, Object> resp = new HashMap<>();

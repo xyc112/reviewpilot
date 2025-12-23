@@ -10,15 +10,7 @@ export const validateUsername = (username: string): string | null => {
     if (!username || username.trim().length === 0) {
         return '用户名不能为空';
     }
-    if (username.length < 3) {
-        return '用户名至少需要3个字符';
-    }
-    if (username.length > 20) {
-        return '用户名不能超过20个字符';
-    }
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        return '用户名只能包含字母、数字和下划线';
-    }
+    // 移除长度和字符限制，允许中文等任意字符
     return null;
 };
 

@@ -53,6 +53,18 @@ const Login: React.FC = () => {
         e.preventDefault();
         
         // 验证所有字段
+        if (!formData.username || formData.username.trim().length === 0) {
+            setErrors({ username: '用户名不能为空' });
+            setTouched({ username: true, password: true });
+            return;
+        }
+        
+        if (!formData.password || formData.password.length === 0) {
+            setErrors({ password: '密码不能为空' });
+            setTouched({ username: true, password: true });
+            return;
+        }
+        
         const usernameError = validateUsername(formData.username);
         const passwordError = validatePassword(formData.password);
         
@@ -149,7 +161,6 @@ const Login: React.FC = () => {
                                     onBlur={handleBlur}
                                     className={`form-input ${errors.username ? 'form-input-error' : ''}`}
                                     placeholder="请输入用户名"
-                                    required
                                     aria-invalid={!!errors.username}
                                     aria-describedby={errors.username ? 'username-error' : undefined}
                                 />

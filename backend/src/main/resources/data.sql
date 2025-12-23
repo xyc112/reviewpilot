@@ -45,17 +45,17 @@ INSERT INTO graph (course_id, nodes, relations) VALUES
 );
 
 -- 插入示例笔记
-INSERT INTO note (id, course_id, title, content, author_id, visibility, created_at, updated_at) VALUES
-('note1', 1, 'Java 变量类型总结', 'Java中有8种基本数据类型：\n- byte: 8位\n- short: 16位\n- int: 32位\n- long: 64位\n- float: 32位浮点\n- double: 64位浮点\n- char: 16位字符\n- boolean: 布尔值', 2, 'public', '2024-01-16 10:00:00', '2024-01-16 10:00:00'),
-('note2', 1, '面向对象三大特性', '1. 封装：隐藏实现细节\n2. 继承：代码复用\n3. 多态：同一接口不同实现', 2, 'public', '2024-01-17 14:00:00', '2024-01-17 14:00:00'),
-('note3', 2, 'Spring Boot 配置要点', 'application.yml 配置说明...', 2, 'private', '2024-01-21 09:00:00', '2024-01-21 09:00:00');
+INSERT INTO note (id, course_id, title, content, summary, author_id, visibility, created_at, updated_at) VALUES
+('note1', 1, 'Java 变量类型总结', 'Java中有8种基本数据类型：\n- byte: 8位\n- short: 16位\n- int: 32位\n- long: 64位\n- float: 32位浮点\n- double: 64位浮点\n- char: 16位字符\n- boolean: 布尔值', 'Java基本数据类型包括8种：byte、short、int、long、float、double、char、boolean，每种类型都有不同的位数和取值范围。', 2, 'public', '2024-01-16 10:00:00', '2024-01-16 10:00:00'),
+('note2', 1, '面向对象三大特性', '1. 封装：隐藏实现细节\n2. 继承：代码复用\n3. 多态：同一接口不同实现', '面向对象编程的三大核心特性：封装、继承和多态，是Java编程的基础概念。', 2, 'public', '2024-01-17 14:00:00', '2024-01-17 14:00:00'),
+('note3', 2, 'Spring Boot 配置要点', 'application.yml 配置说明...', 'Spring Boot配置文件的使用方法和常见配置项说明。', 2, 'private', '2024-01-21 09:00:00', '2024-01-21 09:00:00');
 
 -- 插入示例测验
 -- 注意：JSON 字符串需要正确转义，每个题目需要唯一的 id
 -- 题目类型：single(单选题), multiple(多选题), truefalse(判断题)
 INSERT INTO quiz (id, course_id, title, questions, author_id, created_at, updated_at) VALUES
 ('quiz1', 1, 'Java 基础测验', 
-'[{"id":"quiz1-q1","type":"single","question":"Java中哪种数据类型占用8个字节？","options":["int","long","double","float"],"answer":[2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"truefalse","question":"Java是一种面向对象的编程语言","options":["正确","错误"],"answer":[0]}]',
+'[{"id":"quiz1-q1","type":"multiple","question":"Java中哪些数据类型占用8个字节？","options":["int","long","double","float"],"answer":[1,2]},{"id":"quiz1-q2","type":"multiple","question":"以下哪些是Java的基本数据类型？","options":["String","int","boolean","Object"],"answer":[1,2]},{"id":"quiz1-q3","type":"truefalse","question":"Java是一种面向对象的编程语言","options":["正确","错误"],"answer":[0]}]',
 1, '2024-01-18 10:00:00', '2024-01-18 10:00:00'),
 ('quiz2', 2, 'Spring Boot 入门测验',
 '[{"id":"quiz2-q1","type":"single","question":"Spring Boot的默认端口是多少？","options":["8080","3000","5000","7000"],"answer":[0]},{"id":"quiz2-q2","type":"truefalse","question":"Spring Boot可以自动配置应用程序","options":["正确","错误"],"answer":[0]}]',

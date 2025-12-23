@@ -234,7 +234,7 @@ const QuizDetail: React.FC = () => {
                                     <div className="question-score">
                                         <span className="score-label">本题得分：</span>
                                         <span className={`score-value ${isCorrect ? 'correct' : 'incorrect'}`}>
-                                            {result?.score || 0} / {Math.round(100 / quiz.questions.length)}
+                                            {result?.score || 0} / {Math.round(100 / quiz.questions.length) + (index < (100 % quiz.questions.length) ? 1 : 0)}
                                         </span>
                                     </div>
                                 </div>

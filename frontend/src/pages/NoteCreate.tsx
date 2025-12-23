@@ -17,6 +17,7 @@ const NoteCreate: React.FC = () => {
     const [noteForm, setNoteForm] = useState({
         title: '',
         content: '',
+        summary: '',
         visibility: 'private' as 'public' | 'private',
     });
 
@@ -72,6 +73,18 @@ const NoteCreate: React.FC = () => {
                             placeholder="输入笔记标题"
                             className="form-input"
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label>摘要:</label>
+                        <textarea
+                            value={noteForm.summary}
+                            onChange={(e) => setNoteForm({ ...noteForm, summary: e.target.value })}
+                            rows={3}
+                            placeholder="输入笔记摘要（可选，用于列表预览，建议50-150字）"
+                            className="form-input"
+                        />
+                        <p className="form-hint">摘要将显示在笔记列表中，如果不填写，将自动截取内容前150字作为预览</p>
                     </div>
 
                     <div className="form-group">

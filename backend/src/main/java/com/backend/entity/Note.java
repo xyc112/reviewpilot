@@ -24,6 +24,12 @@ public class Note {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    /**
+     * 笔记摘要，用于列表预览
+     */
+    @Column(columnDefinition = "TEXT")
+    private String summary;
+
     private Long authorId;
 
     /**
