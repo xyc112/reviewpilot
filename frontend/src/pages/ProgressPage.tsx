@@ -105,28 +105,12 @@ const ProgressPage: React.FC = () => {
                 flexDirection: 'column',
                 padding: '0.625rem',
             }}>
-                {/* 顶部：标题和当前学习课程提示 */}
-                <div style={{ marginBottom: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-                    <div style={{ flex: 1 }}>
-                        <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>当前学习课程进度</h2>
-                        <p style={{ margin: '0.125rem 0 0 0', color: '#78716c', fontSize: '0.8125rem' }}>
-                            显示您正在学习课程的详细进度
-                        </p>
-                    </div>
-                    <div style={{ 
-                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
-                        border: '2px solid #f59e0b', 
-                        borderRadius: '0.5rem', 
-                        padding: '0.375rem 0.875rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                    }}>
-                        <Star size={16} color="#f59e0b" />
-                        <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#92400e' }}>
-                            {currentStudyingCourse.title}
-                        </span>
-                    </div>
+                {/* 顶部：标题 */}
+                <div style={{ marginBottom: '0.625rem', flexShrink: 0 }}>
+                    <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>当前学习课程进度</h2>
+                    <p style={{ margin: '0.125rem 0 0 0', color: '#78716c', fontSize: '0.8125rem' }}>
+                        显示您正在学习课程的详细进度
+                    </p>
                 </div>
 
                 {/* 主体内容：使用 Grid 布局 */}

@@ -232,8 +232,10 @@ const QuizDetail: React.FC = () => {
                                         {question.options?.map((option, optIndex) => {
                                             const isSelected = userAnswer.includes(optIndex);
                                             const isCorrectAnswer = correctAnswerIndices.includes(optIndex);
+                                            // 如果题目整体正确，所有选中的选项都是正确的
                                             const isCorrectlySelected = isSelected && isCorrectAnswer;
-                                            const isIncorrectlySelected = isSelected && !isCorrectAnswer;
+                                            // 只有当题目整体错误时，才显示错误选中的选项
+                                            const isIncorrectlySelected = !isCorrect && isSelected && !isCorrectAnswer;
 
                                             let optionClass = "option-result";
                                             if (isCorrectlySelected) {
