@@ -11,7 +11,8 @@ import '../styles/Course.css';
 const QuizDetail: React.FC = () => {
     const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
 
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -23,19 +24,19 @@ const QuizDetail: React.FC = () => {
     const { success, error: showError } = useToast();
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         if (quizId) {
             fetchQuiz();
         }
-    }, [selectedCourse, quizId, navigate]);
+    }, [course, quizId, navigate]);
 
     const fetchQuiz = async () => {
-        if (!selectedCourse || !quizId) return;
+        if (!course || !quizId) return;
         try {
-            const response = await quizAPI.getQuiz(selectedCourse.id, quizId);
+            const response = await quizAPI.getQuiz(course.id, quizId);
             setQuiz(response.data);
         } catch (err: any) {
             setError('获取测验失败');
@@ -85,8 +86,8 @@ const QuizDetail: React.FC = () => {
                 answer
             }));
 
-            if (!selectedCourse) return;
-            const response = await quizAPI.submitAttempt(selectedCourse.id, quiz.id, submitData);
+            if (!course) return;
+            const response = await quizAPI.submitAttempt(course.id, quiz.id, submitData);
             setAttempt(response.data);
             
             // 自动添加错题到错题本
@@ -107,7 +108,7 @@ const QuizDetail: React.FC = () => {
                 // 批量添加错题
                 for (const wq of wrongQuestions) {
                     try {
-                        await wrongQuestionAPI.addWrongQuestion(selectedCourse.id, wq.questionEntityId, wq.userAnswer);
+                        await wrongQuestionAPI.addWrongQuestion(course.id, wq.questionEntityId, wq.userAnswer);
                     } catch (err: any) {
                         console.error('Failed to add wrong question:', err);
                     }
@@ -131,10 +132,10 @@ const QuizDetail: React.FC = () => {
     };
 
     const handleAddToWrongBook = async (questionEntityId: number, userAnswer: number[], questionId: string) => {
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
             setAddingToWrongBook(prev => new Set(prev).add(questionId));
-            await wrongQuestionAPI.addWrongQuestion(selectedCourse.id, questionEntityId, userAnswer);
+            await wrongQuestionAPI.addWrongQuestion(course.id, questionEntityId, userAnswer);
             success('已添加到错题本');
         } catch (err: any) {
             showError('添加失败: ' + (err.response?.data?.message || err.message));
@@ -146,7 +147,7 @@ const QuizDetail: React.FC = () => {
         }
     };
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>

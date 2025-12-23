@@ -8,7 +8,8 @@ import '../styles/Course.css';
 
 const CreateQuiz: React.FC = () => {
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { isAdmin } = useAuth();
 
     const [title, setTitle] = useState('');
@@ -27,10 +28,10 @@ const CreateQuiz: React.FC = () => {
         if (!isAdmin) {
             navigate('/quizzes');
         }
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
         }
-    }, [isAdmin, selectedCourse, navigate]);
+    }, [isAdmin, course, navigate]);
 
     const handleAddQuestion = () => {
         setQuestions([
@@ -99,7 +100,7 @@ const CreateQuiz: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedCourse) return;
+        if (!course) return;
 
         // 验证表单
         if (!title.trim()) {
@@ -139,7 +140,7 @@ const CreateQuiz: React.FC = () => {
                 }))
             };
 
-            await quizAPI.createQuiz(selectedCourse.id, quizData);
+            await quizAPI.createQuiz(course.id, quizData);
             navigate('/quizzes');
         } catch (err: any) {
             setError(err.response?.data?.message || '创建测验失败');
@@ -156,7 +157,7 @@ const CreateQuiz: React.FC = () => {
         );
     }
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>

@@ -9,7 +9,8 @@ import { useCourse } from '../context/CourseContext';
 const EditQuiz: React.FC = () => {
     const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { isAdmin, user } = useAuth();
 
     const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -20,19 +21,19 @@ const EditQuiz: React.FC = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         if (quizId) {
             fetchQuiz();
         }
-    }, [selectedCourse, quizId, navigate]);
+    }, [course, quizId, navigate]);
 
     const fetchQuiz = async () => {
-        if (!selectedCourse || !quizId) return;
+        if (!course || !quizId) return;
         try {
-            const response = await quizAPI.getQuiz(selectedCourse.id, quizId);
+            const response = await quizAPI.getQuiz(course.id, quizId);
             const quizData = response.data;
             setQuiz(quizData);
             setTitle(quizData.title);
@@ -122,7 +123,7 @@ const EditQuiz: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedCourse || !quizId || !quiz) return;
+        if (!course || !quizId || !quiz) return;
 
         // 验证表单
         if (!title.trim()) {
@@ -163,7 +164,7 @@ const EditQuiz: React.FC = () => {
                 }))
             };
 
-            await quizAPI.updateQuiz(selectedCourse.id, quizId, quizData);
+            await quizAPI.updateQuiz(course.id, quizId, quizData);
             navigate('/quizzes');
         } catch (err: any) {
             setError(err.response?.data?.message || '更新测验失败');
@@ -171,6 +172,17 @@ const EditQuiz: React.FC = () => {
             setSaving(false);
         }
     };
+
+    if (!course) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+                <button onClick={() => navigate('/courses')} className="btn btn-primary">
+                    前往课程列表
+                </button>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
