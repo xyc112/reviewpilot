@@ -32,12 +32,39 @@ const Community: React.FC = () => {
     const [showReplyForm, setShowReplyForm] = useState<{ postId: number; parentId: number | null } | null>(null);
     
     const [newPost, setNewPost] = useState({ title: '', content: '' });
-    const [newComment, setNewComment] = useState('');
+    const [replyComments, setReplyComments] = useState<Record<string, string>>({});
     const [editingPost, setEditingPost] = useState<number | null>(null);
     const [editPostData, setEditPostData] = useState({ title: '', content: '' });
     const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'post' | 'comment'; id: number; postId?: number } | null>(null);
     
     const commentInputRef = useRef<HTMLTextAreaElement>(null);
+
+    // 获取回复框的 key
+    const getReplyKey = (postId: number, parentId: number | null) => {
+        return `${postId}-${parentId}`;
+    };
+
+    // 获取特定回复框的内容
+    const getReplyContent = (postId: number, parentId: number | null) => {
+        return replyComments[getReplyKey(postId, parentId)] || '';
+    };
+
+    // 设置特定回复框的内容
+    const setReplyContent = (postId: number, parentId: number | null, content: string) => {
+        setReplyComments(prev => ({
+            ...prev,
+            [getReplyKey(postId, parentId)]: content
+        }));
+    };
+
+    // 清除特定回复框的内容
+    const clearReplyContent = (postId: number, parentId: number | null) => {
+        setReplyComments(prev => {
+            const newState = { ...prev };
+            delete newState[getReplyKey(postId, parentId)];
+            return newState;
+        });
+    };
 
     useEffect(() => {
         if (!courseId) {
@@ -153,17 +180,18 @@ const Community: React.FC = () => {
     };
 
     const handleCreateComment = async (postId: number, parentId: number | null = null) => {
-        if (!courseId || !newComment.trim()) {
+        const content = getReplyContent(postId, parentId);
+        if (!courseId || !content.trim()) {
             showError('请输入评论内容');
             return;
         }
         try {
             await commentAPI.createComment(Number(courseId), postId, {
-                content: newComment,
+                content: content,
                 parentId: parentId,
             });
             success('评论发布成功');
-            setNewComment('');
+            clearReplyContent(postId, parentId);
             setShowReplyForm(null);
             fetchComments(postId);
         } catch (err: any) {
@@ -257,8 +285,8 @@ const Community: React.FC = () => {
                             <div className="reply-form">
                                 <textarea
                                     ref={commentInputRef}
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
+                                    value={getReplyContent(postId, comment.id)}
+                                    onChange={(e) => setReplyContent(postId, comment.id, e.target.value)}
                                     placeholder="输入回复..."
                                     rows={3}
                                     className="form-textarea"
@@ -274,7 +302,7 @@ const Community: React.FC = () => {
                                     <button
                                         onClick={() => {
                                             setShowReplyForm(null);
-                                            setNewComment('');
+                                            clearReplyContent(postId, comment.id);
                                         }}
                                         className="btn btn-outline btn-small"
                                     >
@@ -532,8 +560,8 @@ const Community: React.FC = () => {
                                         {!showReplyForm || showReplyForm.postId !== post.id || showReplyForm.parentId !== null ? (
                                             <div className="comment-form">
                                                 <textarea
-                                                    value={newComment}
-                                                    onChange={(e) => setNewComment(e.target.value)}
+                                                    value={getReplyContent(post.id, null)}
+                                                    onChange={(e) => setReplyContent(post.id, null, e.target.value)}
                                                     placeholder="输入评论..."
                                                     rows={3}
                                                     className="form-textarea"
