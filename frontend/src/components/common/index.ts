@@ -5,3 +5,4 @@ export { default as Layout } from './Layout';
 export { default as GraphCanvas } from './GraphCanvas';
 export { default as GroupPanel } from './GroupPanel';
 export { default as ProtectedRoute } from './ProtectedRoute';
+export { default as ConfirmDialog } from './ConfirmDialog';

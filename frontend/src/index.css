@@ -18,6 +18,109 @@ body {
     background-image: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 暗色模式 */
+[data-theme='dark'] body {
+    color: #f9fafb;
+    background-color: #111827;
+}
+
+[data-theme='dark'] .container {
+    background-color: transparent;
+}
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .course-card,
+[data-theme='dark'] .note-card,
+[data-theme='dark'] .modal,
+[data-theme='dark'] .modal-large {
+    background: #1f2937;
+    color: #f9fafb;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .navbar-card {
+    background: rgba(31, 41, 55, 0.8);
+    border-bottom-color: #374151;
+}
+
+[data-theme='dark'] .brand {
+    color: #f9fafb;
+}
+
+[data-theme='dark'] .nav-item {
+    color: #d1d5db;
+}
+
+[data-theme='dark'] .nav-item:hover,
+[data-theme='dark'] .nav-item.active {
+    color: #f9fafb;
+}
+
+[data-theme='dark'] .user-name {
+    color: #d1d5db;
+}
+
+[data-theme='dark'] .logout-btn,
+[data-theme='dark'] .theme-toggle-btn {
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+[data-theme='dark'] .logout-btn:hover,
+[data-theme='dark'] .theme-toggle-btn:hover {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #6b7280;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+[data-theme='dark'] input:focus,
+[data-theme='dark'] textarea:focus,
+[data-theme='dark'] select:focus {
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+}
+
+[data-theme='dark'] .search-input,
+[data-theme='dark'] .filter-select {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+[data-theme='dark'] .graph-sidebar,
+[data-theme='dark'] .node-details {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .node-item {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .node-item:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+[data-theme='dark'] .note-content {
+    background: #374151;
+    border-color: #4b5563;
+}
+
+[data-theme='dark'] .note-content pre {
+    color: #d1d5db;
 }
 
 /* Custom Scrollbar */

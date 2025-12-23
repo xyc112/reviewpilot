@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz, QuizAttempt } from '../types';
 import { quizAPI } from '../services/api';
+import { useCourse } from '../context/CourseContext';
 import '../styles/Course.css';
 
 const QuizDetail: React.FC = () => {
-    const { courseId, quizId } = useParams<{ courseId: string; quizId: string }>();
+    const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
+    const { selectedCourse } = useCourse();
 
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -17,14 +19,19 @@ const QuizDetail: React.FC = () => {
     const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
 
     useEffect(() => {
-        if (courseId && quizId) {
-            fetchQuiz(Number(courseId), quizId);
+        if (!selectedCourse) {
+            navigate('/courses');
+            return;
         }
-    }, [courseId, quizId]);
+        if (quizId) {
+            fetchQuiz();
+        }
+    }, [selectedCourse, quizId, navigate]);
 
-    const fetchQuiz = async (courseId: number, quizId: string) => {
+    const fetchQuiz = async () => {
+        if (!selectedCourse || !quizId) return;
         try {
-            const response = await quizAPI.getQuiz(courseId, quizId);
+            const response = await quizAPI.getQuiz(selectedCourse.id, quizId);
             setQuiz(response.data);
         } catch (err: any) {
             setError('获取测验失败');
@@ -74,7 +81,8 @@ const QuizDetail: React.FC = () => {
                 answer
             }));
 
-            const response = await quizAPI.submitAttempt(Number(courseId), quiz.id, submitData);
+            if (!selectedCourse) return;
+            const response = await quizAPI.submitAttempt(selectedCourse.id, quiz.id, submitData);
             setAttempt(response.data);
         } catch (err: any) {
             setError('提交测验失败: ' + (err.response?.data?.message || '未知错误'));
@@ -87,6 +95,17 @@ const QuizDetail: React.FC = () => {
         setAnswers({});
         setAttempt(null);
     };
+
+    if (!selectedCourse) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+                <button onClick={() => navigate('/courses')} className="btn btn-primary">
+                    前往课程列表
+                </button>
+            </div>
+        );
+    }
 
     if (loading) return <div className="loading">加载中...</div>;
     if (error) return <div className="error-message">{error}</div>;
@@ -181,7 +200,7 @@ const QuizDetail: React.FC = () => {
                             重新答题
                         </button>
                         <button
-                            onClick={() => navigate(`/courses/${courseId}/quizzes`)}
+                            onClick={() => navigate('/quizzes')}
                             className="btn btn-primary"
                         >
                             返回测验列表
@@ -242,7 +261,7 @@ const QuizDetail: React.FC = () => {
                         {submitting ? '提交中...' : '提交答案'}
                     </button>
                     <button
-                        onClick={() => navigate(`/courses/${courseId}/quizzes`)}
+                        onClick={() => navigate('/quizzes')}
                         className="btn btn-outline"
                     >
                         返回测验列表

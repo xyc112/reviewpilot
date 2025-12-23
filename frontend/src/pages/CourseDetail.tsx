@@ -4,15 +4,19 @@ import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Edit, Trash2, Calendar, User, BarChart, ArrowLeft } from 'lucide-react';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useToast } from '../components/common/Toast';
 import '../styles/Course.css';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user, isAdmin } = useAuth();
+    const { success, error: showError } = useToast();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [deleteConfirm, setDeleteConfirm] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -31,18 +35,22 @@ const CourseDetail: React.FC = () => {
         }
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
+        setDeleteConfirm(true);
+    };
+
+    const confirmDelete = async () => {
         if (!course) return;
-
-        if (!window.confirm('确定要删除这个课程吗？此操作不可撤销。')) {
-            return;
-        }
-
         try {
             await courseAPI.deleteCourse(course.id);
+            success('课程删除成功');
             navigate('/courses');
         } catch (err: any) {
-            alert('删除课程失败: ' + (err.response?.data?.message || '无权限'));
+            const errorMsg = '删除课程失败: ' + (err.response?.data?.message || '无权限');
+            setError(errorMsg);
+            showError(errorMsg);
+        } finally {
+            setDeleteConfirm(false);
         }
     };
 
@@ -85,6 +93,17 @@ const CourseDetail: React.FC = () => {
 
     return (
         <div className="container">
+            <ConfirmDialog
+                isOpen={deleteConfirm}
+                title="删除课程"
+                message="确定要删除这个课程吗？此操作不可撤销，将删除课程及其所有相关内容（笔记、测验、知识图谱等）。"
+                confirmText="删除"
+                cancelText="取消"
+                type="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteConfirm(false)}
+            />
+
             <div className="mb-6">
                 <Link to="/courses" className="btn btn-outline btn-small inline-flex items-center gap-2">
                     <ArrowLeft size={16} />

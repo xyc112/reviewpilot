@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Node, Relation } from '../types';
 import { graphAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
 import GraphCanvas from '../components/common/GraphCanvas';
 import GroupPanel from '../components/common/GroupPanel';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useToast } from '../components/common/Toast';
 
 const GraphView: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const courseId = parseInt(id || '0');
+    const navigate = useNavigate();
+    const { selectedCourse } = useCourse();
 
     const [nodes, setNodes] = useState<Node[]>([]);
     const [relations, setRelations] = useState<Relation[]>([]);
@@ -18,8 +21,18 @@ const GraphView: React.FC = () => {
     const [showNodeForm, setShowNodeForm] = useState(false);
     const [showRelationForm, setShowRelationForm] = useState(false);
     const [showGroupPanel, setShowGroupPanel] = useState(false);
+    const [deleteConfirm, setDeleteConfirm] = useState<{
+        isOpen: boolean;
+        type: 'node' | 'relation' | null;
+        id: string | null;
+    }>({
+        isOpen: false,
+        type: null,
+        id: null,
+    });
 
     const { isAdmin } = useAuth();
+    const { success, error: showError } = useToast();
 
     const [nodeForm, setNodeForm] = useState({
         label: '',
@@ -36,17 +49,20 @@ const GraphView: React.FC = () => {
     });
 
     useEffect(() => {
-        if (courseId) {
-            fetchGraphData();
+        if (!selectedCourse) {
+            navigate('/courses');
+            return;
         }
-    }, [courseId]);
+        fetchGraphData();
+    }, [selectedCourse, navigate]);
 
     const fetchGraphData = async () => {
+        if (!selectedCourse) return;
         try {
             setLoading(true);
             const [nodesResponse, relationsResponse] = await Promise.all([
-                graphAPI.getNodes(courseId),
-                graphAPI.getRelations(courseId)
+                graphAPI.getNodes(selectedCourse.id),
+                graphAPI.getRelations(selectedCourse.id)
             ]);
             setNodes(nodesResponse.data);
             setRelations(relationsResponse.data);
@@ -67,47 +83,65 @@ const GraphView: React.FC = () => {
             if (nodeForm.type) nodeData.type = nodeForm.type;
             if (nodeForm.description) nodeData.description = nodeForm.description;
 
-            await graphAPI.createNode(courseId, nodeData);
+            if (!selectedCourse) return;
+            await graphAPI.createNode(selectedCourse.id, nodeData);
             setShowNodeForm(false);
             setNodeForm({ label: '', type: '', description: '' });
+            success('节点创建成功');
             fetchGraphData();
         } catch (err: any) {
-            setError('创建节点失败: ' + (err.response?.data?.message || err.message));
+            const errorMsg = '创建节点失败: ' + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
         }
     };
 
     const handleCreateRelation = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await graphAPI.createRelation(courseId, relationForm);
+            if (!selectedCourse) return;
+            await graphAPI.createRelation(selectedCourse.id, relationForm);
             setShowRelationForm(false);
             setRelationForm({ from: '', to: '', type: 'related', directed: true, weight: 0.5 });
+            success('关系创建成功');
             fetchGraphData();
         } catch (err: any) {
-            setError('创建关系失败: ' + (err.response?.data?.message || err.message));
+            const errorMsg = '创建关系失败: ' + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
         }
     };
 
-    const handleDeleteNode = async (nodeId: string) => {
-        if (window.confirm('确定要删除这个节点吗？这可能会影响相关的关系。')) {
-            try {
-                await graphAPI.deleteNode(courseId, nodeId);
-                setSelectedNode(null);
-                fetchGraphData();
-            } catch (err: any) {
-                setError('删除节点失败: ' + (err.response?.data?.message || err.message));
-            }
-        }
+    const handleDeleteNode = (nodeId: string) => {
+        setDeleteConfirm({ isOpen: true, type: 'node', id: nodeId });
     };
 
-    const handleDeleteRelation = async (relationId: string) => {
-        if (window.confirm('确定要删除这个关系吗？')) {
-            try {
-                await graphAPI.deleteRelation(courseId, relationId);
-                fetchGraphData();
-            } catch (err: any) {
-                setError('删除关系失败: ' + (err.response?.data?.message || err.message));
+    const handleDeleteRelation = (relationId: string) => {
+        setDeleteConfirm({ isOpen: true, type: 'relation', id: relationId });
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteConfirm.id || !deleteConfirm.type) return;
+        try {
+            if (deleteConfirm.type === 'node') {
+                if (!selectedCourse) return;
+                await graphAPI.deleteNode(selectedCourse.id, deleteConfirm.id);
+                if (selectedNode?.id === deleteConfirm.id) {
+                    setSelectedNode(null);
+                }
+                success('节点删除成功');
+            } else {
+                if (!selectedCourse) return;
+                await graphAPI.deleteRelation(selectedCourse.id, deleteConfirm.id);
+                success('关系删除成功');
             }
+            fetchGraphData();
+        } catch (err: any) {
+            const errorMsg = `删除${deleteConfirm.type === 'node' ? '节点' : '关系'}失败: ` + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
+        } finally {
+            setDeleteConfirm({ isOpen: false, type: null, id: null });
         }
     };
 
@@ -126,19 +160,45 @@ const GraphView: React.FC = () => {
         return types[type] || type;
     };
 
+    if (!selectedCourse) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+                <button onClick={() => navigate('/courses')} className="btn btn-primary">
+                    前往课程列表
+                </button>
+            </div>
+        );
+    }
+
     if (loading) return <div className="loading">加载知识图谱中...</div>;
     if (error) return <div className="error">{error}</div>;
 
     return (
         <div className="graph-view">
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                title={deleteConfirm.type === 'node' ? '删除节点' : '删除关系'}
+                message={
+                    deleteConfirm.type === 'node'
+                        ? '确定要删除这个节点吗？这可能会影响相关的关系。'
+                        : '确定要删除这个关系吗？'
+                }
+                confirmText="删除"
+                cancelText="取消"
+                type="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteConfirm({ isOpen: false, type: null, id: null })}
+            />
+
             <div className="page-header">
-                <h1>知识图谱</h1>
-                <div className="header-actions">
-                    <Link to={`/courses/${courseId}`} className="btn btn-outline">
-                        返回课程
-                    </Link>
+                <div className="header-content">
+                    <div>
+                        <h1>知识图谱</h1>
+                        <p className="text-stone-500 mt-2">{selectedCourse?.title} - 知识图谱</p>
+                    </div>
                     {isAdmin && (
-                        <div className="admin-buttons">
+                        <div className="header-actions">
                             <button
                                 onClick={() => setShowNodeForm(true)}
                                 className="btn btn-primary btn-small"
@@ -151,14 +211,14 @@ const GraphView: React.FC = () => {
                             >
                                 添加关系
                             </button>
+                            <button
+                                onClick={() => setShowGroupPanel(!showGroupPanel)}
+                                className="btn btn-secondary btn-small"
+                            >
+                                {showGroupPanel ? '隐藏分组' : '📦 分组'}
+                            </button>
                         </div>
                     )}
-                    <button
-                        onClick={() => setShowGroupPanel(!showGroupPanel)}
-                        className="btn btn-secondary btn-small"
-                    >
-                        {showGroupPanel ? '隐藏分组' : '📦 分组'}
-                    </button>
                 </div>
             </div>
 

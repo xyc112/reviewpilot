@@ -63,7 +63,8 @@ const GroupPanel: React.FC<GroupPanelProps> = ({
     };
 
     const handleDeleteGroup = (groupId: string) => {
-        if (window.confirm('确定要删除这个分组吗？')) {
+        // 简单的确认，因为这是本地状态管理
+        if (confirm('确定要删除这个分组吗？')) {
             setGroups(groups.filter(g => g.id !== groupId));
             if (onGroupDelete) onGroupDelete(groupId);
         }

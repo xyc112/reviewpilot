@@ -9,7 +9,15 @@
     background-color: #fafaf9; /* spa.bg */
     position: relative;
     display: flex;
+    flex-direction: row;
+}
+
+.main-content-area {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 /* =========================================
@@ -17,7 +25,7 @@
 ========================================= */
 .navbar-card {
     width: 100%;
-    height: 80px;
+    height: 70px;
     padding: 0 2rem;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
@@ -42,6 +50,10 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+.brand span {
+    display: inline-block;
 }
 
 /* Navigation Center Links */
@@ -111,15 +123,35 @@
     border-color: #d6d3d1;
 }
 
+.theme-toggle-btn {
+    background: transparent;
+    border: 1px solid #e7e5e4;
+    color: #57534e;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    background: #f5f5f4;
+    color: #1c1917;
+    border-color: #d6d3d1;
+}
+
 /* =========================================
    MAIN CONTENT WRAPPER
 ========================================= */
 .main-wrapper {
     flex: 1;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 3rem 2rem;
+    padding: 2rem;
     animation: fadeIn 0.6s ease-out;
 }
 
@@ -133,18 +165,43 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .main-content-area {
+        margin-left: 0;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
+
 @media (max-width: 768px) {
+    .main-content-area {
+        margin-left: 0;
+    }
+
     .navbar-card {
         padding: 0 1rem;
         height: 64px;
     }
     
-    .nav-center {
-        display: none; /* Mobile menu would be better, but for now hide */
-    }
-    
     .main-wrapper {
         padding: 1.5rem 1rem;
     }
+}
+
+/* 暗色模式 */
+[data-theme='dark'] .main-content-area {
+    background-color: #111827;
+}
+
+[data-theme='dark'] .navbar-card {
+    background: rgba(31, 41, 55, 0.8);
+    border-bottom-color: #374151;
 }
 

@@ -4,11 +4,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz } from '../types';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
 
 const EditQuiz: React.FC = () => {
-    // 修复：修改 useParams 的参数名
-    const { id: courseId, quizId } = useParams<{ id: string; quizId: string }>();
+    const { quizId } = useParams<{ quizId: string }>();
     const navigate = useNavigate();
+    const { selectedCourse } = useCourse();
     const { isAdmin, user } = useAuth();
 
     const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -19,14 +20,19 @@ const EditQuiz: React.FC = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (courseId && quizId) {
-            fetchQuiz(Number(courseId), quizId);
+        if (!selectedCourse) {
+            navigate('/courses');
+            return;
         }
-    }, [courseId, quizId]);
+        if (quizId) {
+            fetchQuiz();
+        }
+    }, [selectedCourse, quizId, navigate]);
 
-    const fetchQuiz = async (courseId: number, quizId: string) => {
+    const fetchQuiz = async () => {
+        if (!selectedCourse || !quizId) return;
         try {
-            const response = await quizAPI.getQuiz(courseId, quizId);
+            const response = await quizAPI.getQuiz(selectedCourse.id, quizId);
             const quizData = response.data;
             setQuiz(quizData);
             setTitle(quizData.title);
@@ -109,7 +115,7 @@ const EditQuiz: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!courseId || !quizId || !quiz) return;
+        if (!selectedCourse || !quizId || !quiz) return;
 
         // 验证表单
         if (!title.trim()) {
@@ -150,8 +156,8 @@ const EditQuiz: React.FC = () => {
                 }))
             };
 
-            await quizAPI.updateQuiz(Number(courseId), quizId, quizData);
-            navigate(`/courses/${courseId}/quizzes`);
+            await quizAPI.updateQuiz(selectedCourse.id, quizId, quizData);
+            navigate('/quizzes');
         } catch (err: any) {
             setError(err.response?.data?.message || '更新测验失败');
         } finally {

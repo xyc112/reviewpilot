@@ -1,38 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Note } from '../types';
 import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
+import { Search, X, Plus } from 'lucide-react';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { useToast } from '../components/common/Toast';
 
 const NoteList: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const courseId = parseInt(id || '0');
+    const navigate = useNavigate();
+    const { selectedCourse } = useCourse();
 
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-    const [showNoteForm, setShowNoteForm] = useState(false);
-    const [editingNote, setEditingNote] = useState<Note | null>(null);
-
-    const { user, isAdmin } = useAuth();
-
-    const [noteForm, setNoteForm] = useState({
-        title: '',
-        content: '',
-        visibility: 'private' as 'public' | 'private',
+    const [searchQuery, setSearchQuery] = useState('');
+    const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private'>('all');
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; noteId: string | null }>({
+        isOpen: false,
+        noteId: null,
     });
 
+    const { user, isAdmin } = useAuth();
+    const { success, error: showError } = useToast();
+
     useEffect(() => {
-        if (courseId) {
-            fetchNotes();
+        if (!selectedCourse) {
+            navigate('/courses');
+            return;
         }
-    }, [courseId]);
+        fetchNotes();
+    }, [selectedCourse, navigate]);
 
     const fetchNotes = async () => {
+        if (!selectedCourse) return;
         try {
             setLoading(true);
-            const response = await noteAPI.getNotes(courseId);
+            const response = await noteAPI.getNotes(selectedCourse.id);
             setNotes(response.data);
         } catch (err: any) {
             setError('获取笔记列表失败: ' + (err.response?.data?.message || err.message));
@@ -42,76 +47,28 @@ const NoteList: React.FC = () => {
         }
     };
 
-    const handleCreateNote = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const noteData = {
-                title: noteForm.title,
-                content: noteForm.content,
-                visibility: noteForm.visibility,
-            };
-
-            await noteAPI.createNote(courseId, noteData);
-            setShowNoteForm(false);
-            setNoteForm({ title: '', content: '', visibility: 'private' });
-            fetchNotes();
-        } catch (err: any) {
-            setError('创建笔记失败: ' + (err.response?.data?.message || err.message));
-        }
-    };
-
-    const handleUpdateNote = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingNote) return;
-
-        try {
-            const noteData = {
-                title: noteForm.title,
-                content: noteForm.content,
-                visibility: noteForm.visibility,
-            };
-
-            await noteAPI.updateNote(courseId, editingNote.id, noteData);
-            setEditingNote(null);
-            setShowNoteForm(false);
-            setNoteForm({ title: '', content: '', visibility: 'private' });
-            fetchNotes();
-        } catch (err: any) {
-            setError('更新笔记失败: ' + (err.response?.data?.message || err.message));
-        }
-    };
 
     const handleDeleteNote = async (noteId: string) => {
-        if (window.confirm('确定要删除这条笔记吗？')) {
-            try {
-                await noteAPI.deleteNote(courseId, noteId);
-                if (selectedNote?.id === noteId) {
-                    setSelectedNote(null);
-                }
-                fetchNotes();
-            } catch (err: any) {
-                setError('删除笔记失败: ' + (err.response?.data?.message || err.message));
-            }
+        setDeleteConfirm({ isOpen: true, noteId });
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteConfirm.noteId) return;
+        if (!selectedCourse) return;
+        try {
+            await noteAPI.deleteNote(selectedCourse.id, deleteConfirm.noteId);
+            success('笔记删除成功');
+            fetchNotes();
+        } catch (err: any) {
+            const errorMsg = '删除笔记失败: ' + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
+        } finally {
+            setDeleteConfirm({ isOpen: false, noteId: null });
         }
     };
 
-    const handleEditClick = (note: Note) => {
-        setEditingNote(note);
-        setNoteForm({
-            title: note.title,
-            content: note.content,
-            visibility: note.visibility,
-        });
-        setShowNoteForm(true);
-    };
 
-    const handleViewNote = (note: Note) => {
-        setSelectedNote(note);
-    };
-
-    const canEditNote = (note: Note) => {
-        return isAdmin || note.authorId === user?.id;
-    };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString('zh-CN', {
@@ -123,138 +80,117 @@ const NoteList: React.FC = () => {
         });
     };
 
+    // 过滤笔记
+    const filteredNotes = useMemo(() => {
+        return notes.filter(note => {
+            // 搜索过滤
+            const matchesSearch = !searchQuery || 
+                note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                note.content.toLowerCase().includes(searchQuery.toLowerCase());
+
+            // 可见性过滤
+            const matchesVisibility = visibilityFilter === 'all' || note.visibility === visibilityFilter;
+
+            return matchesSearch && matchesVisibility;
+        });
+    }, [notes, searchQuery, visibilityFilter]);
+
+    if (!selectedCourse) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+                <button onClick={() => navigate('/courses')} className="btn btn-primary">
+                    前往课程列表
+                </button>
+            </div>
+        );
+    }
+
     if (loading) return <div className="loading">加载笔记列表中...</div>;
 
     return (
         <div className="notes-view">
             <div className="page-header">
-                <h1>课程笔记</h1>
-                <div className="header-actions">
-                    <Link to={`/courses/${courseId}`} className="btn btn-outline">
-                        返回课程
-                    </Link>
-                    <button
-                        onClick={() => {
-                            setEditingNote(null);
-                            setNoteForm({ title: '', content: '', visibility: 'private' });
-                            setShowNoteForm(true);
-                        }}
-                        className="btn btn-primary"
-                    >
-                        创建笔记
-                    </button>
+                <div className="header-content">
+                    <div>
+                        <h1>课程笔记</h1>
+                        <p className="text-stone-500 mt-2">{selectedCourse?.title} - 管理和查看您的学习笔记</p>
+                    </div>
+                    {selectedCourse && (
+                        <div className="header-actions">
+                            <Link
+                                to="/notes/new"
+                                className="btn btn-primary"
+                            >
+                                <Plus size={18} />
+                                创建笔记
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {error && <div className="error">{error}</div>}
 
-            {/* 笔记创建/编辑表单 */}
-            {showNoteForm && (
-                <div className="modal-overlay">
-                    <div className="modal modal-large">
-                        <h3>{editingNote ? '编辑笔记' : '创建新笔记'}</h3>
-                        <form onSubmit={editingNote ? handleUpdateNote : handleCreateNote}>
-                            <div className="form-group">
-                                <label>标题:</label>
-                                <input
-                                    type="text"
-                                    value={noteForm.title}
-                                    onChange={(e) => setNoteForm({ ...noteForm, title: e.target.value })}
-                                    required
-                                    placeholder="输入笔记标题"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>内容:</label>
-                                <textarea
-                                    value={noteForm.content}
-                                    onChange={(e) => setNoteForm({ ...noteForm, content: e.target.value })}
-                                    rows={12}
-                                    required
-                                    placeholder="输入笔记内容，支持 Markdown 格式"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>可见性:</label>
-                                <select
-                                    value={noteForm.visibility}
-                                    onChange={(e) => setNoteForm({ ...noteForm, visibility: e.target.value as 'public' | 'private' })}
-                                    aria-label="笔记可见性"
-                                >
-                                    <option value="private">私有（仅自己可见）</option>
-                                    <option value="public">公开（所有人可见）</option>
-                                </select>
-                            </div>
-                            <div className="form-actions">
-                                <button type="submit" className="btn btn-primary">
-                                    {editingNote ? '保存' : '创建'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowNoteForm(false);
-                                        setEditingNote(null);
-                                        setNoteForm({ title: '', content: '', visibility: 'private' });
-                                    }}
-                                    className="btn btn-outline"
-                                >
-                                    取消
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+            {/* 搜索和过滤栏 */}
+            <div className="search-filter-bar">
+                <div className="search-box">
+                    <Search size={20} className="search-icon" />
+                    <input
+                        type="text"
+                        placeholder="搜索笔记标题或内容..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="search-input"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="search-clear"
+                            aria-label="清除搜索"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
                 </div>
-            )}
 
-            {/* 笔记详情模态框 */}
-            {selectedNote && (
-                <div className="modal-overlay" onClick={() => setSelectedNote(null)}>
-                    <div className="modal modal-large" onClick={(e) => e.stopPropagation()}>
-                        <div className="note-detail-header">
-                            <div>
-                                <h2>{selectedNote.title}</h2>
-                                <div className="note-meta">
-                                    <span className={`visibility-badge ${selectedNote.visibility}`}>
-                                        {selectedNote.visibility === 'public' ? '公开' : '私有'}
-                                    </span>
-                                    <span>创建于: {formatDate(selectedNote.createdAt)}</span>
-                                    {selectedNote.updatedAt && (
-                                        <span>更新于: {formatDate(selectedNote.updatedAt)}</span>
-                                    )}
-                                </div>
-                            </div>
-                            <button onClick={() => setSelectedNote(null)} className="btn btn-outline">
-                                关闭
-                            </button>
-                        </div>
-                        <div className="note-content">
-                            <pre>{selectedNote.content}</pre>
-                        </div>
-                        {canEditNote(selectedNote) && (
-                            <div className="note-actions">
-                                <button
-                                    onClick={() => {
-                                        handleEditClick(selectedNote);
-                                        setSelectedNote(null);
-                                    }}
-                                    className="btn btn-primary"
-                                >
-                                    编辑
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        handleDeleteNote(selectedNote.id);
-                                        setSelectedNote(null);
-                                    }}
-                                    className="btn btn-danger"
-                                >
-                                    删除
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                <div className="filter-group">
+                    <select
+                        value={visibilityFilter}
+                        onChange={(e) => setVisibilityFilter(e.target.value as 'all' | 'public' | 'private')}
+                        className="filter-select"
+                    >
+                        <option value="all">全部可见性</option>
+                        <option value="public">公开</option>
+                        <option value="private">私有</option>
+                    </select>
                 </div>
-            )}
+
+                {(searchQuery || visibilityFilter !== 'all') && (
+                    <button
+                        onClick={() => {
+                            setSearchQuery('');
+                            setVisibilityFilter('all');
+                        }}
+                        className="btn btn-outline btn-small"
+                    >
+                        <X size={16} />
+                        清除筛选
+                    </button>
+                )}
+            </div>
+
+            {/* 确认删除对话框 */}
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                title="删除笔记"
+                message="确定要删除这条笔记吗？此操作无法撤销。"
+                confirmText="删除"
+                cancelText="取消"
+                type="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteConfirm({ isOpen: false, noteId: null })}
+            />
 
             <div className="notes-container">
                 {notes.length === 0 ? (
@@ -262,10 +198,28 @@ const NoteList: React.FC = () => {
                         <p>暂无笔记</p>
                         <p>点击"创建笔记"按钮开始记录你的学习心得</p>
                     </div>
+                ) : filteredNotes.length === 0 ? (
+                    <div className="empty-state">
+                        <p>未找到匹配的笔记</p>
+                        <p>尝试调整搜索条件或筛选器</p>
+                        <button
+                            onClick={() => {
+                                setSearchQuery('');
+                                setVisibilityFilter('all');
+                            }}
+                            className="btn btn-primary"
+                        >
+                            清除所有筛选
+                        </button>
+                    </div>
                 ) : (
                     <div className="notes-grid">
-                        {notes.map((note) => (
-                            <div key={note.id} className="note-card" onClick={() => handleViewNote(note)}>
+                        {filteredNotes.map((note) => (
+                            <Link
+                                key={note.id}
+                                to={`/notes/${note.id}`}
+                                className="note-card"
+                            >
                                 <div className="note-card-header">
                                     <h3>{note.title}</h3>
                                     <span className={`visibility-badge ${note.visibility}`}>
@@ -281,24 +235,8 @@ const NoteList: React.FC = () => {
                                     <span className="note-date">
                                         {formatDate(note.createdAt)}
                                     </span>
-                                    {canEditNote(note) && (
-                                        <div className="note-card-actions" onClick={(e) => e.stopPropagation()}>
-                                            <button
-                                                onClick={() => handleEditClick(note)}
-                                                className="btn btn-small btn-primary"
-                                            >
-                                                编辑
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteNote(note.id)}
-                                                className="btn btn-small btn-danger"
-                                            >
-                                                删除
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}

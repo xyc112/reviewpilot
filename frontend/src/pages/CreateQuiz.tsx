@@ -1,13 +1,14 @@
 // src/pages/CreateQuiz.tsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
 import '../styles/Course.css';
 
 const CreateQuiz: React.FC = () => {
-    const { id: courseId } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { selectedCourse } = useCourse();
     const { isAdmin } = useAuth();
 
     const [title, setTitle] = useState('');
@@ -24,9 +25,12 @@ const CreateQuiz: React.FC = () => {
 
     useEffect(() => {
         if (!isAdmin) {
-            navigate(`/courses/${courseId}/quizzes`);
+            navigate('/quizzes');
         }
-    }, [isAdmin, courseId, navigate]);
+        if (!selectedCourse) {
+            navigate('/courses');
+        }
+    }, [isAdmin, selectedCourse, navigate]);
 
     const handleAddQuestion = () => {
         setQuestions([
@@ -95,7 +99,7 @@ const CreateQuiz: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!courseId) return;
+        if (!selectedCourse) return;
 
         // 验证表单
         if (!title.trim()) {
@@ -135,8 +139,8 @@ const CreateQuiz: React.FC = () => {
                 }))
             };
 
-            await quizAPI.createQuiz(Number(courseId), quizData);
-            navigate(`/courses/${courseId}/quizzes`);
+            await quizAPI.createQuiz(selectedCourse.id, quizData);
+            navigate('/quizzes');
         } catch (err: any) {
             setError(err.response?.data?.message || '创建测验失败');
         } finally {
@@ -148,6 +152,17 @@ const CreateQuiz: React.FC = () => {
         return (
             <div className="container">
                 <div className="error-message">无权限访问此页面</div>
+            </div>
+        );
+    }
+
+    if (!selectedCourse) {
+        return (
+            <div className="container">
+                <div className="error-message">请先选择一个课程</div>
+                <button onClick={() => navigate('/courses')} className="btn btn-primary">
+                    前往课程列表
+                </button>
             </div>
         );
     }
