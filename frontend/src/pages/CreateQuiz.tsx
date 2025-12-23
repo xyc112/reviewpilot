@@ -169,10 +169,6 @@ const CreateQuiz: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <h1>创建新测验</h1>
-            </div>
-
             <div className="content-section">
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

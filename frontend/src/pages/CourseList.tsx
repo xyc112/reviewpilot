@@ -182,14 +182,6 @@ const CourseList: React.FC = () => {
 
     if (loading) return (
         <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>课程列表</h1>
-                        <p className="text-stone-500 mt-2">选择课程以访问知识图谱、笔记和测验</p>
-                    </div>
-                </div>
-            </div>
             <SkeletonGrid count={6} />
         </div>
     );
@@ -202,20 +194,14 @@ const CourseList: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>课程列表</h1>
-                        <p className="text-stone-500 mt-2">添加课程到学习列表，开始您的学习之旅</p>
-                        {currentStudyingCourse && (
-                            <div style={{ marginTop: '0.75rem' }}>
-                                <div className="selected-course-badge" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
-                                    <Star size={16} />
-                                    <span>正在学习: {currentStudyingCourse.title}</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+            {(currentStudyingCourse || isAdmin) && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    {currentStudyingCourse && (
+                        <div className="selected-course-badge" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
+                            <Star size={16} />
+                            <span>正在学习: {currentStudyingCourse.title}</span>
+                        </div>
+                    )}
                     {isAdmin && (
                         <Link to="/courses/new" className="btn btn-primary">
                             <Plus size={18} />
@@ -223,7 +209,7 @@ const CourseList: React.FC = () => {
                         </Link>
                     )}
                 </div>
-            </div>
+            )}
 
             <ConfirmDialog
                 isOpen={deleteConfirm.isOpen}

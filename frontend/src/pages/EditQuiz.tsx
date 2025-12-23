@@ -208,9 +208,6 @@ const EditQuiz: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <h1>编辑测验</h1>
-            </div>
 
             <div className="content-section">
                 <form onSubmit={handleSubmit}>

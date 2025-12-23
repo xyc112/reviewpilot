@@ -133,36 +133,31 @@ const CourseOverview: React.FC = () => {
             <div className="course-detail">
                 <div className="course-content">
                     <div className="content-section">
-                        <div className="header-content">
-                            <div>
-                                <h1>{course.title}</h1>
-                                {isCurrentCourse && (
-                                    <span className="inline-flex items-center gap-1 text-sm text-amber-600 mt-2">
-                                        <BookOpen size={14} />
-                                        当前学习课程
-                                    </span>
-                                )}
-                            </div>
-                            <div className="header-actions">
-                                {canEdit && (
-                                    <>
-                                        <Link
-                                            to={`/courses/edit/${course.id}`}
-                                            className="btn btn-secondary"
-                                        >
-                                            <Edit size={16} />
-                                            编辑课程
-                                        </Link>
-                                        <button
-                                            onClick={handleDelete}
-                                            className="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                                        >
-                                            <Trash2 size={16} />
-                                            删除课程
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                            {isCurrentCourse && (
+                                <span className="inline-flex items-center gap-1 text-sm text-amber-600">
+                                    <BookOpen size={14} />
+                                    当前学习课程
+                                </span>
+                            )}
+                            {canEdit && (
+                                <>
+                                    <Link
+                                        to={`/courses/edit/${course.id}`}
+                                        className="btn btn-secondary"
+                                    >
+                                        <Edit size={16} />
+                                        编辑课程
+                                    </Link>
+                                    <button
+                                        onClick={handleDelete}
+                                        className="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                    >
+                                        <Trash2 size={16} />
+                                        删除课程
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         <div className="course-meta mb-6">

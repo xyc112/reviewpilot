@@ -81,26 +81,17 @@ const QuizList: React.FC = () => {
 
     return (
         <div className="notes-view">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>课程测验</h1>
-                    </div>
-                    {course && (
-                        <div className="header-actions">
-                            {isAdmin && (
-                                <Link
-                                    to="/quizzes/new"
-                                    className="btn btn-primary"
-                                >
-                                    <Plus size={18} />
-                                    创建测验
-                                </Link>
-                            )}
-                        </div>
-                    )}
+            {course && isAdmin && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                    <Link
+                        to="/quizzes/new"
+                        className="btn btn-primary"
+                    >
+                        <Plus size={18} />
+                        创建测验
+                    </Link>
                 </div>
-            </div>
+            )}
 
             {error && <div className="error-message mb-4">{error}</div>}
 

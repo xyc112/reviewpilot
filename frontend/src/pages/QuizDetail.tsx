@@ -167,9 +167,6 @@ const QuizDetail: React.FC = () => {
         
         return (
             <div className="container">
-                <div className="page-header">
-                    <h1>{quiz.title} - 测验结果</h1>
-                </div>
 
                 <div className="quiz-result">
                     <div className={`result-summary ${isPassed ? 'passed' : 'failed'}`}>
@@ -329,11 +326,6 @@ const QuizDetail: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <h1>{quiz.title}</h1>
-                <p>共 {quiz.questions.length} 题</p>
-            </div>
-
             <div className="quiz-container">
                 {quiz.questions.map((question, index) => (
                     <div key={question.id} className="question-card">

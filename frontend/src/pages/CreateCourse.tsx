@@ -58,9 +58,6 @@ const CreateCourse: React.FC = () => {
     return (
         <div className="container">
             <div className="content-section">
-                <div className="header-content">
-                    <h1>创建新课程</h1>
-                </div>
                 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

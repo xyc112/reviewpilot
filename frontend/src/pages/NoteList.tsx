@@ -111,24 +111,17 @@ const NoteList: React.FC = () => {
 
     return (
         <div className="notes-view">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>课程笔记</h1>
-                    </div>
-                    {course && (
-                        <div className="header-actions">
-                            <Link
-                                to="/notes/new"
-                                className="btn btn-primary"
-                            >
-                                <Plus size={18} />
-                                创建笔记
-                            </Link>
-                        </div>
-                    )}
+            {course && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                    <Link
+                        to="/notes/new"
+                        className="btn btn-primary"
+                    >
+                        <Plus size={18} />
+                        创建笔记
+                    </Link>
                 </div>
-            </div>
+            )}
 
             {error && <div className="error">{error}</div>}
 

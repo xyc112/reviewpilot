@@ -198,37 +198,28 @@ const ReviewPlanPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="container">
-                <div className="page-header">
-                    <h1>复习计划</h1>
-                </div>
-                <div style={{ textAlign: 'center', padding: '2rem' }}>加载中...</div>
-            </div>
-        );
+        <div className="container">
+            <div style={{ textAlign: 'center', padding: '2rem' }}>加载中...</div>
+        </div>
+    );
     }
 
     return (
         <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>复习计划</h1>
-                        <p className="text-stone-500 mt-2">管理您的学习计划和考试安排</p>
-                    </div>
-                    <button
-                        onClick={() => {
-                            const today = new Date();
-                            setSelectedDate(today);
-                            setFormData(prev => ({ ...prev, planDate: today.toISOString().split('T')[0] }));
-                            setShowPlanForm(true);
-                            setEditingPlan(null);
-                        }}
-                        className="btn btn-primary"
-                    >
-                        <Plus size={18} />
-                        新建计划
-                    </button>
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                <button
+                    onClick={() => {
+                        const today = new Date();
+                        setSelectedDate(today);
+                        setFormData(prev => ({ ...prev, planDate: today.toISOString().split('T')[0] }));
+                        setShowPlanForm(true);
+                        setEditingPlan(null);
+                    }}
+                    className="btn btn-primary"
+                >
+                    <Plus size={18} />
+                    新建计划
+                </button>
             </div>
 
             <ConfirmDialog

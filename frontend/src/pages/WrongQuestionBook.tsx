@@ -183,16 +183,6 @@ const WrongQuestionBook: React.FC = () => {
                 onCancel={() => setDeleteConfirm(null)}
             />
 
-            <div className="page-header">
-                <div className="header-content">
-                    <div>
-                        <h1>错题本</h1>
-                        <p className="text-stone-500 mt-2">
-                            {course.title} - 复习和练习错题
-                        </p>
-                    </div>
-                </div>
-            </div>
 
             {stats && (
                 <div className="stats-cards mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>

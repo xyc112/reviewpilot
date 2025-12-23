@@ -114,10 +114,8 @@ const CourseDetail: React.FC = () => {
             <div className="course-detail">
                 <div className="course-content">
                     <div className="content-section">
-                        <div className="header-content">
-                            <h1>{course.title}</h1>
-                            <div className="header-actions">
-                                {canEdit && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                            {canEdit && (
                                     <>
                                         <Link
                                             to={`/courses/edit/${course.id}`}
@@ -135,7 +133,6 @@ const CourseDetail: React.FC = () => {
                                         </button>
                                     </>
                                 )}
-                            </div>
                         </div>
 
                         <div className="course-meta mb-6">
@@ -178,9 +175,6 @@ const CourseDetail: React.FC = () => {
                                 <MessageSquare size={18} />
                                 进入课程社区
                             </Link>
-                            <p className="text-sm text-stone-500 mt-2">
-                                与其他学习者交流讨论，提出问题或分享观点
-                            </p>
                         </div>
                     </div>
                 </div>

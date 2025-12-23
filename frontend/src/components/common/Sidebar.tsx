@@ -41,6 +41,13 @@ const Sidebar: React.FC = () => {
 
     const menuItems = [
         {
+            id: 'review-plan',
+            label: '复习计划',
+            icon: Calendar,
+            path: '/review-plan',
+            requiresCourse: false,
+        },
+        {
             id: 'courses',
             label: '课程列表',
             icon: BookOpen,
@@ -95,13 +102,6 @@ const Sidebar: React.FC = () => {
             icon: MessageSquare,
             path: '/community',
             requiresCourse: true,
-        },
-        {
-            id: 'review-plan',
-            label: '复习计划',
-            icon: Calendar,
-            path: '/review-plan',
-            requiresCourse: false,
         },
     ];
 

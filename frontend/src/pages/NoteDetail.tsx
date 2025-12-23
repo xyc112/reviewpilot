@@ -105,18 +105,17 @@ const NoteDetail: React.FC = () => {
                 onCancel={() => setDeleteConfirm(false)}
             />
 
-            <div className="page-header">
-                <div className="header-content">
-                    <Link to="/notes" className="btn btn-outline">
-                        <ArrowLeft size={18} />
-                        返回笔记列表
-                    </Link>
-                    {canEdit() && (
-                        <div className="header-actions">
-                            <Link
-                                to={`/notes/${noteId}/edit`}
-                                className="btn btn-primary"
-                            >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <Link to="/notes" className="btn btn-outline">
+                    <ArrowLeft size={18} />
+                    返回笔记列表
+                </Link>
+                {canEdit() && (
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <Link
+                            to={`/notes/${noteId}/edit`}
+                            className="btn btn-primary"
+                        >
                                 <Edit size={18} />
                                 编辑笔记
                             </Link>
@@ -127,9 +126,8 @@ const NoteDetail: React.FC = () => {
                                 <Trash2 size={18} />
                                 删除笔记
                             </button>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             <div className="note-detail-page">

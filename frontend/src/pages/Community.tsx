@@ -312,19 +312,14 @@ const Community: React.FC = () => {
             />
 
             <div className="community-page">
-                <div className="page-header">
-                    <div className="header-content">
-                        <div>
-                            <h1>课程社区</h1>
-                        </div>
-                        <button
-                            onClick={() => setShowCreatePost(!showCreatePost)}
-                            className="btn btn-primary"
-                        >
-                            <Plus size={18} />
-                            {showCreatePost ? '取消' : '发布新帖'}
-                        </button>
-                    </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                    <button
+                        onClick={() => setShowCreatePost(!showCreatePost)}
+                        className="btn btn-primary"
+                    >
+                        <Plus size={18} />
+                        {showCreatePost ? '取消' : '发布新帖'}
+                    </button>
                 </div>
 
                 {error && <div className="error-message mb-4">{error}</div>}

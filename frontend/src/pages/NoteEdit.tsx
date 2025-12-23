@@ -111,14 +111,11 @@ const NoteEdit: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="page-header">
-                <div className="header-content">
-                    <Link to={`/notes/${noteId}`} className="btn btn-outline">
-                        <ArrowLeft size={18} />
-                        取消编辑
-                    </Link>
-                    <h1>编辑笔记</h1>
-                </div>
+            <div style={{ marginBottom: '1.5rem' }}>
+                <Link to={`/notes/${noteId}`} className="btn btn-outline">
+                    <ArrowLeft size={18} />
+                    取消编辑
+                </Link>
             </div>
 
             {error && <div className="error-message">{error}</div>}
