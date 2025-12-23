@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Post, Comment, Course } from '../types';
 import { postAPI, commentAPI, courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { Plus, MessageSquare, Edit, Trash2, Send, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, MessageSquare, Edit, Trash2, Send, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import MarkdownRenderer from '../components/common/MarkdownRenderer';
 import '../styles/Community.css';
+import '../styles/Course.css';
 
 const Community: React.FC = () => {
     const { courseId: courseIdParam } = useParams<{ courseId: string }>();
@@ -23,6 +24,7 @@ const Community: React.FC = () => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [expandedPost, setExpandedPost] = useState<number | null>(null);
     const [comments, setComments] = useState<Record<number, Comment[]>>({});
     const [loadingComments, setLoadingComments] = useState<Record<number, boolean>>({});
@@ -201,6 +203,18 @@ const Community: React.FC = () => {
         });
     };
 
+    // 过滤帖子
+    const filteredPosts = useMemo(() => {
+        return posts.filter(post => {
+            // 搜索过滤
+            const matchesSearch = !searchQuery || 
+                post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (post.authorUsername && post.authorUsername.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchesSearch;
+        });
+    }, [posts, searchQuery]);
+
     const renderComments = (postId: number, parentId: number | null = null, level: number = 0): React.ReactNode => {
         const postComments = comments[postId] || [];
         const filteredComments = postComments.filter(c => c.parentId === parentId);
@@ -324,6 +338,35 @@ const Community: React.FC = () => {
 
                 {error && <div className="error-message mb-4">{error}</div>}
 
+                {/* 搜索栏 */}
+                <div className="search-filter-bar" style={{ marginBottom: '1.5rem' }}>
+                    <div className="search-box">
+                        <div className="input-icon-wrapper">
+                            <Search size={20} className="input-icon" />
+                            <div className="input-icon-divider"></div>
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="搜索帖子标题、内容或作者..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="search-input"
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery('')}
+                                className="search-clear"
+                                aria-label="清除搜索"
+                            >
+                                <X size={16} />
+                            </button>
+                        )}
+                        <span className="search-shortcut-hint" title="快捷键">
+                            <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                        </span>
+                    </div>
+                </div>
+
                 {showCreatePost && (
                     <div className="post-form card mb-6">
                         <h3 className="text-lg font-semibold mb-4">发布新帖</h3>
@@ -372,8 +415,20 @@ const Community: React.FC = () => {
                             <p className="text-lg font-semibold mb-2">还没有帖子</p>
                             <p className="text-stone-500 mb-4">成为第一个发布帖子的人吧！</p>
                         </div>
-                    ) : posts.length > 0 ? (
-                        posts.map(post => (
+                    ) : filteredPosts.length === 0 && searchQuery ? (
+                        <div className="empty-state">
+                            <MessageSquare size={48} className="text-stone-400 mb-4" />
+                            <p className="text-lg font-semibold mb-2">未找到匹配的帖子</p>
+                            <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
+                            <button
+                                onClick={() => setSearchQuery('')}
+                                className="btn btn-primary"
+                            >
+                                清除搜索
+                            </button>
+                        </div>
+                    ) : filteredPosts.length > 0 ? (
+                        filteredPosts.map(post => (
                             <div key={post.id} className="post-card card">
                                 <div className="post-header">
                                     <div className="post-title-section">

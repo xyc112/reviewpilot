@@ -1,11 +1,11 @@
 // src/pages/QuizList.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Quiz } from '../types';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { Plus, ClipboardList, Edit, Trash2 } from 'lucide-react';
+import { Plus, ClipboardList, Edit, Trash2, Search, X } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import '../styles/Course.css';
@@ -20,6 +20,7 @@ const QuizList: React.FC = () => {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; quizId: string | null }>({
         isOpen: false,
         quizId: null,
@@ -65,6 +66,16 @@ const QuizList: React.FC = () => {
         }
     };
 
+    // 过滤测验
+    const filteredQuizzes = useMemo(() => {
+        return quizzes.filter(quiz => {
+            // 搜索过滤
+            const matchesSearch = !searchQuery || 
+                quiz.title.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesSearch;
+        });
+    }, [quizzes, searchQuery]);
+
     if (!course) {
         return (
             <div className="container">
@@ -95,6 +106,35 @@ const QuizList: React.FC = () => {
 
             {error && <div className="error-message mb-4">{error}</div>}
 
+            {/* 搜索栏 */}
+            <div className="search-filter-bar" style={{ marginBottom: '1.5rem' }}>
+                <div className="search-box">
+                    <div className="input-icon-wrapper">
+                        <Search size={20} className="input-icon" />
+                        <div className="input-icon-divider"></div>
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="搜索测验标题..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="search-input"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="search-clear"
+                            aria-label="清除搜索"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                    <span className="search-shortcut-hint" title="快捷键">
+                        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    </span>
+                </div>
+            </div>
+
             <ConfirmDialog
                 isOpen={deleteConfirm.isOpen}
                 title="删除测验"
@@ -121,9 +161,21 @@ const QuizList: React.FC = () => {
                             </Link>
                         )}
                     </div>
+                ) : filteredQuizzes.length === 0 && searchQuery ? (
+                    <div className="empty-state">
+                        <ClipboardList size={48} className="text-stone-400 mb-4" />
+                        <p className="text-lg font-semibold mb-2">未找到匹配的测验</p>
+                        <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="btn btn-primary"
+                        >
+                            清除搜索
+                        </button>
+                    </div>
                 ) : (
                     <div className="quizzes-list">
-                        {quizzes.map((quiz) => (
+                        {filteredQuizzes.map((quiz) => (
                             <div key={quiz.id} className="quiz-list-item">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
                                     <div style={{ flex: 1, minWidth: 0 }}>

@@ -7,6 +7,7 @@ import { useCourse } from '../context/CourseContext';
 import { Search, X, Plus } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
+import '../styles/Course.css';
 
 const NoteList: React.FC = () => {
     const navigate = useNavigate();
@@ -148,6 +149,9 @@ const NoteList: React.FC = () => {
                             <X size={16} />
                         </button>
                     )}
+                    <span className="search-shortcut-hint" title="快捷键">
+                        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    </span>
                 </div>
 
                 <div className="filter-group">

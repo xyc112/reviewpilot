@@ -4,7 +4,7 @@ import { Course } from '../types';
 import { courseAPI, userCourseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { Book, Plus, Search, Filter, X, Edit, Trash2, BookOpen, Star } from 'lucide-react';
+import { Book, Plus, Search, X, Edit, Trash2, BookOpen, Star } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import { SkeletonGrid } from '../components/common/Skeleton';
@@ -18,7 +18,6 @@ const CourseList: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedLevel, setSelectedLevel] = useState<string>('all');
     const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; courseId: number | null }>({
         isOpen: false,
@@ -149,16 +148,13 @@ const CourseList: React.FC = () => {
                 course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-            // 难度过滤
-            const matchesLevel = selectedLevel === 'all' || course.level === selectedLevel;
-
             // 标签过滤
             const matchesTags = selectedTags.size === 0 || 
                 course.tags.some(tag => selectedTags.has(tag));
 
-            return matchesSearch && matchesLevel && matchesTags;
+            return matchesSearch && matchesTags;
         });
-    }, [courses, searchQuery, selectedLevel, selectedTags]);
+    }, [courses, searchQuery, selectedTags]);
 
     const toggleTag = (tag: string) => {
         setSelectedTags(prev => {
@@ -174,11 +170,10 @@ const CourseList: React.FC = () => {
 
     const clearFilters = () => {
         setSearchQuery('');
-        setSelectedLevel('all');
         setSelectedTags(new Set());
     };
 
-    const hasActiveFilters = searchQuery || selectedLevel !== 'all' || selectedTags.size > 0;
+    const hasActiveFilters = searchQuery || selectedTags.size > 0;
 
     if (loading) return (
         <div className="container">
@@ -248,20 +243,6 @@ const CourseList: React.FC = () => {
                     <span className="search-shortcut-hint" title="快捷键">
                         <kbd>Ctrl</kbd> + <kbd>K</kbd>
                     </span>
-                </div>
-
-                <div className="filter-group">
-                    <Filter size={18} />
-                    <select
-                        value={selectedLevel}
-                        onChange={(e) => setSelectedLevel(e.target.value)}
-                        className="filter-select"
-                    >
-                        <option value="all">全部难度</option>
-                        <option value="BEGINNER">初级</option>
-                        <option value="INTERMEDIATE">中级</option>
-                        <option value="ADVANCED">高级</option>
-                    </select>
                 </div>
 
                 {hasActiveFilters && (

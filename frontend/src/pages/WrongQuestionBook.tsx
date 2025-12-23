@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WrongQuestion, Question } from '../types';
 import { wrongQuestionAPI, quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { BookOpen, X, CheckCircle, RotateCcw, Trash2, ArrowLeft } from 'lucide-react';
+import { BookOpen, X, CheckCircle, RotateCcw, Trash2, ArrowLeft, Search } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
 import '../styles/Course.css';
@@ -20,6 +20,7 @@ const WrongQuestionBook: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [filter, setFilter] = useState<'all' | 'notMastered' | 'mastered'>('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [practicingQuestion, setPracticingQuestion] = useState<WrongQuestion | null>(null);
     const [practiceAnswers, setPracticeAnswers] = useState<Record<number, number[]>>({});
     const [showPracticeResult, setShowPracticeResult] = useState<Record<number, boolean>>({});
@@ -154,6 +155,16 @@ const WrongQuestionBook: React.FC = () => {
         setShowPracticeResult({});
     };
 
+    // 过滤错题
+    const filteredWrongQuestions = useMemo(() => {
+        return wrongQuestions.filter(wq => {
+            // 搜索过滤
+            const matchesSearch = !searchQuery || 
+                (wq.question?.question && wq.question.question.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchesSearch;
+        });
+    }, [wrongQuestions, searchQuery]);
+
     if (!course) {
         return (
             <div className="container">
@@ -220,6 +231,35 @@ const WrongQuestionBook: React.FC = () => {
                 >
                     已掌握
                 </button>
+            </div>
+
+            {/* 搜索栏 */}
+            <div className="search-filter-bar" style={{ marginBottom: '1.5rem' }}>
+                <div className="search-box">
+                    <div className="input-icon-wrapper">
+                        <Search size={20} className="input-icon" />
+                        <div className="input-icon-divider"></div>
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="搜索错题内容..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="search-input"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="search-clear"
+                            aria-label="清除搜索"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                    <span className="search-shortcut-hint" title="快捷键">
+                        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    </span>
+                </div>
             </div>
 
             {error && <div className="error-message mb-4">{error}</div>}
@@ -329,8 +369,20 @@ const WrongQuestionBook: React.FC = () => {
                                 : '完成测验后，错题会自动添加到错题本'}
                         </p>
                     </div>
-                ) : wrongQuestions.length > 0 ? (
-                    wrongQuestions.map(wq => (
+                ) : filteredWrongQuestions.length === 0 && searchQuery ? (
+                    <div className="empty-state">
+                        <BookOpen size={48} className="text-stone-400 mb-4" />
+                        <p className="text-lg font-semibold mb-2">未找到匹配的错题</p>
+                        <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="btn btn-primary"
+                        >
+                            清除搜索
+                        </button>
+                    </div>
+                ) : filteredWrongQuestions.length > 0 ? (
+                    filteredWrongQuestions.map(wq => (
                         <div key={wq.id} className="wrong-question-card card mb-4">
                             <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1">
