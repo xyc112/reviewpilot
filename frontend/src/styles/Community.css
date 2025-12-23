@@ -257,6 +257,11 @@
     color: #9ca3af;
 }
 
+[data-theme='dark'] .post-author,
+[data-theme='dark'] .comment-author {
+    color: #f9fafb;
+}
+
 [data-theme='dark'] .post-edit-form,
 [data-theme='dark'] .comment-form,
 [data-theme='dark'] .comment-item {
