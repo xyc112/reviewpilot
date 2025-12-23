@@ -110,31 +110,30 @@ const Login: React.FC = () => {
                             <path d="M30 50 L45 65 L70 35" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </div>
-                    <h1 className="auth-welcome-title">欢迎回来</h1>
+                    <h1 className="auth-welcome-title">欢迎来到 ReviewPilot</h1>
                     <p className="auth-welcome-subtitle">
-                        继续您的学习之旅<br/>
-                        探索知识，提升自我
+                        一体化复习平台，让学习更高效，让复习更系统
                     </p>
                     <div className="auth-welcome-features">
                         <div className="feature-item">
                             <div className="feature-icon">📚</div>
                             <div className="feature-text">
-                                <strong>丰富的课程资源</strong>
-                                <span>涵盖多个领域的优质内容</span>
-                            </div>
-                        </div>
-                        <div className="feature-item">
-                            <div className="feature-icon">🧠</div>
-                            <div className="feature-text">
-                                <strong>知识图谱可视化</strong>
-                                <span>直观理解知识关联</span>
+                                <strong>课程与知识图谱</strong>
+                                <span>管理课程，可视化知识关联</span>
                             </div>
                         </div>
                         <div className="feature-item">
                             <div className="feature-icon">📝</div>
                             <div className="feature-text">
-                                <strong>智能笔记系统</strong>
-                                <span>记录学习点滴</span>
+                                <strong>笔记与测验</strong>
+                                <span>记录笔记，检验学习成果</span>
+                            </div>
+                        </div>
+                        <div className="feature-item">
+                            <div className="feature-icon">📅</div>
+                            <div className="feature-text">
+                                <strong>复习计划与社区</strong>
+                                <span>制定计划，交流学习心得</span>
                             </div>
                         </div>
                     </div>

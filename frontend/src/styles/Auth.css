@@ -5,9 +5,10 @@
 
 /* Full Page Auth Layout */
 .auth-page-full {
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     background-color: #fafaf9;
+    overflow: hidden;
 }
 
 .auth-page-left {
@@ -16,9 +17,10 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 3rem;
+    padding: 2.5rem;
     position: relative;
     overflow: hidden;
+    height: 100vh;
 }
 
 .auth-page-left::before {
@@ -41,42 +43,42 @@
 }
 
 .auth-welcome-icon {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 2rem;
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1.5rem;
     color: white;
     opacity: 0.9;
 }
 
 .auth-welcome-title {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 800;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     line-height: 1.2;
     letter-spacing: -0.02em;
 }
 
 .auth-welcome-subtitle {
-    font-size: 1.25rem;
-    margin-bottom: 3rem;
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
     opacity: 0.95;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .auth-welcome-features {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .feature-item {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.875rem;
+    padding: 0.875rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
 }
@@ -87,25 +89,26 @@
 }
 
 .feature-icon {
-    font-size: 2rem;
+    font-size: 1.75rem;
     flex-shrink: 0;
 }
 
 .feature-text {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
 .feature-text strong {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     display: block;
 }
 
 .feature-text span {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     opacity: 0.9;
+    line-height: 1.4;
 }
 
 .auth-page-right {
