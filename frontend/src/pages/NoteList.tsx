@@ -4,6 +4,7 @@ import { Note } from '../types';
 import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { Search, X, Plus } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
@@ -13,6 +14,8 @@ const NoteList: React.FC = () => {
     const navigate = useNavigate();
     const { selectedCourse, currentStudyingCourse } = useCourse();
     const course = selectedCourse || currentStudyingCourse;
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
@@ -199,7 +202,7 @@ const NoteList: React.FC = () => {
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1 }}>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                                                <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#1c1917' }}>
+                                                <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                                     {note.title}
                                                 </h3>
                                                 <span className={`visibility-badge ${note.visibility}`} style={{

@@ -5,6 +5,7 @@ import { Quiz } from '../types';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { Plus, ClipboardList, Edit, Trash2, Search, X } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
@@ -14,6 +15,8 @@ const QuizList: React.FC = () => {
     const navigate = useNavigate();
     const { selectedCourse, currentStudyingCourse } = useCourse();
     const course = selectedCourse || currentStudyingCourse;
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const { isAdmin } = useAuth();
     const { success, error: showError } = useToast();
 
@@ -180,7 +183,7 @@ const QuizList: React.FC = () => {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#1c1917' }}>
+                                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                                 {quiz.title}
                                             </h3>
                                             <span style={{
