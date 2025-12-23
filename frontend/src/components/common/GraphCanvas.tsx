@@ -6,11 +6,20 @@ interface GraphCanvasProps {
     nodes: Node[];
     relations: Relation[];
     onNodeClick?: (node: Node) => void;
+    onRelationClick?: (relation: Relation) => void;
+    onDeselect?: () => void;
     onNodeUpdate?: (nodeId: string, position: { x: number; y: number }) => void;
     onNodeCreate?: (position: { x: number; y: number }) => void;
     onRelationCreate?: (from: string, to: string) => void;
     selectedNodeId?: string;
+    selectedRelationId?: string;
     editable?: boolean;
+    relationType?: 'prerequisite' | 'related' | 'part_of';
+    relationDirected?: boolean;
+    relationWeight?: number;
+    onRelationTypeChange?: (type: 'prerequisite' | 'related' | 'part_of') => void;
+    onRelationDirectedChange?: (directed: boolean) => void;
+    onRelationWeightChange?: (weight: number) => void;
 }
 
 interface D3Node extends d3.SimulationNodeDatum {
@@ -38,18 +47,25 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
     nodes,
     relations,
     onNodeClick,
+    onRelationClick,
+    onDeselect,
     onNodeUpdate,
     onNodeCreate,
     onRelationCreate,
     selectedNodeId,
+    selectedRelationId,
     editable = false,
+    relationType = 'related',
+    relationDirected = true,
+    relationWeight = 0.5,
+    onRelationTypeChange,
+    onRelationDirectedChange,
+    onRelationWeightChange,
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
-    const [groupMode, setGroupMode] = useState(false);
-    const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
-    const [draggingFrom, setDraggingFrom] = useState<string | null>(null);
-    const [tempLine, setTempLine] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+    const draggingFromRef = useRef<string | null>(null);
+    const tempLineRef = useRef<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
 
     useEffect(() => {
         if (!svgRef.current) return;
@@ -73,7 +89,7 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             .filter((event) => {
                 // 允许滚轮和拖拽，但阻止在拖拽节点时缩放
                 // 双击事件不在filter中处理，由专门的双击处理器处理
-                return event.type === 'wheel' || (event.type === 'mousedown' && event.button === 0 && !draggingFrom);
+                return event.type === 'wheel' || (event.type === 'mousedown' && event.button === 0 && !draggingFromRef.current);
             });
 
         svg.call(zoom);
@@ -172,9 +188,18 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             .join('line')
             .attr('class', 'link')
             .attr('stroke', d => arrowColors[d.type as keyof typeof arrowColors] || '#999')
-            .attr('stroke-width', d => (d.weight || 0.5) * 4)
-            .attr('stroke-opacity', 0.6)
+            .attr('stroke-width', d => {
+                const base = (d.weight || 0.5) * 4;
+                return d.id === selectedRelationId ? base + 2 : base;
+            })
+            .attr('stroke-opacity', d => d.id === selectedRelationId ? 0.9 : 0.6)
             .attr('marker-end', d => d.directed ? `url(#arrow-${d.type})` : null);
+
+        const handleRelationSelect = (relationId: string) => {
+            if (!onRelationClick) return;
+            const rel = relations.find(r => r.id === relationId);
+            if (rel) onRelationClick(rel);
+        };
 
         // 临时线条（用于创建关系）
         const tempLinkGroup = container.append('g').attr('class', 'temp-links');
@@ -187,7 +212,8 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             .join('text')
             .attr('class', 'link-label')
             .attr('font-size', '10px')
-            .attr('fill', '#666')
+            .attr('fill', d => d.id === selectedRelationId ? '#2c3e50' : '#666')
+            .attr('font-weight', d => d.id === selectedRelationId ? 'bold' : 'normal')
             .attr('text-anchor', 'middle')
             .text(d => {
                 const typeMap: { [key: string]: string } = {
@@ -197,6 +223,16 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
                 };
                 return typeMap[d.type] || d.type;
             });
+
+        links.on('click', function(event, d) {
+            event.stopPropagation();
+            handleRelationSelect(d.id);
+        });
+
+        linkLabels.on('click', function(event, d) {
+            event.stopPropagation();
+            handleRelationSelect(d.id);
+        });
 
         // 节点分组颜色
         const colorScale = d3.scaleOrdinal<string>()
@@ -243,9 +279,8 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             .text(d => d.type || '')
             .style('pointer-events', 'none');
 
-        // 节点拖拽处理 - 支持拖拽创建关系
-        let dragFromNode: string | null = null;
-        let isDraggingNode = false;
+        // 节点点击和拖拽处理
+        const nodeClickData = new Map<string, { startTime: number; startPos: { x: number; y: number }; isDragged: boolean }>();
         
         nodeGroups.on('mousedown', function(event, d) {
             // 如果是右键或中键，不处理
@@ -255,62 +290,43 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             
             // 如果按住Ctrl键，准备创建关系
             if (event.ctrlKey && editable && onRelationCreate) {
-                dragFromNode = d.id;
-                isDraggingNode = false;
                 const node = d3Nodes.find(n => n.id === d.id);
+                draggingFromRef.current = d.id;
                 if (node && node.x !== undefined && node.y !== undefined) {
-                    setDraggingFrom(d.id);
-                    setTempLine({ x1: node.x, y1: node.y, x2: node.x, y2: node.y });
+                    tempLineRef.current = { x1: node.x, y1: node.y, x2: node.x, y2: node.y };
+                    updateTempLine();
                 }
                 return;
             }
             
-            // 延迟处理，如果用户拖拽了节点，则不触发点击逻辑
-            let isDragged = false;
-            const startTime = Date.now();
-            const startPos = { x: event.x, y: event.y };
-            isDraggingNode = true;
+            // 记录点击开始信息
+            nodeClickData.set(d.id, {
+                startTime: Date.now(),
+                startPos: { x: event.clientX, y: event.clientY },
+                isDragged: false
+            });
+        });
+        
+        // 在节点组上添加点击事件处理（在拖拽结束后）
+        nodeGroups.on('click', function(event, d) {
+            // 如果按住Ctrl键，不处理点击
+            if (event.ctrlKey) return;
             
-            const handleMouseUp = (e: MouseEvent) => {
-                const timeDiff = Date.now() - startTime;
-                const posDiff = Math.abs(e.clientX - startPos.x) + Math.abs(e.clientY - startPos.y);
+            const clickInfo = nodeClickData.get(d.id);
+            if (clickInfo) {
+                const timeDiff = Date.now() - clickInfo.startTime;
+                const posDiff = Math.abs(event.clientX - clickInfo.startPos.x) + Math.abs(event.clientY - clickInfo.startPos.y);
                 
                 // 如果时间很短且位置变化很小，认为是点击而不是拖拽
-                if (timeDiff < 200 && posDiff < 5 && !isDragged && isDraggingNode) {
-                    if (groupMode) {
-                        // 分组模式：选择多个节点
-                        const newSelected = new Set(selectedNodes);
-                        if (newSelected.has(d.id)) {
-                            newSelected.delete(d.id);
-                        } else {
-                            newSelected.add(d.id);
-                        }
-                        setSelectedNodes(newSelected);
-                        
-                        // 更新选中状态的视觉反馈
-                        d3.select(event.currentTarget)
-                            .select('circle')
-                            .attr('stroke', newSelected.has(d.id) ? '#f39c12' : '#fff')
-                            .attr('stroke-width', newSelected.has(d.id) ? 4 : 2);
-                    } else {
-                        // 普通模式：单击查看详情
-                        if (onNodeClick) {
-                            const node = nodes.find(n => n.id === d.id);
-                            if (node) onNodeClick(node);
-                        }
+                if (timeDiff < 300 && posDiff < 8 && !clickInfo.isDragged) {
+                    event.stopPropagation();
+                    if (onNodeClick) {
+                        const node = nodes.find(n => n.id === d.id);
+                        if (node) onNodeClick(node);
                     }
                 }
-                
-                document.removeEventListener('mouseup', handleMouseUp);
-                document.removeEventListener('mousemove', handleMouseMove);
-            };
-            
-            const handleMouseMove = () => {
-                isDragged = true;
-            };
-            
-            document.addEventListener('mouseup', handleMouseUp);
-            document.addEventListener('mousemove', handleMouseMove);
+                nodeClickData.delete(d.id);
+            }
         });
 
         // 鼠标悬停效果
@@ -337,7 +353,7 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
         });
 
         nodeGroups.on('mouseleave', function(event, d) {
-            if (draggingFrom && draggingFrom !== d.id) {
+            if (draggingFromRef.current && draggingFromRef.current !== d.id) {
                 // 恢复目标节点样式
                 d3.select(this).select('circle')
                     .transition()
@@ -361,28 +377,16 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
         
         // 处理Ctrl+点击创建关系
         if (editable && onRelationCreate) {
-            nodeGroups.on('mousedown', function(event, d) {
-                if (event.button === 0 && event.ctrlKey) {
-                    event.stopPropagation();
-                    if (!draggingFrom) {
-                        // 开始创建关系
-                        setDraggingFrom(d.id);
-                        const node = d3Nodes.find(n => n.id === d.id);
-                        if (node && node.x !== undefined && node.y !== undefined) {
-                            setTempLine({ x1: node.x, y1: node.y, x2: node.x, y2: node.y });
-                        }
-                    }
-                }
-            });
-            
             // 在节点上释放鼠标时创建关系
             nodeGroups.on('mouseup', function(event, d) {
-                if (draggingFrom && draggingFrom !== d.id && event.button === 0 && event.ctrlKey) {
+                const from = draggingFromRef.current;
+                if (from && from !== d.id && event.button === 0 && event.ctrlKey) {
                     event.stopPropagation();
-                    onRelationCreate(draggingFrom, d.id);
-                    setDraggingFrom(null);
-                    setTempLine(null);
+                    onRelationCreate(from, d.id);
                 }
+                draggingFromRef.current = null;
+                tempLineRef.current = null;
+                updateTempLine();
             });
         }
 
@@ -406,11 +410,23 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             if (!event.active) simulation.alphaTarget(0.3).restart();
             event.subject.fx = event.subject.x;
             event.subject.fy = event.subject.y;
+            
+            // 标记为拖拽开始
+            const clickInfo = nodeClickData.get(event.subject.id);
+            if (clickInfo) {
+                clickInfo.isDragged = true;
+            }
         }
 
         function dragged(event: d3.D3DragEvent<SVGGElement, D3Node, D3Node>) {
             event.subject.fx = event.x;
             event.subject.fy = event.y;
+            
+            // 标记为拖拽中
+            const clickInfo = nodeClickData.get(event.subject.id);
+            if (clickInfo) {
+                clickInfo.isDragged = true;
+            }
         }
 
         function dragended(event: d3.D3DragEvent<SVGGElement, D3Node, D3Node>) {
@@ -428,6 +444,8 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
         // 更新临时线条
         function updateTempLine() {
             tempLinkGroup.selectAll('.temp-link').remove();
+            const draggingFrom = draggingFromRef.current;
+            const tempLine = tempLineRef.current;
             if (tempLine && draggingFrom) {
                 const fromNode = d3Nodes.find(n => n.id === draggingFrom);
                 if (fromNode && fromNode.x !== undefined && fromNode.y !== undefined) {
@@ -449,33 +467,51 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
         // 鼠标移动时更新临时线条
         if (editable && onRelationCreate) {
             svg.on('mousemove.temp', function(event) {
-                if (draggingFrom) {
+                if (draggingFromRef.current) {
                     const [x, y] = d3.pointer(event, svgRef.current);
                     const transform = d3.zoomTransform(svgRef.current!);
                     const worldX = (x - transform.x) / transform.k;
                     const worldY = (y - transform.y) / transform.k;
-                    setTempLine(prev => {
-                        if (prev) {
-                            return { ...prev, x2: worldX, y2: worldY };
-                        }
-                        const fromNode = d3Nodes.find(n => n.id === draggingFrom);
-                        if (fromNode && fromNode.x !== undefined && fromNode.y !== undefined) {
-                            return { x1: fromNode.x, y1: fromNode.y, x2: worldX, y2: worldY };
-                        }
-                        return null;
-                    });
+                    const fromNode = d3Nodes.find(n => n.id === draggingFromRef.current);
+                    if (fromNode && fromNode.x !== undefined && fromNode.y !== undefined) {
+                        tempLineRef.current = { x1: fromNode.x, y1: fromNode.y, x2: worldX, y2: worldY };
+                        updateTempLine();
+                    }
                 }
             });
 
             svg.on('click.temp', function(event) {
                 // 点击空白处取消创建关系
                 const target = event.target as Element;
-                if (draggingFrom && !target.closest('.node-group') && !target.closest('.node-circle')) {
-                    setDraggingFrom(null);
-                    setTempLine(null);
+                if (draggingFromRef.current && !target.closest('.node-group') && !target.closest('.node-circle')) {
+                    draggingFromRef.current = null;
+                    tempLineRef.current = null;
+                    updateTempLine();
                 }
             });
         }
+
+        // 点击空白区域清除选中状态
+        svg.on('click.deselect', function(event) {
+            const target = event.target as Element;
+            // 如果点击的是画布背景（不是节点、边或标签）
+            if (target === svgRef.current || target.tagName === 'svg' || (target.tagName === 'g' && target.classList.contains('graph-container'))) {
+                const [x, y] = d3.pointer(event, svgRef.current);
+                const rect = svgRef.current?.getBoundingClientRect();
+                if (rect) {
+                    const clickedElement = document.elementFromPoint(x + rect.left, y + rect.top);
+                    const isBackground = clickedElement &&
+                        !clickedElement.closest('.node-group') &&
+                        !clickedElement.closest('.link') &&
+                        !clickedElement.closest('.link-label') &&
+                        !clickedElement.closest('.graph-controls') &&
+                        !clickedElement.closest('.node-details-panel') &&
+                        !clickedElement.closest('.graph-legend') &&
+                        !clickedElement.closest('.graph-help');
+                    if (isBackground) onDeselect?.();
+                }
+            }
+        });
 
         // 在 tick 中更新临时线条
         function tickedWithTemp() {
@@ -494,53 +530,63 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
             svg.on('dblclick.create-node', null);
             svg.on('mousemove.temp', null);
             svg.on('click.temp', null);
+            svg.on('click.deselect', null);
         };
-    }, [nodes, relations, selectedNodeId, groupMode, editable, draggingFrom, tempLine, onNodeClick, onNodeUpdate, onNodeCreate, onRelationCreate]);
-
-    const handleResetZoom = () => {
-        const svg = d3.select(svgRef.current);
-        svg.transition()
-            .duration(750)
-            .call(d3.zoom<SVGSVGElement, unknown>().transform as any, d3.zoomIdentity);
-    };
-
-    const handleGroupSelected = () => {
-        if (selectedNodes.size < 2) {
-            alert('请至少选择两个节点进行分组');
-            return;
-        }
-        // 这里可以实现分组逻辑，例如创建一个虚拟的分组节点
-        console.log('分组节点:', Array.from(selectedNodes));
-        setSelectedNodes(new Set());
-        setGroupMode(false);
-    };
+    }, [nodes, relations, selectedNodeId, selectedRelationId, editable, relationType, relationDirected, relationWeight, onRelationTypeChange, onRelationDirectedChange, onRelationWeightChange, onNodeClick, onRelationClick, onDeselect, onNodeUpdate, onNodeCreate, onRelationCreate]);
 
     return (
         <div className="graph-canvas-container">
             <div className="graph-controls">
-                <button
-                    className={`control-btn ${groupMode ? 'active' : ''}`}
-                    onClick={() => setGroupMode(!groupMode)}
-                    title="分组模式"
-                >
-                    {groupMode ? '✓ 分组模式' : '分组模式'}
-                </button>
-                {groupMode && selectedNodes.size > 0 && (
-                    <button
-                        className="control-btn"
-                        onClick={handleGroupSelected}
-                        title="创建分组"
-                    >
-                        创建分组 ({selectedNodes.size})
-                    </button>
+                {editable && onRelationCreate && (
+                    <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <label style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>关系类型</label>
+                            <select
+                                value={relationType}
+                                onChange={(e) => onRelationTypeChange?.(e.target.value as 'prerequisite' | 'related' | 'part_of')}
+                                style={{ 
+                                    padding: '4px 8px', 
+                                    borderRadius: 6, 
+                                    border: '1px solid #d6d9e1',
+                                    fontSize: '12px',
+                                    background: 'white',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option value="prerequisite">前置</option>
+                                <option value="related">相关</option>
+                                <option value="part_of">包含</option>
+                            </select>
+                        </div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '12px', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                checked={relationDirected}
+                                onChange={(e) => onRelationDirectedChange?.(e.target.checked)}
+                                style={{ cursor: 'pointer' }}
+                            />
+                            <span style={{ color: '#64748b' }}>有向</span>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: 11, color: '#64748b' }}>权重</span>
+                            <input
+                                type="number"
+                                min={0}
+                                max={1}
+                                step={0.1}
+                                value={relationWeight}
+                                onChange={(e) => onRelationWeightChange?.(Math.max(0, Math.min(1, Number(e.target.value) || 0)))}
+                                style={{ 
+                                    width: 50, 
+                                    padding: '4px 6px', 
+                                    borderRadius: 6, 
+                                    border: '1px solid #d6d9e1',
+                                    fontSize: '12px'
+                                }}
+                            />
+                        </div>
+                    </>
                 )}
-                <button
-                    className="control-btn"
-                    onClick={handleResetZoom}
-                    title="重置视图"
-                >
-                    🔄 重置视图
-                </button>
                 <div className="zoom-info">
                     缩放: {(transform.k * 100).toFixed(0)}%
                 </div>
