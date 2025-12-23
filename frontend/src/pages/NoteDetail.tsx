@@ -13,7 +13,8 @@ import '../styles/Course.css';
 const NoteDetail: React.FC = () => {
     const { noteId } = useParams<{ noteId: string }>();
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { user, isAdmin } = useAuth();
     const { success, error: showError } = useToast();
 
@@ -23,20 +24,20 @@ const NoteDetail: React.FC = () => {
     const [deleteConfirm, setDeleteConfirm] = useState(false);
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         if (noteId) {
             fetchNote();
         }
-    }, [selectedCourse, noteId, navigate]);
+    }, [course, noteId, navigate]);
 
     const fetchNote = async () => {
-        if (!selectedCourse || !noteId) return;
+        if (!course || !noteId) return;
         try {
             setLoading(true);
-            const response = await noteAPI.getNote(selectedCourse.id, noteId);
+            const response = await noteAPI.getNote(course.id, noteId);
             setNote(response.data);
         } catch (err: any) {
             const errorMsg = '获取笔记失败: ' + (err.response?.data?.message || err.message);
@@ -49,9 +50,9 @@ const NoteDetail: React.FC = () => {
 
     const handleDelete = async () => {
         if (!note) return;
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
-            await noteAPI.deleteNote(selectedCourse.id, note.id);
+            await noteAPI.deleteNote(course.id, note.id);
             success('笔记删除成功');
             navigate('/notes');
         } catch (err: any) {
@@ -77,7 +78,7 @@ const NoteDetail: React.FC = () => {
         });
     };
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>

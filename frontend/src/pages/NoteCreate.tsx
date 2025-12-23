@@ -8,7 +8,8 @@ import '../styles/Course.css';
 
 const NoteCreate: React.FC = () => {
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { success, error: showError } = useToast();
 
     const [saving, setSaving] = useState(false);
@@ -22,20 +23,20 @@ const NoteCreate: React.FC = () => {
     });
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
         }
-    }, [selectedCourse, navigate]);
+    }, [course, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedCourse) return;
+        if (!course) return;
 
         setSaving(true);
         setError('');
 
         try {
-            const response = await noteAPI.createNote(selectedCourse.id, noteForm);
+            const response = await noteAPI.createNote(course.id, noteForm);
             success('笔记创建成功');
             navigate(`/notes/${response.data.id}`);
         } catch (err: any) {

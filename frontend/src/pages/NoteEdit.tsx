@@ -11,7 +11,8 @@ import '../styles/Course.css';
 const NoteEdit: React.FC = () => {
     const { noteId } = useParams<{ noteId: string }>();
     const navigate = useNavigate();
-    const { selectedCourse } = useCourse();
+    const { selectedCourse, currentStudyingCourse } = useCourse();
+    const course = selectedCourse || currentStudyingCourse;
     const { user, isAdmin } = useAuth();
     const { success, error: showError } = useToast();
 
@@ -28,20 +29,20 @@ const NoteEdit: React.FC = () => {
     });
 
     useEffect(() => {
-        if (!selectedCourse) {
+        if (!course) {
             navigate('/courses');
             return;
         }
         if (noteId) {
             fetchNote();
         }
-    }, [selectedCourse, noteId, navigate]);
+    }, [course, noteId, navigate]);
 
     const fetchNote = async () => {
-        if (!selectedCourse || !noteId) return;
+        if (!course || !noteId) return;
         try {
             setLoading(true);
-            const response = await noteAPI.getNote(selectedCourse.id, noteId);
+            const response = await noteAPI.getNote(course.id, noteId);
             const noteData = response.data;
             setNote(noteData);
             setNoteForm({
@@ -66,9 +67,9 @@ const NoteEdit: React.FC = () => {
         setSaving(true);
         setError('');
 
-        if (!selectedCourse) return;
+        if (!course) return;
         try {
-            await noteAPI.updateNote(selectedCourse.id, note.id, noteForm);
+            await noteAPI.updateNote(course.id, note.id, noteForm);
             success('笔记更新成功');
             navigate(`/notes/${noteId}`);
         } catch (err: any) {
@@ -84,7 +85,7 @@ const NoteEdit: React.FC = () => {
         return isAdmin || note?.authorId === user?.id;
     };
 
-    if (!selectedCourse) {
+    if (!course) {
         return (
             <div className="container">
                 <div className="error-message">请先选择一个课程</div>
