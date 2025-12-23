@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface NoteRepository extends JpaRepository<Note, String> {
     List<Note> findByCourseId(Long courseId);
     Optional<Note> findByCourseIdAndId(Long courseId, String id);
+    long countByCourseIdAndAuthorId(Long courseId, Long authorId);
 }

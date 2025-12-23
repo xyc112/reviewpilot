@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class QuizService {
     private final QuizRepository quizRepository;
     private final CourseService courseService;
+    private final ProgressService progressService;
 
     private void ensureCourseExists(Long courseId) {
         courseService.getCourse(courseId);
@@ -242,6 +243,9 @@ public class QuizService {
 
         // 确保总分不超过maxScore（理论上应该正好等于maxScore）
         int computed = Math.min(totalScore, maxScore);
+
+        // 保存进度记录
+        progressService.saveQuizProgress(currentUser.getId(), courseId, quizId, computed, maxScore);
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("quizId", quizId);

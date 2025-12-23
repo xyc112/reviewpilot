@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Network, FileText, ClipboardList, Menu, X } from 'lucide-react';
+import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp } from 'lucide-react';
 import { useCourse } from '../../context/CourseContext';
 import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
@@ -45,6 +45,13 @@ const Sidebar: React.FC = () => {
             label: '课程',
             icon: BookOpen,
             path: '/courses',
+            requiresCourse: false,
+        },
+        {
+            id: 'progress',
+            label: '学习进度',
+            icon: TrendingUp,
+            path: '/progress',
             requiresCourse: false,
         },
         {
