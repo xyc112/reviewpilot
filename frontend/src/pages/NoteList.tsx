@@ -135,7 +135,10 @@ const NoteList: React.FC = () => {
             {/* 搜索和过滤栏 */}
             <div className="search-filter-bar">
                 <div className="search-box">
-                    <Search size={20} className="search-icon" />
+                    <div className="input-icon-wrapper">
+                        <Search size={20} className="input-icon" />
+                        <div className="input-icon-divider"></div>
+                    </div>
                     <input
                         type="text"
                         placeholder="搜索笔记标题或内容..."

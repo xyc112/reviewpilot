@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from './ThemeProvider';
 import { LogOut, User, LayoutDashboard, Moon, Sun } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { useGlobalShortcuts } from '../../hooks/useKeyboardShortcuts';
 import '../../styles/Auth.css';
 import '../../styles/CourseUI.css';
 
@@ -11,6 +12,9 @@ const Layout: React.FC = () => {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
+
+    // 启用全局快捷键
+    useGlobalShortcuts();
 
     const handleLogout = () => {
         logout();
@@ -25,7 +29,7 @@ const Layout: React.FC = () => {
             {/* Main Content Area */}
             <div className="main-content-area">
                 {/* Top Navbar */}
-                <header className="navbar-card">
+                <header className="navbar-card" role="banner">
                     <div className="brand">
                         <LayoutDashboard size={24} strokeWidth={1.5} />
                         <span>ReviewPilot</span>

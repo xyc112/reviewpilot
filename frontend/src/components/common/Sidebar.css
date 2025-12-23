@@ -163,15 +163,75 @@
 }
 
 
+/* 移动端菜单按钮 */
+.mobile-menu-button {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    background: white;
+    border: 1px solid #e7e5e4;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-button:hover {
+    background: #f5f5f4;
+    border-color: #a8a29e;
+}
+
+.mobile-menu-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(168, 162, 158, 0.2);
+}
+
+/* 移动端遮罩层 */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 60;
+    animation: fadeIn 0.3s ease;
+}
+
 /* 响应式 */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .sidebar {
         width: 240px;
         transform: translateX(-100%);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     }
 
     .sidebar.open {
         transform: translateX(0);
     }
+
+    .mobile-menu-button {
+        display: block;
+    }
+
+    .sidebar-overlay {
+        display: block;
+    }
+}
+
+[data-theme='dark'] .mobile-menu-button {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+}
+
+[data-theme='dark'] .mobile-menu-button:hover {
+    background: #374151;
+    border-color: #4b5563;
 }
 

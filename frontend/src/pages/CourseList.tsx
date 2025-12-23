@@ -7,6 +7,8 @@ import { useCourse } from '../context/CourseContext';
 import { Book, Plus, Search, Filter, X, Edit, Trash2, Check } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
+import { SkeletonGrid } from '../components/common/Skeleton';
+import { SearchHighlight } from '../components/common/SearchHighlight';
 import '../styles/CourseUI.css';
 import '../styles/Course.css';
 
@@ -133,7 +135,15 @@ const CourseList: React.FC = () => {
 
     if (loading) return (
         <div className="container">
-            <div className="loading">加载中...</div>
+            <div className="page-header">
+                <div className="header-content">
+                    <div>
+                        <h1>课程列表</h1>
+                        <p className="text-stone-500 mt-2">选择课程以访问知识图谱、笔记和测验</p>
+                    </div>
+                </div>
+            </div>
+            <SkeletonGrid count={6} />
         </div>
     );
 
@@ -180,7 +190,10 @@ const CourseList: React.FC = () => {
             {/* 搜索和过滤栏 */}
             <div className="search-filter-bar">
                 <div className="search-box">
-                    <Search size={20} className="search-icon" />
+                    <div className="input-icon-wrapper">
+                        <Search size={20} className="input-icon" />
+                        <div className="input-icon-divider"></div>
+                    </div>
                     <input
                         type="text"
                         placeholder="搜索课程标题、描述或标签..."
@@ -197,6 +210,9 @@ const CourseList: React.FC = () => {
                             <X size={16} />
                         </button>
                     )}
+                    <span className="search-shortcut-hint" title="快捷键">
+                        <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    </span>
                 </div>
 
                 <div className="filter-group">
@@ -277,17 +293,26 @@ const CourseList: React.FC = () => {
                     {filteredCourses.map((course) => (
                         <div key={course.id} className="course-card">
                             <div className="course-card-header">
-                                <h3 className="course-title">{course.title}</h3>
+                                <h3 className="course-title">
+                                    <SearchHighlight text={course.title} searchQuery={searchQuery} />
+                                </h3>
                                 <span className={getLevelClass(course.level)}>
                                     {getLevelText(course.level)}
                                 </span>
                             </div>
-                            <p className="course-description">{course.description || '暂无描述'}</p>
+                            <p className="course-description">
+                                <SearchHighlight 
+                                    text={course.description || '暂无描述'} 
+                                    searchQuery={searchQuery} 
+                                />
+                            </p>
 
                             {course.tags.length > 0 && (
                                 <div className="course-tags">
                                     {course.tags.map(tag => (
-                                        <span key={tag} className="tag">{tag}</span>
+                                        <span key={tag} className="tag">
+                                            <SearchHighlight text={tag} searchQuery={searchQuery} />
+                                        </span>
                                     ))}
                                 </div>
                             )}

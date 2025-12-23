@@ -40,6 +40,13 @@ const GraphView: React.FC = () => {
         description: '',
     });
 
+    const [editingNode, setEditingNode] = useState<Node | null>(null);
+    const [editNodeForm, setEditNodeForm] = useState({
+        label: '',
+        type: '',
+        description: '',
+    });
+
     const [relationForm, setRelationForm] = useState({
         from: '',
         to: '',
@@ -64,8 +71,27 @@ const GraphView: React.FC = () => {
                 graphAPI.getNodes(selectedCourse.id),
                 graphAPI.getRelations(selectedCourse.id)
             ]);
-            setNodes(nodesResponse.data);
-            setRelations(relationsResponse.data);
+            const fetchedNodes = nodesResponse.data;
+            const fetchedRelations = relationsResponse.data;
+            setNodes(fetchedNodes);
+            setRelations(fetchedRelations);
+            
+            // 更新正在编辑的节点和选中的节点
+            setEditingNode(prev => {
+                if (prev) {
+                    const updatedNode = fetchedNodes.find(n => n.id === prev.id);
+                    return updatedNode || prev;
+                }
+                return prev;
+            });
+            
+            setSelectedNode(prev => {
+                if (prev) {
+                    const updatedNode = fetchedNodes.find(n => n.id === prev.id);
+                    return updatedNode || prev;
+                }
+                return prev;
+            });
         } catch (err: any) {
             setError('获取知识图谱数据失败: ' + (err.response?.data?.message || err.message));
             console.error('Error fetching graph data:', err);
@@ -78,17 +104,22 @@ const GraphView: React.FC = () => {
         e.preventDefault();
         try {
             const nodeData: Partial<Node> = {
-                label: nodeForm.label,
+                label: nodeForm.label || '新节点',
             };
             if (nodeForm.type) nodeData.type = nodeForm.type;
             if (nodeForm.description) nodeData.description = nodeForm.description;
 
             if (!selectedCourse) return;
-            await graphAPI.createNode(selectedCourse.id, nodeData);
+            const response = await graphAPI.createNode(selectedCourse.id, nodeData);
             setShowNodeForm(false);
             setNodeForm({ label: '', type: '', description: '' });
             success('节点创建成功');
             fetchGraphData();
+            // 自动选中新创建的节点
+            if (response.data && response.data.id) {
+                const newNode = nodes.find(n => n.id === response.data.id) || response.data;
+                setSelectedNode(newNode);
+            }
         } catch (err: any) {
             const errorMsg = '创建节点失败: ' + (err.response?.data?.message || err.message);
             setError(errorMsg);
@@ -96,8 +127,72 @@ const GraphView: React.FC = () => {
         }
     };
 
-    const handleCreateRelation = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleCreateNodeByPosition = async (position: { x: number; y: number }) => {
+        // 直接创建空节点，不弹出输入框
+        try {
+            const nodeData: Partial<Node> = {
+                label: '新节点',
+                x: position.x,
+                y: position.y,
+            };
+
+            if (!selectedCourse) return;
+            const response = await graphAPI.createNode(selectedCourse.id, nodeData);
+            success('节点创建成功，可以在右侧面板编辑');
+            
+            // 先刷新数据
+            await fetchGraphData();
+            
+            // 自动选中新创建的节点
+            if (response.data && response.data.id) {
+                // 等待数据刷新后再选中
+                setTimeout(() => {
+                    setNodes(currentNodes => {
+                        const newNode = currentNodes.find(n => n.id === response.data.id);
+                        if (newNode) {
+                            setSelectedNode(newNode);
+                        }
+                        return currentNodes;
+                    });
+                }, 100);
+            }
+        } catch (err: any) {
+            const errorMsg = '创建节点失败: ' + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
+        }
+    };
+
+    const handleCreateRelation = async (e?: React.FormEvent, from?: string, to?: string) => {
+        if (e) e.preventDefault();
+        
+        // 如果是拖拽创建
+        if (from && to) {
+            const type = prompt('请输入关系类型（prerequisite/related/part_of，默认: related）:') || 'related';
+            const directed = confirm('是否为有向关系？') || true;
+            const weightInput = prompt('请输入权重（0-1，默认: 0.5）:') || '0.5';
+            const weight = parseFloat(weightInput) || 0.5;
+            
+            try {
+                if (!selectedCourse) return;
+                await graphAPI.createRelation(selectedCourse.id, {
+                    from,
+                    to,
+                    type: type as any,
+                    directed,
+                    weight: Math.max(0, Math.min(1, weight)),
+                });
+                success('关系创建成功');
+                fetchGraphData();
+            } catch (err: any) {
+                const errorMsg = '创建关系失败: ' + (err.response?.data?.message || err.message);
+                setError(errorMsg);
+                showError(errorMsg);
+            }
+            return;
+        }
+        
+        // 表单创建方式
         try {
             if (!selectedCourse) return;
             await graphAPI.createRelation(selectedCourse.id, relationForm);
@@ -110,6 +205,10 @@ const GraphView: React.FC = () => {
             setError(errorMsg);
             showError(errorMsg);
         }
+    };
+
+    const handleCreateRelationByNodes = async (from: string, to: string) => {
+        await handleCreateRelation(undefined, from, to);
     };
 
     const handleDeleteNode = (nodeId: string) => {
@@ -160,6 +259,47 @@ const GraphView: React.FC = () => {
         return types[type] || type;
     };
 
+    const handleStartEditNode = (node: Node) => {
+        setEditingNode(node);
+        setEditNodeForm({
+            label: node.label || '',
+            type: node.type || '',
+            description: node.description || '',
+        });
+    };
+
+    const handleCancelEditNode = () => {
+        setEditingNode(null);
+        setEditNodeForm({ label: '', type: '', description: '' });
+    };
+
+    const handleSaveEditNode = async () => {
+        if (!editingNode || !selectedCourse) return;
+        
+        try {
+            const nodeData: Partial<Node> = {
+                label: editNodeForm.label.trim() || '新节点',
+            };
+            if (editNodeForm.type) nodeData.type = editNodeForm.type;
+            if (editNodeForm.description) nodeData.description = editNodeForm.description;
+
+            await graphAPI.updateNode(selectedCourse.id, editingNode.id!, nodeData);
+            success('节点更新成功');
+            setEditingNode(null);
+            setEditNodeForm({ label: '', type: '', description: '' });
+            fetchGraphData();
+            // 更新选中的节点
+            if (selectedNode?.id === editingNode.id) {
+                const updatedNode = { ...selectedNode, ...nodeData };
+                setSelectedNode(updatedNode);
+            }
+        } catch (err: any) {
+            const errorMsg = '更新节点失败: ' + (err.response?.data?.message || err.message);
+            setError(errorMsg);
+            showError(errorMsg);
+        }
+    };
+
     if (!selectedCourse) {
         return (
             <div className="container">
@@ -202,12 +342,14 @@ const GraphView: React.FC = () => {
                             <button
                                 onClick={() => setShowNodeForm(true)}
                                 className="btn btn-primary btn-small"
+                                title="使用表单创建节点（或双击画布）"
                             >
                                 添加节点
                             </button>
                             <button
                                 onClick={() => setShowRelationForm(true)}
                                 className="btn btn-primary btn-small"
+                                title="使用表单创建关系（或点击两个节点）"
                             >
                                 添加关系
                             </button>
@@ -405,6 +547,8 @@ const GraphView: React.FC = () => {
                             nodes={nodes}
                             relations={relations}
                             onNodeClick={setSelectedNode}
+                            onNodeCreate={isAdmin ? handleCreateNodeByPosition : undefined}
+                            onRelationCreate={isAdmin ? handleCreateRelationByNodes : undefined}
                             selectedNodeId={selectedNode?.id}
                             editable={isAdmin}
                         />
@@ -412,23 +556,86 @@ const GraphView: React.FC = () => {
 
                     {selectedNode && (
                         <div className="node-details">
-                            <h3>节点详情</h3>
-                            <div className="detail-item">
-                                <strong>标签:</strong> {selectedNode.label}
+                            <div className="node-details-header">
+                                <h3>节点详情</h3>
+                                {isAdmin && !editingNode && (
+                                    <button
+                                        onClick={() => handleStartEditNode(selectedNode)}
+                                        className="btn btn-primary btn-small"
+                                    >
+                                        编辑
+                                    </button>
+                                )}
                             </div>
-                            {selectedNode.type && (
-                                <div className="detail-item">
-                                    <strong>类型:</strong> {selectedNode.type}
+
+                            {editingNode && editingNode.id === selectedNode.id ? (
+                                <div className="node-edit-form">
+                                    <div className="form-group">
+                                        <label className="form-label">节点标签:</label>
+                                        <input
+                                            type="text"
+                                            value={editNodeForm.label}
+                                            onChange={(e) => setEditNodeForm({ ...editNodeForm, label: e.target.value })}
+                                            className="form-input"
+                                            placeholder="输入节点名称"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">节点类型:</label>
+                                        <input
+                                            type="text"
+                                            value={editNodeForm.type}
+                                            onChange={(e) => setEditNodeForm({ ...editNodeForm, type: e.target.value })}
+                                            className="form-input"
+                                            placeholder="例如: concept, topic, skill"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">描述:</label>
+                                        <textarea
+                                            value={editNodeForm.description}
+                                            onChange={(e) => setEditNodeForm({ ...editNodeForm, description: e.target.value })}
+                                            className="form-input"
+                                            rows={3}
+                                            placeholder="输入节点描述（可选）"
+                                        />
+                                    </div>
+                                    <div className="form-actions">
+                                        <button
+                                            onClick={handleSaveEditNode}
+                                            className="btn btn-primary"
+                                        >
+                                            保存
+                                        </button>
+                                        <button
+                                            onClick={handleCancelEditNode}
+                                            className="btn btn-outline"
+                                        >
+                                            取消
+                                        </button>
+                                    </div>
                                 </div>
+                            ) : (
+                                <>
+                                    <div className="detail-item">
+                                        <strong>标签:</strong> {selectedNode.label || '未命名节点'}
+                                    </div>
+                                    {selectedNode.type && (
+                                        <div className="detail-item">
+                                            <strong>类型:</strong> {selectedNode.type}
+                                        </div>
+                                    )}
+                                    {selectedNode.description && (
+                                        <div className="detail-item">
+                                            <strong>描述:</strong> {selectedNode.description}
+                                        </div>
+                                    )}
+                                    <div className="detail-item">
+                                        <strong>ID:</strong> {selectedNode.id}
+                                    </div>
+                                </>
                             )}
-                            {selectedNode.description && (
-                                <div className="detail-item">
-                                    <strong>描述:</strong> {selectedNode.description}
-                                </div>
-                            )}
-                            <div className="detail-item">
-                                <strong>ID:</strong> {selectedNode.id}
-                            </div>
 
                             {/* 显示相关关系 */}
                             <div className="node-relations">
