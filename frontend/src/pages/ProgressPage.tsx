@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { OverallStats, CourseProgress } from '../types';
 import { progressAPI, courseAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { BookOpen, CheckCircle2, FileText, Trophy, Target, Star } from 'lucide-react';
 import { SkeletonGrid } from '../components/common/Skeleton';
 import { CircularProgressChart, ScoreDistributionChart } from '../components/common/ProgressChart';
@@ -11,6 +12,8 @@ import '../styles/CourseUI.css';
 
 const ProgressPage: React.FC = () => {
     const { currentStudyingCourse } = useCourse();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
     const [courseProgressList, setCourseProgressList] = useState<CourseProgress[]>([]);
     const [courses, setCourses] = useState<Map<number, { title: string; level: string }>>(new Map());
@@ -107,8 +110,8 @@ const ProgressPage: React.FC = () => {
             }}>
                 {/* 顶部：标题 */}
                 <div style={{ marginBottom: '0.625rem', flexShrink: 0 }}>
-                    <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>当前学习课程进度</h2>
-                    <p style={{ margin: '0.125rem 0 0 0', color: '#78716c', fontSize: '0.8125rem' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>当前学习课程进度</h2>
+                    <p style={{ margin: '0.125rem 0 0 0', color: isDark ? '#9ca3af' : '#78716c', fontSize: '0.8125rem' }}>
                         显示您正在学习课程的详细进度
                     </p>
                 </div>
@@ -151,7 +154,7 @@ const ProgressPage: React.FC = () => {
                     <div style={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: '0.625rem', minHeight: 0 }}>
                         {/* 完成度圆形图 */}
                         <div className="content-section" style={{ flex: '0 0 auto', padding: '0.875rem' }}>
-                            <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600 }}>课程完成度</h3>
+                            <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>课程完成度</h3>
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <CircularProgressChart
                                     completed={progressData.completedQuizzes}
@@ -164,7 +167,7 @@ const ProgressPage: React.FC = () => {
                         {/* 分数分布图 */}
                         {progressData.quizProgressList.length > 0 ? (
                             <div className="content-section" style={{ flex: 1, padding: '0.875rem', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                                <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600 }}>分数分布</h3>
+                                <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>分数分布</h3>
                                 <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center' }}>
                                     {progressData.quizProgressList.filter(qp => qp.score !== null).length > 0 ? (
                                         <ScoreDistributionChart
@@ -173,17 +176,17 @@ const ProgressPage: React.FC = () => {
                                                 .map(qp => ({ score: qp.score!, count: 1 }))}
                                         />
                                     ) : (
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', color: '#78716c' }}>
-                                            <p style={{ margin: 0, fontSize: '0.8125rem' }}>暂无分数数据</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', color: isDark ? '#9ca3af' : '#78716c' }}>
+                                            <p style={{ margin: 0, fontSize: '0.8125rem', color: isDark ? '#9ca3af' : '#78716c' }}>暂无分数数据</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         ) : (
                             <div className="content-section" style={{ flex: 1, padding: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
-                                <div style={{ textAlign: 'center', color: '#78716c' }}>
-                                    <Target size={28} style={{ margin: '0 auto 0.5rem' }} />
-                                    <p style={{ margin: 0, fontSize: '0.8125rem' }}>暂无测验记录</p>
+                                <div style={{ textAlign: 'center', color: isDark ? '#9ca3af' : '#78716c' }}>
+                                    <Target size={28} style={{ margin: '0 auto 0.5rem', color: isDark ? '#9ca3af' : '#78716c' }} />
+                                    <p style={{ margin: 0, fontSize: '0.8125rem', color: isDark ? '#9ca3af' : '#78716c' }}>暂无测验记录</p>
                                 </div>
                             </div>
                         )}
@@ -193,19 +196,19 @@ const ProgressPage: React.FC = () => {
                     <div style={{ gridColumn: 'span 3', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                         {progressData.quizProgressList.length > 0 ? (
                             <div className="content-section" style={{ flex: 1, padding: '0.875rem', overflowY: 'auto', minHeight: 0 }}>
-                                <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600 }}>测验成绩</h3>
+                                <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>测验成绩</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     {progressData.quizProgressList.map((quizProgress) => (
                                         <div
                                             key={quizProgress.quizId}
                                             style={{
                                                 padding: '0.625rem',
-                                                backgroundColor: '#fafaf9',
+                                                backgroundColor: isDark ? '#1f2937' : '#fafaf9',
                                                 borderRadius: '0.5rem',
                                                 border: `2px solid ${getScoreColor(quizProgress.score)}`,
                                             }}
                                         >
-                                            <div style={{ fontSize: '0.8125rem', fontWeight: 500, marginBottom: '0.25rem' }}>
+                                            <div style={{ fontSize: '0.8125rem', fontWeight: 500, marginBottom: '0.25rem', color: isDark ? '#f9fafb' : '#1c1917' }}>
                                                 测验 {quizProgress.quizId}
                                             </div>
                                             <div style={{ 
@@ -221,9 +224,9 @@ const ProgressPage: React.FC = () => {
                             </div>
                         ) : (
                             <div className="content-section" style={{ flex: 1, padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <div style={{ textAlign: 'center', color: '#78716c' }}>
-                                    <Target size={28} style={{ margin: '0 auto 0.5rem' }} />
-                                    <p style={{ margin: 0, fontSize: '0.8125rem' }}>暂无测验记录</p>
+                                <div style={{ textAlign: 'center', color: isDark ? '#9ca3af' : '#78716c' }}>
+                                    <Target size={28} style={{ margin: '0 auto 0.5rem', color: isDark ? '#9ca3af' : '#78716c' }} />
+                                    <p style={{ margin: 0, fontSize: '0.8125rem', color: isDark ? '#9ca3af' : '#78716c' }}>暂无测验记录</p>
                                 </div>
                             </div>
                         )}
@@ -242,8 +245,8 @@ const ProgressPage: React.FC = () => {
         }}>
             {/* 顶部标题 */}
             <div style={{ marginBottom: '0.625rem', flexShrink: 0 }}>
-                <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>学习进度总览</h2>
-                <p style={{ margin: '0.125rem 0 0 0', color: '#78716c', fontSize: '0.8125rem' }}>
+                <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>学习进度总览</h2>
+                <p style={{ margin: '0.125rem 0 0 0', color: isDark ? '#9ca3af' : '#78716c', fontSize: '0.8125rem' }}>
                     显示您在学习列表中所有课程的整体进度
                 </p>
             </div>
@@ -301,7 +304,7 @@ const ProgressPage: React.FC = () => {
                 <div style={{ gridColumn: 'span 4', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
                     {overallStats && overallStats.totalQuizzes > 0 ? (
                         <div className="content-section" style={{ padding: '1rem', textAlign: 'center', width: '100%' }}>
-                            <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9375rem', fontWeight: 600 }}>整体完成度</h3>
+                            <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9375rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>整体完成度</h3>
                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                 <CircularProgressChart
                                     completed={overallStats.completedQuizzes}
@@ -312,8 +315,8 @@ const ProgressPage: React.FC = () => {
                         </div>
                     ) : (
                         <div className="content-section" style={{ padding: '1rem', textAlign: 'center', width: '100%' }}>
-                            <Target size={36} style={{ margin: '0 auto 0.625rem', color: '#78716c' }} />
-                            <p style={{ color: '#78716c', margin: '0 0 0.625rem 0', fontSize: '0.8125rem' }}>暂无学习记录</p>
+                            <Target size={36} style={{ margin: '0 auto 0.625rem', color: isDark ? '#9ca3af' : '#78716c' }} />
+                            <p style={{ color: isDark ? '#9ca3af' : '#78716c', margin: '0 0 0.625rem 0', fontSize: '0.8125rem' }}>暂无学习记录</p>
                             <Link to="/courses" className="btn btn-primary btn-small">
                                 浏览课程
                             </Link>
@@ -325,7 +328,7 @@ const ProgressPage: React.FC = () => {
                 <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                     {courseProgressList.length > 0 ? (
                         <div className="content-section" style={{ flex: 1, padding: '0.875rem', overflowY: 'auto', minHeight: 0 }}>
-                            <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600 }}>课程进度</h3>
+                            <h3 style={{ margin: '0 0 0.625rem 0', fontSize: '0.875rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>课程进度</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 {courseProgressList.map((progress) => {
                                     const courseInfo = courses.get(progress.courseId);
@@ -349,9 +352,9 @@ const ProgressPage: React.FC = () => {
                         </div>
                     ) : (
                         <div className="content-section" style={{ flex: 1, padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{ textAlign: 'center', color: '#78716c' }}>
-                                <Target size={28} style={{ margin: '0 auto 0.5rem' }} />
-                                <p style={{ margin: 0, fontSize: '0.8125rem' }}>暂无课程进度</p>
+                            <div style={{ textAlign: 'center', color: isDark ? '#9ca3af' : '#78716c' }}>
+                                <Target size={28} style={{ margin: '0 auto 0.5rem', color: isDark ? '#9ca3af' : '#78716c' }} />
+                                <p style={{ margin: 0, fontSize: '0.8125rem', color: isDark ? '#9ca3af' : '#78716c' }}>暂无课程进度</p>
                             </div>
                         </div>
                     )}
@@ -370,6 +373,8 @@ const CompactStatCard: React.FC<{
     color: string;
     large?: boolean;
 }> = ({ icon, title, value, subtitle, color, large = false }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div className="content-section" style={{
             display: 'flex',
@@ -381,15 +386,15 @@ const CompactStatCard: React.FC<{
                 <div style={{ color, display: 'flex', alignItems: 'center' }}>
                     {icon}
                 </div>
-                <h3 style={{ margin: 0, fontSize: large ? '0.875rem' : '0.75rem', fontWeight: 500, color: '#78716c' }}>
+                <h3 style={{ margin: 0, fontSize: large ? '0.875rem' : '0.75rem', fontWeight: 500, color: isDark ? '#9ca3af' : '#78716c' }}>
                     {title}
                 </h3>
             </div>
             <div>
-                <div style={{ fontSize: large ? '1.625rem' : '1.25rem', fontWeight: 700, color: '#1c1917', lineHeight: 1.2 }}>
+                <div style={{ fontSize: large ? '1.625rem' : '1.25rem', fontWeight: 700, color: isDark ? '#f9fafb' : '#1c1917', lineHeight: 1.2 }}>
                     {value}
                 </div>
-                <div style={{ fontSize: '0.625rem', color: '#78716c', marginTop: '0.25rem' }}>
+                <div style={{ fontSize: '0.625rem', color: isDark ? '#9ca3af' : '#78716c', marginTop: '0.25rem' }}>
                     {subtitle}
                 </div>
             </div>
@@ -408,19 +413,21 @@ const CompactCourseCard: React.FC<{
     getLevelText: (level: string) => string;
     getScoreColor: (score: number | null) => string;
 }> = ({ title, level, completed, total, completionRate, averageScore, getLevelText, getScoreColor }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div style={{
             padding: '0.75rem',
-            backgroundColor: '#fafaf9',
+            backgroundColor: isDark ? '#1f2937' : '#fafaf9',
             borderRadius: '0.5rem',
-            border: '1px solid #e7e5e4',
+            border: `1px solid ${isDark ? '#374151' : '#e7e5e4'}`,
         }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#1c1917', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {title}
                     </div>
-                    <div style={{ fontSize: '0.625rem', color: '#78716c' }}>
+                    <div style={{ fontSize: '0.625rem', color: isDark ? '#9ca3af' : '#78716c' }}>
                         {getLevelText(level)} · {completed}/{total} 完成
                     </div>
                 </div>
@@ -439,7 +446,7 @@ const CompactCourseCard: React.FC<{
             <div style={{
                 width: '100%',
                 height: '0.3125rem',
-                backgroundColor: '#f5f5f4',
+                backgroundColor: isDark ? '#374151' : '#f5f5f4',
                 borderRadius: '9999px',
                 overflow: 'hidden',
             }}>

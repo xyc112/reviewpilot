@@ -1331,3 +1331,113 @@
     box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
 }
 
+/* 复习计划和学习进度页面深色模式 */
+[data-theme='dark'] .content-section {
+    background: #1f2937;
+    color: #f9fafb;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .progress-container-fullscreen {
+    background-color: #111827;
+}
+
+[data-theme='dark'] .progress-container-fullscreen h2,
+[data-theme='dark'] .progress-container-fullscreen h3,
+[data-theme='dark'] .progress-container-fullscreen p {
+    color: #f9fafb;
+}
+
+[data-theme='dark'] .progress-container-fullscreen p[style*="color"] {
+    color: #9ca3af !important;
+}
+
+/* 复习计划页面深色模式 - 使用CSS变量和通用选择器 */
+[data-theme='dark'] .container {
+    color: #f9fafb;
+}
+
+/* 覆盖内联样式中的文字颜色 */
+[data-theme='dark'] .container h2,
+[data-theme='dark'] .container h3,
+[data-theme='dark'] .container h4,
+[data-theme='dark'] .container p,
+[data-theme='dark'] .container span,
+[data-theme='dark'] .container div {
+    /* 使用CSS变量来覆盖内联样式，但优先级不够，需要使用更具体的选择器 */
+}
+
+/* 为复习计划和学习进度页面的内联样式添加深色模式支持 */
+[data-theme='dark'] .container button[style*="background"]:not([style*="background: linear-gradient"]) {
+    /* 按钮背景已经在通用样式中处理 */
+}
+
+/* 覆盖内联样式中的背景色 - 使用属性选择器 */
+[data-theme='dark'] div[style*="backgroundColor: '#fafaf9'"],
+[data-theme='dark'] div[style*="background: '#fafaf9'"],
+[data-theme='dark'] div[style*="background: white"],
+[data-theme='dark'] div[style*="background: '#eff6ff'"] {
+    background: #1f2937 !important;
+    background-color: #1f2937 !important;
+}
+
+[data-theme='dark'] div[style*="backgroundColor: '#f5f5f4'"],
+[data-theme='dark'] div[style*="background: '#f5f5f4'"],
+[data-theme='dark'] div[style*="background: '#fafafa'"] {
+    background: #374151 !important;
+    background-color: #374151 !important;
+}
+
+/* 覆盖文字颜色 */
+[data-theme='dark'] div[style*="color: '#1c1917'"],
+[data-theme='dark'] div[style*="color: '#1e293b'"],
+[data-theme='dark'] div[style*="color: '#475569'"],
+[data-theme='dark'] div[style*="color: '#64748b'"],
+[data-theme='dark'] span[style*="color: '#1c1917'"],
+[data-theme='dark'] p[style*="color: '#1c1917'"],
+[data-theme='dark'] h3[style*="color: '#1c1917'"],
+[data-theme='dark'] h4[style*="color: '#1c1917'"] {
+    color: #f9fafb !important;
+}
+
+[data-theme='dark'] div[style*="color: '#78716c'"],
+[data-theme='dark'] span[style*="color: '#78716c'"],
+[data-theme='dark'] p[style*="color: '#78716c'"],
+[data-theme='dark'] h3[style*="color: '#78716c'"],
+[data-theme='dark'] h4[style*="color: '#78716c'"] {
+    color: #9ca3af !important;
+}
+
+/* 覆盖边框颜色 */
+[data-theme='dark'] div[style*="border: '1px solid #e7e5e4'"],
+[data-theme='dark'] div[style*="border: '2px solid #e7e5e4'"],
+[data-theme='dark'] div[style*="borderColor: '#e7e5e4'"],
+[data-theme='dark'] button[style*="border: '1px solid #e7e5e4'"],
+[data-theme='dark'] button[style*="border: '2px solid #e7e5e4'"] {
+    border-color: #374151 !important;
+}
+
+[data-theme='dark'] button[style*="border: '2px solid #1c1917'"] {
+    border-color: #6b7280 !important;
+}
+
+/* 覆盖按钮背景 */
+[data-theme='dark'] button[style*="background: white"],
+[data-theme='dark'] button[style*="background: '#eff6ff'"],
+[data-theme='dark'] button[style*="background: '#fafafa'"] {
+    background: #1f2937 !important;
+}
+
+[data-theme='dark'] button[style*="background: '#f5f5f4'"] {
+    background: #374151 !important;
+}
+
+/* 覆盖按钮文字颜色 */
+[data-theme='dark'] button[style*="color: '#1c1917'"] {
+    color: #f9fafb !important;
+}
+
+[data-theme='dark'] button[style*="color: '#3b82f6'"] {
+    color: #60a5fa !important;
+}
+

@@ -212,3 +212,7 @@
     border-bottom-color: #374151;
 }
 
+[data-theme='dark'] .layout-container {
+    background-color: #111827;
+}
+

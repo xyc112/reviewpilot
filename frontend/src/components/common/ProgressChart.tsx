@@ -1,5 +1,6 @@
 import React from 'react';
 import * as d3 from 'd3';
+import { useTheme } from './ThemeProvider';
 
 interface ProgressChartProps {
     completed: number;
@@ -17,10 +18,12 @@ export const CircularProgressChart: React.FC<ProgressChartProps> = ({
     size = 120,
     strokeWidth = 12,
 }) => {
+    const { theme } = useTheme();
     const percentage = total > 0 ? (completed / total) * 100 : 0;
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percentage / 100) * circumference;
+    const isDark = theme === 'dark';
 
     // 根据百分比选择颜色
     const getColor = (percent: number) => {
@@ -39,7 +42,7 @@ export const CircularProgressChart: React.FC<ProgressChartProps> = ({
                     cy={size / 2}
                     r={radius}
                     fill="none"
-                    stroke="#f5f5f4"
+                    stroke={isDark ? '#374151' : '#f5f5f4'}
                     strokeWidth={strokeWidth}
                 />
                 {/* 进度圆 */}
@@ -68,10 +71,10 @@ export const CircularProgressChart: React.FC<ProgressChartProps> = ({
                     textAlign: 'center',
                 }}
             >
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1c1917' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: isDark ? '#f9fafb' : '#1c1917' }}>
                     {Math.round(percentage)}%
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#78716c', marginTop: '0.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: isDark ? '#9ca3af' : '#78716c', marginTop: '0.25rem' }}>
                     {completed}/{total}
                 </div>
             </div>
@@ -88,6 +91,8 @@ interface BarChartProps {
  * 简单的柱状图组件
  */
 export const SimpleBarChart: React.FC<BarChartProps> = ({ data, height = 200 }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const maxValue = Math.max(...data.map(d => d.value), 1);
 
     return (
@@ -123,7 +128,7 @@ export const SimpleBarChart: React.FC<BarChartProps> = ({ data, height = 200 }) 
                             </span>
                         )}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#78716c', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: isDark ? '#9ca3af' : '#78716c', textAlign: 'center' }}>
                         {item.label}
                     </div>
                 </div>

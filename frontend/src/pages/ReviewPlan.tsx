@@ -2,11 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ReviewPlan as ReviewPlanType } from '../types';
 import { reviewPlanAPI } from '../services/api';
 import { useToast } from '../components/common/Toast';
+import { useTheme } from '../components/common/ThemeProvider';
 import { Calendar, Plus, Edit, Trash2, Check, X, Clock, GraduationCap, ChevronLeft, ChevronRight } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import '../styles/CourseUI.css';
 
 const ReviewPlanPage: React.FC = () => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [plans, setPlans] = useState<ReviewPlanType[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -220,7 +223,7 @@ const ReviewPlanPage: React.FC = () => {
     if (loading) {
         return (
         <div className="container">
-            <div style={{ textAlign: 'center', padding: '2rem' }}>加载中...</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: isDark ? '#f9fafb' : '#1c1917' }}>加载中...</div>
         </div>
     );
     }
@@ -249,7 +252,7 @@ const ReviewPlanPage: React.FC = () => {
                             <button onClick={handlePrevMonth} className="btn btn-outline btn-small">
                                 <ChevronLeft size={18} />
                             </button>
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>
+                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                 {currentDate.getFullYear()}年 {monthNames[currentDate.getMonth()]}
                             </h3>
                             <button onClick={handleNextMonth} className="btn btn-outline btn-small">
@@ -279,16 +282,28 @@ const ReviewPlanPage: React.FC = () => {
                                 const planCount = getPlanCountOnDate(date);
                                 const isPast = date < today;
 
+                                const getButtonBg = () => {
+                                    if (isSelected) return isDark ? '#374151' : '#f5f5f4';
+                                    if (isToday) return isDark ? '#1e3a8a' : '#eff6ff';
+                                    return isDark ? '#1f2937' : 'white';
+                                };
+
+                                const getHoverBg = () => {
+                                    if (isSelected) return isDark ? '#374151' : '#f5f5f4';
+                                    if (isToday) return isDark ? '#1e3a8a' : '#eff6ff';
+                                    return isDark ? '#374151' : '#fafafa';
+                                };
+
                                 return (
                                     <button
                                         key={index}
                                         onClick={() => handleDateClick(date)}
                                         style={{
                                             aspectRatio: '1',
-                                            border: isToday ? '2px solid #3b82f6' : isSelected ? '2px solid #1c1917' : '1px solid #e7e5e4',
+                                            border: isToday ? '2px solid #3b82f6' : isSelected ? (isDark ? '2px solid #6b7280' : '2px solid #1c1917') : `1px solid ${isDark ? '#374151' : '#e7e5e4'}`,
                                             borderRadius: '0.5rem',
                                             padding: '0.5rem',
-                                            background: isSelected ? '#f5f5f4' : isToday ? '#eff6ff' : 'white',
+                                            background: getButtonBg(),
                                             cursor: 'pointer',
                                             transition: 'all 0.2s',
                                             display: 'flex',
@@ -300,16 +315,16 @@ const ReviewPlanPage: React.FC = () => {
                                         }}
                                         onMouseEnter={(e) => {
                                             if (!isSelected) {
-                                                e.currentTarget.style.background = '#fafafa';
+                                                e.currentTarget.style.background = getHoverBg();
                                             }
                                         }}
                                         onMouseLeave={(e) => {
                                             if (!isSelected) {
-                                                e.currentTarget.style.background = isToday ? '#eff6ff' : 'white';
+                                                e.currentTarget.style.background = getButtonBg();
                                             }
                                         }}
                                     >
-                                        <span style={{ fontSize: '0.875rem', fontWeight: isToday ? 600 : 400, color: isToday ? '#3b82f6' : '#1c1917' }}>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: isToday ? 600 : 400, color: isToday ? '#3b82f6' : (isDark ? '#f9fafb' : '#1c1917') }}>
                                             {date.getDate()}
                                         </span>
                                         {hasPlans && (
@@ -355,7 +370,7 @@ const ReviewPlanPage: React.FC = () => {
                         <div className="content-section">
                             <div style={{ padding: '1rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>
+                                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                         {editingPlan ? '编辑计划' : '新建计划'}
                                     </h3>
                                     <button
@@ -372,53 +387,62 @@ const ReviewPlanPage: React.FC = () => {
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: isDark ? '#d1d5db' : '#44403c' }}>
                                             标题 *
                                         </label>
                                         <input
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                            className="form-input"
                                             style={{
                                                 width: '100%',
                                                 padding: '0.75rem',
-                                                border: '1px solid #e7e5e4',
+                                                border: `1px solid ${isDark ? '#4b5563' : '#e7e5e4'}`,
                                                 borderRadius: '0.5rem',
                                                 fontSize: '0.875rem',
+                                                background: isDark ? '#374151' : '#ffffff',
+                                                color: isDark ? '#f9fafb' : '#1c1917',
                                             }}
                                             placeholder="输入计划标题"
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: isDark ? '#d1d5db' : '#44403c' }}>
                                             日期 *
                                         </label>
                                         <input
                                             type="date"
                                             value={formData.planDate}
                                             onChange={(e) => setFormData(prev => ({ ...prev, planDate: e.target.value }))}
+                                            className="form-input"
                                             style={{
                                                 width: '100%',
                                                 padding: '0.75rem',
-                                                border: '1px solid #e7e5e4',
+                                                border: `1px solid ${isDark ? '#4b5563' : '#e7e5e4'}`,
                                                 borderRadius: '0.5rem',
                                                 fontSize: '0.875rem',
+                                                background: isDark ? '#374151' : '#ffffff',
+                                                color: isDark ? '#f9fafb' : '#1c1917',
                                             }}
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: isDark ? '#d1d5db' : '#44403c' }}>
                                             类型 *
                                         </label>
                                         <select
                                             value={formData.type}
                                             onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'plan' | 'exam' }))}
+                                            className="form-input"
                                             style={{
                                                 width: '100%',
                                                 padding: '0.75rem',
-                                                border: '1px solid #e7e5e4',
+                                                border: `1px solid ${isDark ? '#4b5563' : '#e7e5e4'}`,
                                                 borderRadius: '0.5rem',
                                                 fontSize: '0.875rem',
+                                                background: isDark ? '#374151' : '#ffffff',
+                                                color: isDark ? '#f9fafb' : '#1c1917',
                                             }}
                                         >
                                             <option value="plan">计划</option>
@@ -426,20 +450,23 @@ const ReviewPlanPage: React.FC = () => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: isDark ? '#d1d5db' : '#44403c' }}>
                                             描述
                                         </label>
                                         <textarea
                                             value={formData.description}
                                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                            className="form-input"
                                             style={{
                                                 width: '100%',
                                                 padding: '0.75rem',
-                                                border: '1px solid #e7e5e4',
+                                                border: `1px solid ${isDark ? '#4b5563' : '#e7e5e4'}`,
                                                 borderRadius: '0.5rem',
                                                 fontSize: '0.875rem',
                                                 minHeight: '80px',
                                                 resize: 'vertical',
+                                                background: isDark ? '#374151' : '#ffffff',
+                                                color: isDark ? '#f9fafb' : '#1c1917',
                                             }}
                                             placeholder="输入计划描述（可选）"
                                         />
@@ -487,11 +514,11 @@ const ReviewPlanPage: React.FC = () => {
                     {selectedDate && !showPlanForm && (
                         <div className="content-section">
                             <div style={{ padding: '1rem' }}>
-                                <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600 }}>
+                                <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                     {selectedDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })} 的计划
                                 </h3>
                                 {selectedDatePlans.length === 0 ? (
-                                    <p style={{ color: '#78716c', fontSize: '0.875rem', margin: 0 }}>该日期暂无计划</p>
+                                    <p style={{ color: isDark ? '#9ca3af' : '#78716c', fontSize: '0.875rem', margin: 0 }}>该日期暂无计划</p>
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                         {selectedDatePlans.map(plan => (
@@ -499,9 +526,9 @@ const ReviewPlanPage: React.FC = () => {
                                                 key={plan.id}
                                                 style={{
                                                     padding: '0.75rem',
-                                                    border: '1px solid #e7e5e4',
+                                                    border: `1px solid ${isDark ? '#374151' : '#e7e5e4'}`,
                                                     borderRadius: '0.5rem',
-                                                    background: plan.completed ? '#f5f5f4' : 'white',
+                                                    background: plan.completed ? (isDark ? '#374151' : '#f5f5f4') : (isDark ? '#1f2937' : 'white'),
                                                     opacity: plan.completed ? 0.7 : 1,
                                                 }}
                                             >
@@ -513,7 +540,7 @@ const ReviewPlanPage: React.FC = () => {
                                                     )}
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                                            <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, textDecoration: plan.completed ? 'line-through' : 'none' }}>
+                                                            <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, textDecoration: plan.completed ? 'line-through' : 'none', color: isDark ? '#f9fafb' : '#1c1917' }}>
                                                                 {plan.title}
                                                             </h4>
                                                             <span style={{
@@ -527,7 +554,7 @@ const ReviewPlanPage: React.FC = () => {
                                                             </span>
                                                         </div>
                                                         {plan.description && (
-                                                            <p style={{ margin: 0, fontSize: '0.8125rem', color: '#78716c' }}>
+                                                            <p style={{ margin: 0, fontSize: '0.8125rem', color: isDark ? '#9ca3af' : '#78716c' }}>
                                                                 {plan.description}
                                                             </p>
                                                         )}
@@ -567,7 +594,7 @@ const ReviewPlanPage: React.FC = () => {
                     {upcomingPlans.length > 0 && (
                         <div className="content-section">
                             <div style={{ padding: '1rem' }}>
-                                <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600 }}>即将到来</h3>
+                                <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600, color: isDark ? '#f9fafb' : '#1c1917' }}>即将到来</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     {upcomingPlans.map(plan => {
                                         const planDate = new Date(plan.planDate);
@@ -582,16 +609,17 @@ const ReviewPlanPage: React.FC = () => {
                                         }}
                                                 style={{
                                                     padding: '0.75rem',
-                                                    border: '1px solid #e7e5e4',
+                                                    border: `1px solid ${isDark ? '#374151' : '#e7e5e4'}`,
                                                     borderRadius: '0.5rem',
                                                     cursor: 'pointer',
                                                     transition: 'all 0.2s',
+                                                    background: isDark ? '#1f2937' : 'white',
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                    e.currentTarget.style.background = '#fafafa';
+                                                    e.currentTarget.style.background = isDark ? '#374151' : '#fafafa';
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                    e.currentTarget.style.background = 'white';
+                                                    e.currentTarget.style.background = isDark ? '#1f2937' : 'white';
                                                 }}
                                             >
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
@@ -600,14 +628,14 @@ const ReviewPlanPage: React.FC = () => {
                                                     ) : (
                                                         <Clock size={16} style={{ color: '#3b82f6' }} />
                                                     )}
-                                                    <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, flex: 1 }}>
+                                                    <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, flex: 1, color: isDark ? '#f9fafb' : '#1c1917' }}>
                                                         {plan.title}
                                                     </h4>
-                                                    <span style={{ fontSize: '0.75rem', color: '#78716c' }}>
+                                                    <span style={{ fontSize: '0.75rem', color: isDark ? '#9ca3af' : '#78716c' }}>
                                                         {daysUntil === 0 ? '今天' : daysUntil === 1 ? '明天' : `${daysUntil}天后`}
                                                     </span>
                                                 </div>
-                                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#78716c' }}>
+                                                <p style={{ margin: 0, fontSize: '0.75rem', color: isDark ? '#9ca3af' : '#78716c' }}>
                                                     {planDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}
                                                 </p>
                                             </div>
