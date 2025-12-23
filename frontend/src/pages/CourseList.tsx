@@ -189,20 +189,12 @@ const CourseList: React.FC = () => {
 
     return (
         <div className="container">
-            {(currentStudyingCourse || isAdmin) && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                    {currentStudyingCourse && (
-                        <div className="selected-course-badge" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
-                            <Star size={16} />
-                            <span>正在学习: {currentStudyingCourse.title}</span>
-                        </div>
-                    )}
-                    {isAdmin && (
-                        <Link to="/courses/new" className="btn btn-primary">
-                            <Plus size={18} />
-                            创建新课程
-                        </Link>
-                    )}
+            {isAdmin && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+                    <Link to="/courses/new" className="btn btn-primary">
+                        <Plus size={18} />
+                        创建新课程
+                    </Link>
                 </div>
             )}
 

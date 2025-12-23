@@ -18,7 +18,6 @@ const NoteList: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private'>('all');
     const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; noteId: string | null }>({
         isOpen: false,
         noteId: null,
@@ -90,12 +89,9 @@ const NoteList: React.FC = () => {
                 note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 note.content.toLowerCase().includes(searchQuery.toLowerCase());
 
-            // 可见性过滤
-            const matchesVisibility = visibilityFilter === 'all' || note.visibility === visibilityFilter;
-
-            return matchesSearch && matchesVisibility;
+            return matchesSearch;
         });
-    }, [notes, searchQuery, visibilityFilter]);
+    }, [notes, searchQuery]);
 
     if (!course) {
         return (
@@ -112,18 +108,6 @@ const NoteList: React.FC = () => {
 
     return (
         <div className="notes-view">
-            {course && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-                    <Link
-                        to="/notes/new"
-                        className="btn btn-primary"
-                    >
-                        <Plus size={18} />
-                        创建笔记
-                    </Link>
-                </div>
-            )}
-
             {error && <div className="error">{error}</div>}
 
             {/* 搜索和过滤栏 */}
@@ -154,28 +138,23 @@ const NoteList: React.FC = () => {
                     </span>
                 </div>
 
-                <div className="filter-group">
-                    <select
-                        value={visibilityFilter}
-                        onChange={(e) => setVisibilityFilter(e.target.value as 'all' | 'public' | 'private')}
-                        className="filter-select"
+                {course && (
+                    <Link
+                        to="/notes/new"
+                        className="btn btn-primary"
                     >
-                        <option value="all">全部可见性</option>
-                        <option value="public">公开</option>
-                        <option value="private">私有</option>
-                    </select>
-                </div>
+                        <Plus size={18} />
+                        创建笔记
+                    </Link>
+                )}
 
-                {(searchQuery || visibilityFilter !== 'all') && (
+                {searchQuery && (
                     <button
-                        onClick={() => {
-                            setSearchQuery('');
-                            setVisibilityFilter('all');
-                        }}
+                        onClick={() => setSearchQuery('')}
                         className="btn btn-outline btn-small"
                     >
                         <X size={16} />
-                        清除筛选
+                        清除搜索
                     </button>
                 )}
             </div>
@@ -201,15 +180,12 @@ const NoteList: React.FC = () => {
                 ) : filteredNotes.length === 0 ? (
                     <div className="empty-state">
                         <p>未找到匹配的笔记</p>
-                        <p>尝试调整搜索条件或筛选器</p>
+                        <p>尝试调整搜索条件</p>
                         <button
-                            onClick={() => {
-                                setSearchQuery('');
-                                setVisibilityFilter('all');
-                            }}
+                            onClick={() => setSearchQuery('')}
                             className="btn btn-primary"
                         >
-                            清除所有筛选
+                            清除搜索
                         </button>
                     </div>
                 ) : (

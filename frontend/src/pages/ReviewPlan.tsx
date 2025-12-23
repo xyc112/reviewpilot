@@ -234,7 +234,7 @@ const ReviewPlanPage: React.FC = () => {
             />
 
             {/* 日历和计划列表 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '1.5rem', marginTop: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '1.5rem' }}>
                 {/* 日历 */}
                 <div className="content-section">
                     <div style={{ padding: '1rem' }}>

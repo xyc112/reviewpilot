@@ -196,7 +196,7 @@ const WrongQuestionBook: React.FC = () => {
 
 
             {stats && (
-                <div className="stats-cards mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div className="stats-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
                     <div className="card">
                         <div className="text-sm text-stone-500 mb-1">总错题数</div>
                         <div className="text-2xl font-bold">{stats.total}</div>
@@ -212,7 +212,7 @@ const WrongQuestionBook: React.FC = () => {
                 </div>
             )}
 
-            <div className="filter-bar mb-4">
+            <div className="filter-bar" style={{ marginBottom: '1.5rem' }}>
                 <button
                     onClick={() => setFilter('all')}
                     className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline'}`}
@@ -234,7 +234,7 @@ const WrongQuestionBook: React.FC = () => {
             </div>
 
             {/* 搜索栏 */}
-            <div className="search-filter-bar" style={{ marginBottom: '1.5rem' }}>
+            <div className="search-filter-bar" style={{ marginBottom: '2rem' }}>
                 <div className="search-box">
                     <div className="input-icon-wrapper">
                         <Search size={20} className="input-icon" />
@@ -265,7 +265,7 @@ const WrongQuestionBook: React.FC = () => {
             {error && <div className="error-message mb-4">{error}</div>}
 
             {practicingQuestion && practicingQuestion.question && (
-                <div className="practice-modal card mb-6">
+                <div className="practice-modal card" style={{ marginBottom: '2rem' }}>
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold">练习错题</h3>
                         <button onClick={handleClosePractice} className="btn-icon">
