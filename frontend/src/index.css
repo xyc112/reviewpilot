@@ -1002,6 +1002,10 @@ button:disabled, .btn:disabled {
     border: none;
 }
 
+[data-theme='dark'] .graph-main-fullscreen {
+    background: #111827;
+}
+
 .progress-container-fullscreen {
     height: calc(100vh - 70px) !important; /* 减去navbar高度 */
     margin: 0 !important;
@@ -1056,6 +1060,10 @@ button:disabled, .btn:disabled {
     height: 100%;
     position: relative;
     background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+}
+
+[data-theme='dark'] .graph-canvas-container {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #1f2937 100%);
 }
 
 .graph-canvas {
@@ -1541,6 +1549,23 @@ button:disabled, .btn:disabled {
 
 [data-theme='dark'] .node-edit-form .form-actions {
     border-top-color: #374151;
+}
+
+[data-theme='dark'] .node-edit-form .form-label {
+    color: #d1d5db;
+}
+
+[data-theme='dark'] .node-actions {
+    border-top-color: #374151;
+}
+
+[data-theme='dark'] .btn-icon {
+    color: #9ca3af;
+}
+
+[data-theme='dark'] .btn-icon:hover {
+    background: #374151;
+    color: #f9fafb;
 }
 
 .node-relations {

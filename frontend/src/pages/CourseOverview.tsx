@@ -4,6 +4,7 @@ import { Course } from '../types';
 import { courseAPI, noteAPI, quizAPI, postAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { Edit, Trash2, Calendar, User, BarChart, FileText, ClipboardList, MessageSquare, BookOpen } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
@@ -13,6 +14,8 @@ const CourseOverview: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { user, isAdmin } = useAuth();
     const { currentStudyingCourse } = useCourse();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const { success, error: showError } = useToast();
     const [course, setCourse] = useState<Course | null>(null);
     const [stats, setStats] = useState<{
@@ -162,27 +165,27 @@ const CourseOverview: React.FC = () => {
 
                         <div className="course-meta mb-6">
                             <div className="flex items-center gap-2">
-                                <BarChart size={16} />
+                                <BarChart size={16} style={{ color: isDark ? '#9ca3af' : '#78716c' }} />
                                 <span className={`level-badge level-${course.level.toLowerCase()}`}>
                                     {getLevelText(course.level)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Calendar size={16} />
-                                <span>{formatDate(course.createdAt)}</span>
+                                <Calendar size={16} style={{ color: isDark ? '#9ca3af' : '#78716c' }} />
+                                <span style={{ color: isDark ? '#9ca3af' : '#78716c' }}>{formatDate(course.createdAt)}</span>
                             </div>
                             {course.authorId && (
                                 <div className="flex items-center gap-2">
-                                    <User size={16} />
-                                    <span>作者 ID: {course.authorId}</span>
+                                    <User size={16} style={{ color: isDark ? '#9ca3af' : '#78716c' }} />
+                                    <span style={{ color: isDark ? '#9ca3af' : '#78716c' }}>作者 ID: {course.authorId}</span>
                                 </div>
                             )}
                         </div>
 
                         <div className="description mb-6">
-                            <h3 className="text-lg font-semibold mb-2 text-stone-800">课程简介</h3>
+                            <h3 className="text-lg font-semibold mb-2" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>课程简介</h3>
                             <div className="prose max-w-none">
-                                <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">
+                                <p className="leading-relaxed whitespace-pre-wrap" style={{ color: isDark ? '#d1d5db' : '#44403c' }}>
                                     {course.description || '暂无描述'}
                                 </p>
                             </div>
@@ -200,12 +203,12 @@ const CourseOverview: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div className="card p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-3 bg-blue-50 rounded-lg">
+                                    <div className="p-3 rounded-lg" style={{ backgroundColor: isDark ? '#1e3a8a' : '#dbeafe' }}>
                                         <FileText size={24} className="text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-stone-500">笔记数量</p>
-                                        <p className="text-2xl font-bold text-stone-800">
+                                        <p className="text-sm" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>笔记数量</p>
+                                        <p className="text-2xl font-bold" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>
                                             {stats?.noteCount ?? '-'}
                                         </p>
                                     </div>
@@ -213,12 +216,12 @@ const CourseOverview: React.FC = () => {
                             </div>
                             <div className="card p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-3 bg-green-50 rounded-lg">
+                                    <div className="p-3 rounded-lg" style={{ backgroundColor: isDark ? '#166534' : '#d1fae5' }}>
                                         <ClipboardList size={24} className="text-green-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-stone-500">测验数量</p>
-                                        <p className="text-2xl font-bold text-stone-800">
+                                        <p className="text-sm" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>测验数量</p>
+                                        <p className="text-2xl font-bold" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>
                                             {stats?.quizCount ?? '-'}
                                         </p>
                                     </div>
@@ -226,12 +229,12 @@ const CourseOverview: React.FC = () => {
                             </div>
                             <div className="card p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-3 bg-purple-50 rounded-lg">
+                                    <div className="p-3 rounded-lg" style={{ backgroundColor: isDark ? '#6b21a8' : '#f3e8ff' }}>
                                         <MessageSquare size={24} className="text-purple-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-stone-500">帖子数量</p>
-                                        <p className="text-2xl font-bold text-stone-800">
+                                        <p className="text-sm" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>帖子数量</p>
+                                        <p className="text-2xl font-bold" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>
                                             {stats?.postCount ?? '-'}
                                         </p>
                                     </div>

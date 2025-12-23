@@ -4,6 +4,7 @@ import { WrongQuestion, Question } from '../types';
 import { wrongQuestionAPI, quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { BookOpen, X, CheckCircle, RotateCcw, Trash2, ArrowLeft, Search } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { useToast } from '../components/common/Toast';
@@ -13,6 +14,8 @@ const WrongQuestionBook: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { currentStudyingCourse, selectedCourse } = useCourse();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const { success, error: showError } = useToast();
     
     const course = currentStudyingCourse || selectedCourse;
@@ -198,15 +201,15 @@ const WrongQuestionBook: React.FC = () => {
             {stats && (
                 <div className="stats-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
                     <div className="card">
-                        <div className="text-sm text-stone-500 mb-1">总错题数</div>
-                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <div className="text-sm mb-1" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>总错题数</div>
+                        <div className="text-2xl font-bold" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>{stats.total}</div>
                     </div>
                     <div className="card">
-                        <div className="text-sm text-stone-500 mb-1">未掌握</div>
+                        <div className="text-sm mb-1" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>未掌握</div>
                         <div className="text-2xl font-bold text-red-600">{stats.notMastered}</div>
                     </div>
                     <div className="card">
-                        <div className="text-sm text-stone-500 mb-1">已掌握</div>
+                        <div className="text-sm mb-1" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>已掌握</div>
                         <div className="text-2xl font-bold text-green-600">{stats.mastered}</div>
                     </div>
                 </div>
@@ -267,7 +270,7 @@ const WrongQuestionBook: React.FC = () => {
             {practicingQuestion && practicingQuestion.question && (
                 <div className="practice-modal card" style={{ marginBottom: '2rem' }}>
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">练习错题</h3>
+                        <h3 className="text-lg font-semibold" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>练习错题</h3>
                         <button onClick={handleClosePractice} className="btn-icon">
                             <X size={20} />
                         </button>
@@ -326,16 +329,16 @@ const WrongQuestionBook: React.FC = () => {
 
                         {showPracticeResult[practicingQuestion.questionId] && (
                             <div className="practice-result mb-4">
-                                <div className="text-sm text-stone-600 mb-2">正确答案：</div>
-                                <div className="correct-answers">
+                                <div className="text-sm mb-2" style={{ color: isDark ? '#d1d5db' : '#57534e' }}>正确答案：</div>
+                                <div className="correct-answers" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>
                                     {practicingQuestion.question.answer?.map(idx => 
                                         String.fromCharCode(65 + idx)
                                     ).join(', ')}
                                 </div>
                                 {practicingQuestion.question.explanation && (
                                     <div className="explanation mt-4">
-                                        <div className="text-sm font-semibold mb-2">解析：</div>
-                                        <div className="text-sm text-stone-600">{practicingQuestion.question.explanation}</div>
+                                        <div className="text-sm font-semibold mb-2" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>解析：</div>
+                                        <div className="text-sm" style={{ color: isDark ? '#d1d5db' : '#57534e' }}>{practicingQuestion.question.explanation}</div>
                                     </div>
                                 )}
                             </div>
@@ -359,9 +362,9 @@ const WrongQuestionBook: React.FC = () => {
             <div className="wrong-questions-list">
                 {!loading && wrongQuestions.length === 0 ? (
                     <div className="empty-state">
-                        <BookOpen size={48} className="text-stone-400 mb-4" />
-                        <p className="text-lg font-semibold mb-2">暂无错题</p>
-                        <p className="text-stone-500">
+                        <BookOpen size={48} style={{ color: isDark ? '#6b7280' : '#a8a29e', marginBottom: '1rem' }} />
+                        <p className="text-lg font-semibold mb-2" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>暂无错题</p>
+                        <p style={{ color: isDark ? '#9ca3af' : '#78716c' }}>
                             {filter === 'mastered' 
                                 ? '暂无已掌握的错题' 
                                 : filter === 'notMastered' 
@@ -371,9 +374,9 @@ const WrongQuestionBook: React.FC = () => {
                     </div>
                 ) : filteredWrongQuestions.length === 0 && searchQuery ? (
                     <div className="empty-state">
-                        <BookOpen size={48} className="text-stone-400 mb-4" />
-                        <p className="text-lg font-semibold mb-2">未找到匹配的错题</p>
-                        <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
+                        <BookOpen size={48} style={{ color: isDark ? '#6b7280' : '#a8a29e', marginBottom: '1rem' }} />
+                        <p className="text-lg font-semibold mb-2" style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>未找到匹配的错题</p>
+                        <p style={{ color: isDark ? '#9ca3af' : '#78716c', marginBottom: '1rem' }}>尝试调整搜索条件</p>
                         <button
                             onClick={() => setSearchQuery('')}
                             className="btn btn-primary"
@@ -389,7 +392,7 @@ const WrongQuestionBook: React.FC = () => {
                                     <div className="question-text mb-2">
                                         {wq.question?.question || '题目加载中...'}
                                     </div>
-                                    <div className="wrong-question-meta text-sm text-stone-500">
+                                    <div className="wrong-question-meta text-sm" style={{ color: isDark ? '#9ca3af' : '#78716c' }}>
                                         <span>来自测验: {wq.quizId}</span>
                                         <span className="ml-4">练习次数: {wq.practiceCount}</span>
                                         <span className="ml-4">添加时间: {new Date(wq.addedAt).toLocaleDateString('zh-CN')}</span>
