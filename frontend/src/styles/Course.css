@@ -203,6 +203,19 @@
     margin-bottom: 2rem;
 }
 
+[data-theme='dark'] .empty-state {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+[data-theme='dark'] .empty-state h3 {
+    color: #f9fafb;
+}
+
+[data-theme='dark'] .empty-state p {
+    color: #9ca3af;
+}
+
 /* Grid */
 /* =========================================
    SEARCH & FILTER

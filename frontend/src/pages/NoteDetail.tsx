@@ -4,6 +4,7 @@ import { Note } from '../types';
 import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import MarkdownRenderer from '../components/common/MarkdownRenderer';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -16,6 +17,8 @@ const NoteDetail: React.FC = () => {
     const { selectedCourse, currentStudyingCourse } = useCourse();
     const course = selectedCourse || currentStudyingCourse;
     const { user, isAdmin } = useAuth();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const { success, error: showError } = useToast();
 
     const [note, setNote] = useState<Note | null>(null);
@@ -133,7 +136,7 @@ const NoteDetail: React.FC = () => {
 
             <div className="note-detail-page">
                 <div className="note-detail-header">
-                    <h1>{note.title}</h1>
+                    <h1 style={{ color: isDark ? '#f9fafb' : '#1e293b' }}>{note.title}</h1>
                     <div className="note-meta">
                         <span className={`visibility-badge ${note.visibility}`}>
                             {note.visibility === 'public' ? '公开' : '私有'}

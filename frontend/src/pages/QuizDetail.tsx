@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz, QuizAttempt } from '../types';
 import { quizAPI, wrongQuestionAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
+import { useTheme } from '../components/common/ThemeProvider';
 import { useToast } from '../components/common/Toast';
 import { BookOpen } from 'lucide-react';
 import '../styles/Course.css';
@@ -13,6 +14,8 @@ const QuizDetail: React.FC = () => {
     const navigate = useNavigate();
     const { selectedCourse, currentStudyingCourse } = useCourse();
     const course = selectedCourse || currentStudyingCourse;
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);
@@ -174,7 +177,7 @@ const QuizDetail: React.FC = () => {
                         <div className="result-icon">
                             {isPassed ? '🎉' : '📝'}
                         </div>
-                        <h2>测验完成</h2>
+                        <h2 style={{ color: isDark ? '#f9fafb' : '#1e293b' }}>测验完成</h2>
                         <div className="score-display">
                             <div className="score-main">
                                 <span className="score-value">{attempt.score}</span>
@@ -193,7 +196,7 @@ const QuizDetail: React.FC = () => {
                     </div>
 
                     <div className="result-details">
-                        <h3>题目解析</h3>
+                        <h3 style={{ color: isDark ? '#f9fafb' : '#1e293b' }}>题目解析</h3>
                         {quiz.questions.map((question, index) => {
                             const result = attempt.results.find(r => r.questionId === question.id);
                             const userAnswer = answers[question.id] || [];
@@ -332,7 +335,7 @@ const QuizDetail: React.FC = () => {
             <div className="quiz-container">
                 {quiz.questions.map((question, index) => (
                     <div key={question.id} className="question-card">
-                        <h3>
+                        <h3 style={{ color: isDark ? '#f9fafb' : '#1c1917' }}>
                             题目 {index + 1}: {question.question}
                             {question.type === 'multiple' && <span className="question-type">[多选]</span>}
                             {question.type === 'truefalse' && <span className="question-type">[判断]</span>}
