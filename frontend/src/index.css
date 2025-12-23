@@ -1228,6 +1228,11 @@ button:disabled, .btn:disabled {
     line-height: 1.5;
 }
 
+[data-theme='dark'] .graph-help {
+    background: rgba(31, 41, 55, 0.95);
+    border: 1px solid rgba(55, 65, 81, 0.8);
+}
+
 [data-theme='dark'] .graph-help p {
     color: #f9fafb;
 }
