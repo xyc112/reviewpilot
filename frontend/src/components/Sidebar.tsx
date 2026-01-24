@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, Network, FileText, ClipboardList, Menu, X, TrendingUp, Star, MessageSquare, BookX, Info, Calendar } from 'lucide-react';
-import { useCourse } from '../../context/CourseContext';
-import { useAuth } from '../../context/AuthContext';
+import { useCourse } from '../context/CourseContext';
+import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
 const Sidebar: React.FC = () => {
@@ -198,4 +198,3 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
-

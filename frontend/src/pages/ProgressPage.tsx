@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { OverallStats, CourseProgress } from '../types';
 import { progressAPI, courseAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { BookOpen, CheckCircle2, FileText, Trophy, Target, Star } from 'lucide-react';
-import { SkeletonGrid } from '../components/common/Skeleton';
-import { CircularProgressChart, ScoreDistributionChart } from '../components/common/ProgressChart';
+import { SkeletonGrid } from '../components/Skeleton';
+import { CircularProgressChart, ScoreDistributionChart } from '../components/ProgressChart';
 import '../styles/Course.css';
 import '../styles/CourseUI.css';
 

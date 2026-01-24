@@ -5,10 +5,10 @@ import { Quiz } from '../types';
 import { quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { Plus, ClipboardList, Edit, Trash2, Search, X } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const QuizList: React.FC = () => {

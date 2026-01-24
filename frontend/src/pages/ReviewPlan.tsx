@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ReviewPlan as ReviewPlanType } from '../types';
 import { reviewPlanAPI } from '../services/api';
-import { useToast } from '../components/common/Toast';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useToast } from '../components/Toast';
+import { useTheme } from '../components/ThemeProvider';
 import { Calendar, Plus, Edit, Trash2, Check, X, Clock, GraduationCap, ChevronLeft, ChevronRight } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
+import ConfirmDialog from '../components/ConfirmDialog';
 import '../styles/CourseUI.css';
 
 const ReviewPlanPage: React.FC = () => {

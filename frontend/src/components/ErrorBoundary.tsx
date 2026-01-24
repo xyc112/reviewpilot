@@ -24,7 +24,7 @@ class ErrorBoundaryClass extends Component<Props, State> {
         };
     }
 
-    static getDerivedStateFromError(error: Error): State {
+    static getDerivedStateFromError(error: Error) {
         return {
             hasError: true,
             error,
@@ -111,4 +111,3 @@ export const ErrorBoundary: React.FC<Props> = (props) => {
 };
 
 export default ErrorBoundary;
-

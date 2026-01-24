@@ -5,10 +5,10 @@ import { courseAPI, userCourseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
 import { Book, Plus, Search, X, Edit, Trash2, BookOpen, Star } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
-import { SkeletonGrid } from '../components/common/Skeleton';
-import { SearchHighlight } from '../components/common/SearchHighlight';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
+import { SkeletonGrid } from '../components/Skeleton';
+import { SearchHighlight } from '../components/SearchHighlight';
 import '../styles/CourseUI.css';
 import '../styles/Course.css';
 

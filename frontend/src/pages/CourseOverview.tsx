@@ -4,10 +4,10 @@ import { Course } from '../types';
 import { courseAPI, noteAPI, quizAPI, postAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { Edit, Trash2, Calendar, User, BarChart, FileText, ClipboardList, MessageSquare, BookOpen } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const CourseOverview: React.FC = () => {

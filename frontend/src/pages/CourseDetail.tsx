@@ -4,8 +4,8 @@ import { Course } from '../types';
 import { courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Edit, Trash2, Calendar, User, BarChart, ArrowLeft, MessageSquare } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const CourseDetail: React.FC = () => {

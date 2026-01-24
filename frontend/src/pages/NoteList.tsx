@@ -4,10 +4,10 @@ import { Note } from '../types';
 import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { Search, X, Plus } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const NoteList: React.FC = () => {

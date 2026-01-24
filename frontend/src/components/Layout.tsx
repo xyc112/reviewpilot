@@ -1,12 +1,12 @@
 import React from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from './ThemeProvider';
 import { LogOut, User, LayoutDashboard, Moon, Sun } from 'lucide-react';
 import Sidebar from './Sidebar';
-import { useGlobalShortcuts } from '../../hooks/useKeyboardShortcuts';
-import '../../styles/Auth.css';
-import '../../styles/CourseUI.css';
+import { useGlobalShortcuts } from '../hooks/useKeyboardShortcuts';
+import '../styles/Auth.css';
+import '../styles/CourseUI.css';
 
 const Layout: React.FC = () => {
     const { user, logout } = useAuth();

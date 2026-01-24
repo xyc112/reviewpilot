@@ -4,9 +4,9 @@ import { Node, Relation } from '../types';
 import { graphAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import GraphCanvas from '../components/common/GraphCanvas';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import GraphCanvas from '../components/GraphCanvas';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import { Edit2, X, Trash2 } from 'lucide-react';
 
 const GraphView: React.FC = () => {

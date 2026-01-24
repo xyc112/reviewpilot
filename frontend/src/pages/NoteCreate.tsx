@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { noteAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { useToast } from '../components/common/Toast';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const NoteCreate: React.FC = () => {

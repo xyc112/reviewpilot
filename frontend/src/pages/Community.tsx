@@ -5,9 +5,9 @@ import { postAPI, commentAPI, courseAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
 import { Plus, MessageSquare, Edit, Trash2, Send, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
-import MarkdownRenderer from '../components/common/MarkdownRenderer';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import '../styles/Community.css';
 import '../styles/Course.css';
 

@@ -4,8 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Quiz, QuizAttempt } from '../types';
 import { quizAPI, wrongQuestionAPI } from '../services/api';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
-import { useToast } from '../components/common/Toast';
+import { useTheme } from '../components/ThemeProvider';
+import { useToast } from '../components/Toast';
 import { BookOpen } from 'lucide-react';
 import '../styles/Course.css';
 

@@ -4,10 +4,10 @@ import { WrongQuestion, Question } from '../types';
 import { wrongQuestionAPI, quizAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { BookOpen, X, CheckCircle, RotateCcw, Trash2, ArrowLeft, Search } from 'lucide-react';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const WrongQuestionBook: React.FC = () => {

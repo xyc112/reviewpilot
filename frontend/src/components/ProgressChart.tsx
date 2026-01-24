@@ -162,4 +162,3 @@ export const ScoreDistributionChart: React.FC<ScoreDistributionProps> = ({ score
 
     return <SimpleBarChart data={distribution} height={150} />;
 };
-

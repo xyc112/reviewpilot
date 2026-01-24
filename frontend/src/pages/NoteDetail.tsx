@@ -4,11 +4,11 @@ import { Note } from '../types';
 import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
-import { useTheme } from '../components/common/ThemeProvider';
+import { useTheme } from '../components/ThemeProvider';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
-import MarkdownRenderer from '../components/common/MarkdownRenderer';
-import ConfirmDialog from '../components/common/ConfirmDialog';
-import { useToast } from '../components/common/Toast';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const NoteDetail: React.FC = () => {

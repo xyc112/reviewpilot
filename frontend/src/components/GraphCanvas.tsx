@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { Node, Relation } from '../../types';
+import { Node, Relation } from '../types';
 
 interface GraphCanvasProps {
     nodes: Node[];

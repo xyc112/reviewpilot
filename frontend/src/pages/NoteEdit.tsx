@@ -5,7 +5,7 @@ import { noteAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCourse } from '../context/CourseContext';
 import { ArrowLeft, Save, X } from 'lucide-react';
-import { useToast } from '../components/common/Toast';
+import { useToast } from '../components/Toast';
 import '../styles/Course.css';
 
 const NoteEdit: React.FC = () => {
