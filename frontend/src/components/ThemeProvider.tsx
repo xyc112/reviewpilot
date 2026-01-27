@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { ConfigProvider, theme as antdTheme } from "antd";
+import type { ThemeConfig } from "antd";
 
 type Theme = "light" | "dark";
 
@@ -33,9 +35,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     setThemeState(newTheme);
   };
 
+  // Ant Design 主题配置
+  const antdThemeConfig: ThemeConfig = {
+    algorithm:
+      theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+    token: {
+      borderRadius: 8,
+      colorPrimary: "#1890ff",
+    },
+  };
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
+      <ConfigProvider theme={antdThemeConfig}>{children}</ConfigProvider>
     </ThemeContext.Provider>
   );
 };

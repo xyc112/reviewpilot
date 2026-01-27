@@ -1,6 +1,6 @@
 import React from "react";
-import { AlertTriangle, X } from "lucide-react";
-import "./ConfirmDialog.css";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -23,53 +23,34 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="confirm-dialog-overlay" onClick={onCancel}>
-      <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="confirm-dialog-header">
-          <div className="confirm-dialog-icon-wrapper">
-            {type === "danger" && (
-              <AlertTriangle className="confirm-dialog-icon danger" />
-            )}
-            {type === "warning" && (
-              <AlertTriangle className="confirm-dialog-icon warning" />
-            )}
-            {type === "info" && (
-              <AlertTriangle className="confirm-dialog-icon info" />
-            )}
-          </div>
-          <h3 className="confirm-dialog-title">{title}</h3>
-          <button
-            className="confirm-dialog-close"
-            onClick={onCancel}
-            aria-label="关闭"
-          >
-            <X size={20} />
-          </button>
+    <Modal
+      open={isOpen}
+      title={
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <ExclamationCircleOutlined
+            style={{
+              color:
+                type === "danger"
+                  ? "#ff4d4f"
+                  : type === "warning"
+                    ? "#faad14"
+                    : "#1890ff",
+            }}
+          />
+          <span>{title}</span>
         </div>
-        <div className="confirm-dialog-body">
-          <p>{message}</p>
-        </div>
-        <div className="confirm-dialog-footer">
-          <button
-            className={`btn btn-outline confirm-dialog-btn-cancel`}
-            onClick={onCancel}
-          >
-            {cancelText}
-          </button>
-          <button
-            className={`btn ${
-              type === "danger" ? "btn-danger" : "btn-primary"
-            } confirm-dialog-btn-confirm`}
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
+      }
+      onOk={onConfirm}
+      onCancel={onCancel}
+      okText={confirmText}
+      cancelText={cancelText}
+      okButtonProps={{
+        danger: type === "danger",
+      }}
+    >
+      <p>{message}</p>
+    </Modal>
   );
 };
 

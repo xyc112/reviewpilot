@@ -1,20 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-
-type ToastType = "success" | "error" | "info" | "warning";
-
-interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
-}
+import React, { createContext, useContext, ReactNode } from "react";
+import { message } from "antd";
 
 interface ToastContextType {
-  toasts: Toast[];
   success: (message: string) => void;
   error: (message: string) => void;
   info: (message: string) => void;
   warning: (message: string) => void;
-  remove: (id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -22,44 +13,25 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const addToast = (type: ToastType, message: string) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast = { id, message, type };
-
-    setToasts((prev) => [...prev, newToast]);
-
-    setTimeout(() => {
-      remove(id);
-    }, 5000);
+  const success = (msg: string) => {
+    message.success(msg);
   };
 
-  const remove = (id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  const error = (msg: string) => {
+    message.error(msg);
   };
 
-  const success = (message: string) => addToast("success", message);
-  const error = (message: string) => addToast("error", message);
-  const info = (message: string) => addToast("info", message);
-  const warning = (message: string) => addToast("warning", message);
+  const info = (msg: string) => {
+    message.info(msg);
+  };
+
+  const warning = (msg: string) => {
+    message.warning(msg);
+  };
 
   return (
-    <ToastContext.Provider
-      value={{ toasts, success, error, info, warning, remove }}
-    >
+    <ToastContext.Provider value={{ success, error, info, warning }}>
       {children}
-      <div className="toast-container">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`toast toast-${toast.type}`}
-            onClick={() => remove(toast.id)}
-          >
-            {toast.message}
-          </div>
-        ))}
-      </div>
     </ToastContext.Provider>
   );
 };

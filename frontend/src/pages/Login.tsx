@@ -1,87 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Form, Input, Button, Typography, Alert, Space, Card } from "antd";
+import { UserOutlined, LockOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
 import { authAPI } from "../services/api";
-import { User, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { validateUsername, validatePassword } from "../utils/validation";
-import "../styles/Auth.css";
+
+const { Title, Text } = Typography;
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [showPassword, setShowPassword] = useState(false);
+  const [form] = Form.useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    // 实时验证
-    if (touched[name]) {
-      if (name === "username") {
-        const error = validateUsername(value);
-        setErrors((prev) => ({ ...prev, [name]: error || "" }));
-      } else if (name === "password") {
-        const error = validatePassword(value);
-        setErrors((prev) => ({ ...prev, [name]: error || "" }));
-      }
-    }
-
-    if (error) setError("");
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-
-    // 验证字段
-    if (name === "username") {
-      const error = validateUsername(value);
-      setErrors((prev) => ({ ...prev, [name]: error || "" }));
-    } else if (name === "password") {
-      const error = validatePassword(value);
-      setErrors((prev) => ({ ...prev, [name]: error || "" }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 验证所有字段
-    if (!formData.username || formData.username.trim().length === 0) {
-      setErrors({ username: "用户名不能为空" });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
-    if (!formData.password || formData.password.length === 0) {
-      setErrors({ password: "密码不能为空" });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
-    const usernameError = validateUsername(formData.username);
-    const passwordError = validatePassword(formData.password);
-
-    if (usernameError || passwordError) {
-      setErrors({
-        username: usernameError || "",
-        password: passwordError || "",
-      });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
+  const handleSubmit = async (values: { username: string; password: string }) => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await authAPI.login(formData);
+      const response = await authAPI.login(values);
       const user = response.data;
       login(user);
       navigate("/");
@@ -102,159 +42,174 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="auth-page-full">
-      <div className="auth-page-left">
-        <div className="auth-welcome-content">
-          <div className="auth-welcome-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="currentColor"
-                strokeWidth="3"
-                fill="none"
-                opacity="0.2"
-              />
-              <path
-                d="M30 50 L45 65 L70 35"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <h1 className="auth-welcome-title">欢迎来到 ReviewPilot</h1>
-          <p className="auth-welcome-subtitle">
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      }}
+    >
+      {/* 左侧欢迎区域 */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2.5rem",
+          color: "white",
+        }}
+        className="auth-welcome-section"
+      >
+        <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
+          <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>✓</div>
+          <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
+            欢迎来到 ReviewPilot
+          </Title>
+          <Text style={{ fontSize: "1.125rem", opacity: 0.95, display: "block", marginBottom: "2rem" }}>
             一体化复习平台，让学习更高效，让复习更系统
-          </p>
-          <div className="auth-welcome-features">
-            <div className="feature-item">
-              <div className="feature-icon">📚</div>
-              <div className="feature-text">
-                <strong>课程与知识图谱</strong>
-                <span>管理课程，可视化知识关联</span>
+          </Text>
+          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📚</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>课程与知识图谱</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>管理课程，可视化知识关联</div>
               </div>
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">📝</div>
-              <div className="feature-text">
-                <strong>笔记与测验</strong>
-                <span>记录笔记，检验学习成果</span>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📝</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>笔记与测验</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>记录笔记，检验学习成果</div>
               </div>
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">📅</div>
-              <div className="feature-text">
-                <strong>复习计划与社区</strong>
-                <span>制定计划，交流学习心得</span>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📅</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>复习计划与社区</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>制定计划，交流学习心得</div>
               </div>
             </div>
-          </div>
+          </Space>
         </div>
       </div>
-      <div className="auth-page-right">
-        <div className="auth-form-container">
-          <h2 className="auth-title">登录</h2>
-          <p className="auth-subtitle">请登录继续访问学习辅助系统</p>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">用户名</label>
-              <div className="input-with-icon">
-                <div className="input-icon-wrapper">
-                  <User className="input-icon" size={18} />
-                  <div className="input-icon-divider"></div>
-                </div>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`form-input ${errors.username ? "form-input-error" : ""}`}
-                  placeholder="请输入用户名"
-                  aria-invalid={!!errors.username}
-                  aria-describedby={
-                    errors.username ? "username-error" : undefined
-                  }
-                />
-              </div>
-              {errors.username && (
-                <span id="username-error" className="form-error" role="alert">
-                  {errors.username}
-                </span>
-              )}
-            </div>
+      {/* 右侧表单区域 */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "3rem",
+          background: "#fafaf9",
+        }}
+      >
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: 450,
+          }}
+        >
+          <Title level={2} style={{ textAlign: "center", marginBottom: "0.75rem" }}>
+            登录
+          </Title>
+          <Text
+            type="secondary"
+            style={{
+              display: "block",
+              textAlign: "center",
+              marginBottom: "2.5rem",
+            }}
+          >
+            请登录继续访问学习辅助系统
+          </Text>
 
-            <div className="form-group">
-              <label className="form-label">密码</label>
-              <div className="input-with-icon">
-                <div className="input-icon-wrapper">
-                  <Lock className="input-icon" size={18} />
-                  <div className="input-icon-divider"></div>
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`form-input ${errors.password ? "form-input-error" : ""}`}
-                  placeholder="请输入密码"
-                  required
-                  aria-invalid={!!errors.password}
-                  aria-describedby={
-                    errors.password ? "password-error" : undefined
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="input-action-button"
-                  aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span id="password-error" className="form-error" role="alert">
-                  {errors.password}
-                </span>
-              )}
-            </div>
-
-            {error && <div className="error-message">{error}</div>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="auth-btn flex justify-center items-center gap-2"
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            layout="vertical"
+            size="large"
+          >
+            <Form.Item
+              name="username"
+              label="用户名"
+              rules={[
+                { required: true, message: "用户名不能为空" },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const error = validateUsername(value);
+                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                  },
+                },
+              ]}
             >
-              {loading ? (
-                "登录中..."
-              ) : (
-                <>
-                  登录
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </button>
-          </form>
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="请输入用户名"
+              />
+            </Form.Item>
 
-          <div className="auth-footer">
-            没有账号？
-            <Link to="/register" className="auth-link">
+            <Form.Item
+              name="password"
+              label="密码"
+              rules={[
+                { required: true, message: "密码不能为空" },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const error = validatePassword(value);
+                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="请输入密码"
+              />
+            </Form.Item>
+
+            {error && (
+              <Alert
+                message={error}
+                type="error"
+                showIcon
+                style={{ marginBottom: "1.5rem" }}
+              />
+            )}
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                loading={loading}
+                icon={<ArrowRightOutlined />}
+              >
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.875rem" }}>
+            <Text type="secondary">没有账号？</Text>{" "}
+            <Link to="/register" style={{ fontWeight: 500 }}>
               立即注册
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          .auth-welcome-section {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

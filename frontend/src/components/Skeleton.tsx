@@ -1,26 +1,24 @@
 import React from "react";
+import { Skeleton as AntSkeleton, Card, Row, Col } from "antd";
 
 interface SkeletonProps {
-  width?: string;
-  height?: string;
+  width?: string | number;
+  height?: string | number;
   className?: string;
+  active?: boolean;
 }
 
 const Skeleton: React.FC<SkeletonProps> = ({
   width = "100%",
-  height = "1rem",
+  height = 16,
   className = "",
+  active = true,
 }) => {
   return (
-    <div
-      className={`skeleton ${className}`}
-      style={{
-        width,
-        height,
-        backgroundColor: "#e5e7eb",
-        borderRadius: "0.25rem",
-        animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-      }}
+    <AntSkeleton.Button
+      active={active}
+      style={{ width, height }}
+      className={className}
     />
   );
 };
@@ -31,23 +29,23 @@ interface SkeletonGridProps {
 
 const SkeletonGrid: React.FC<SkeletonGridProps> = ({ count = 3 }) => {
   return (
-    <div className="skeleton-grid">
+    <Row gutter={[16, 16]}>
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="skeleton-card">
-          <Skeleton height="1.5rem" width="60%" />
-          <Skeleton
-            height="1rem"
-            width="100%"
-            style={{ marginTop: "0.5rem" }}
-          />
-          <Skeleton height="1rem" width="80%" style={{ marginTop: "0.5rem" }} />
-          <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-            <Skeleton height="2rem" width="5rem" />
-            <Skeleton height="2rem" width="5rem" />
-          </div>
-        </div>
+        <Col key={index} xs={24} sm={12} md={8} lg={8}>
+          <Card>
+            <AntSkeleton
+              active
+              paragraph={{ rows: 3 }}
+              title={{ width: "60%" }}
+            />
+            <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
+              <AntSkeleton.Button active size="small" style={{ width: 80 }} />
+              <AntSkeleton.Button active size="small" style={{ width: 80 }} />
+            </div>
+          </Card>
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 };
 

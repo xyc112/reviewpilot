@@ -1,4 +1,3 @@
-// Components exports - flattened from components/common/
 export { Skeleton, SkeletonGrid } from "./Skeleton";
 export { ToastProvider, useToast } from "./Toast";
 export { default as Layout } from "./Layout";

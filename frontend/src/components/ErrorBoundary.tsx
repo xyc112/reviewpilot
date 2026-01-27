@@ -1,7 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import "./ErrorBoundary.css";
+import { Result, Button, Space } from "antd";
+import { ReloadOutlined, HomeOutlined } from "@ant-design/icons";
 
 interface Props {
   children: ReactNode;
@@ -62,53 +61,78 @@ const ErrorFallback: React.FC<{
   error: Error | null;
   errorInfo: ErrorInfo | null;
 }> = ({ error, errorInfo }) => {
-  const navigate = useNavigate();
-
   const handleReload = () => {
     window.location.reload();
   };
 
   const handleGoHome = () => {
-    navigate("/");
-    window.location.reload();
+    window.location.href = "/";
   };
 
   return (
-    <div className="error-boundary">
-      <div className="error-boundary-content">
-        <div className="error-boundary-icon">
-          <AlertTriangle size={64} strokeWidth={1.5} />
-        </div>
-        <h1 className="error-boundary-title">出现了一些问题</h1>
-        <p className="error-boundary-message">
-          应用程序遇到了意外错误。我们已经记录了这个问题，请尝试刷新页面。
-        </p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "2rem",
+      }}
+    >
+      <Result
+        status="error"
+        title="出现了一些问题"
+        subTitle="应用程序遇到了意外错误。我们已经记录了这个问题，请尝试刷新页面。"
+        extra={
+          <Space>
+            <Button
+              type="primary"
+              icon={<ReloadOutlined />}
+              onClick={handleReload}
+            >
+              刷新页面
+            </Button>
+            <Button
+              icon={<HomeOutlined />}
+              onClick={handleGoHome}
+            >
+              返回首页
+            </Button>
+          </Space>
+        }
+      >
         {error && (
-          <details className="error-boundary-details">
-            <summary className="error-boundary-summary">错误详情</summary>
-            <div className="error-boundary-error">
-              <strong>错误信息：</strong>
-              <pre>{error.toString()}</pre>
+          <details
+            style={{
+              marginTop: "2rem",
+              padding: "1rem",
+              background: "#fafafa",
+              borderRadius: "4px",
+              textAlign: "left",
+            }}
+          >
+            <summary style={{ cursor: "pointer", fontWeight: 500, marginBottom: "0.5rem" }}>
+              错误详情
+            </summary>
+            <div style={{ marginTop: "1rem" }}>
+              <div style={{ marginBottom: "1rem" }}>
+                <strong>错误信息：</strong>
+                <pre style={{ background: "#fff", padding: "0.5rem", borderRadius: "4px", overflow: "auto" }}>
+                  {error.toString()}
+                </pre>
+              </div>
               {errorInfo && (
-                <>
+                <div>
                   <strong>组件堆栈：</strong>
-                  <pre>{errorInfo.componentStack}</pre>
-                </>
+                  <pre style={{ background: "#fff", padding: "0.5rem", borderRadius: "4px", overflow: "auto" }}>
+                    {errorInfo.componentStack}
+                  </pre>
+                </div>
               )}
             </div>
           </details>
         )}
-        <div className="error-boundary-actions">
-          <button onClick={handleReload} className="btn btn-primary">
-            <RefreshCw size={18} />
-            刷新页面
-          </button>
-          <button onClick={handleGoHome} className="btn btn-secondary">
-            <Home size={18} />
-            返回首页
-          </button>
-        </div>
-      </div>
+      </Result>
     </div>
   );
 };

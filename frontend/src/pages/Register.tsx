@@ -1,94 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Form, Input, Button, Typography, Alert, Space, Card, Select } from "antd";
+import { UserOutlined, LockOutlined, SafetyOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
 import { authAPI } from "../services/api";
-import { User, Lock, Shield, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { validateUsername, validatePassword } from "../utils/validation";
-import "../styles/Auth.css";
+
+const { Title, Text } = Typography;
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    role: "USER",
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [showPassword, setShowPassword] = useState(false);
+  const [form] = Form.useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    // 实时验证
-    if (touched[name]) {
-      if (name === "username") {
-        const error = validateUsername(value);
-        setErrors((prev) => ({ ...prev, [name]: error || "" }));
-      } else if (name === "password") {
-        const error = validatePassword(value);
-        setErrors((prev) => ({ ...prev, [name]: error || "" }));
-      }
-    }
-
-    if (error) setError("");
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-
-    // 验证字段
-    if (name === "username") {
-      const error = validateUsername(value);
-      setErrors((prev) => ({ ...prev, [name]: error || "" }));
-    } else if (name === "password") {
-      const error = validatePassword(value);
-      setErrors((prev) => ({ ...prev, [name]: error || "" }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 验证所有字段
-    if (!formData.username || formData.username.trim().length === 0) {
-      setErrors({ username: "用户名不能为空" });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
-    if (!formData.password || formData.password.length === 0) {
-      setErrors({ password: "密码不能为空" });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
-    const usernameError = validateUsername(formData.username);
-    const passwordError = validatePassword(formData.password);
-
-    if (usernameError || passwordError) {
-      setErrors({
-        username: usernameError || "",
-        password: passwordError || "",
-      });
-      setTouched({ username: true, password: true });
-      return;
-    }
-
+  const handleSubmit = async (values: { username: string; password: string; role: string }) => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await authAPI.register(formData);
+      const response = await authAPI.register(values);
       login(response.data);
       navigate("/");
     } catch (err: any) {
@@ -108,180 +41,190 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="auth-page-full">
-      <div className="auth-page-left">
-        <div className="auth-welcome-content">
-          <div className="auth-welcome-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                stroke="currentColor"
-                strokeWidth="3"
-                fill="none"
-                opacity="0.2"
-              />
-              <path
-                d="M50 20 L50 50 L35 65 L50 50 L65 65 L50 50"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </div>
-          <h1 className="auth-welcome-title">加入我们</h1>
-          <p className="auth-welcome-subtitle">
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      }}
+    >
+      {/* 左侧欢迎区域 */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2.5rem",
+          color: "white",
+        }}
+        className="auth-welcome-section"
+      >
+        <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
+          <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>🚀</div>
+          <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
+            加入我们
+          </Title>
+          <Text style={{ fontSize: "1.125rem", opacity: 0.95, display: "block", marginBottom: "2rem" }}>
             开启您的学习之旅
             <br />
             与知识同行，与成长相伴
-          </p>
-          <div className="auth-welcome-features">
-            <div className="feature-item">
-              <div className="feature-icon">🎓</div>
-              <div className="feature-text">
-                <strong>个性化学习路径</strong>
-                <span>根据您的需求定制学习计划</span>
+          </Text>
+          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🎓</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>个性化学习路径</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>根据您的需求定制学习计划</div>
               </div>
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">📊</div>
-              <div className="feature-text">
-                <strong>学习进度追踪</strong>
-                <span>实时了解学习成果</span>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📊</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>学习进度追踪</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>实时了解学习成果</div>
               </div>
             </div>
-            <div className="feature-item">
-              <div className="feature-icon">🤝</div>
-              <div className="feature-text">
-                <strong>社区互动交流</strong>
-                <span>与学习者共同进步</span>
+            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🤝</div>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>社区互动交流</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>与学习者共同进步</div>
               </div>
             </div>
-          </div>
+          </Space>
         </div>
       </div>
-      <div className="auth-page-right">
-        <div className="auth-form-container">
-          <h2 className="auth-title">创建账号</h2>
-          <p className="auth-subtitle">欢迎加入学习辅助系统</p>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">用户名</label>
-              <div className="input-with-icon">
-                <div className="input-icon-wrapper">
-                  <User className="input-icon" size={18} />
-                  <div className="input-icon-divider"></div>
-                </div>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`form-input ${errors.username ? "form-input-error" : ""}`}
-                  placeholder="请输入用户名"
-                  aria-invalid={!!errors.username}
-                  aria-describedby={
-                    errors.username ? "username-error" : undefined
-                  }
-                />
-              </div>
-              {errors.username && (
-                <span id="username-error" className="form-error" role="alert">
-                  {errors.username}
-                </span>
-              )}
-            </div>
+      {/* 右侧表单区域 */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "3rem",
+          background: "#fafaf9",
+        }}
+      >
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: 450,
+          }}
+        >
+          <Title level={2} style={{ textAlign: "center", marginBottom: "0.75rem" }}>
+            创建账号
+          </Title>
+          <Text
+            type="secondary"
+            style={{
+              display: "block",
+              textAlign: "center",
+              marginBottom: "2.5rem",
+            }}
+          >
+            欢迎加入学习辅助系统
+          </Text>
 
-            <div className="form-group">
-              <label className="form-label">密码</label>
-              <div className="input-with-icon">
-                <div className="input-icon-wrapper">
-                  <Lock className="input-icon" size={18} />
-                  <div className="input-icon-divider"></div>
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`form-input ${errors.password ? "form-input-error" : ""}`}
-                  placeholder="请输入密码"
-                  aria-invalid={!!errors.password}
-                  aria-describedby={
-                    errors.password ? "password-error" : undefined
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="input-action-button"
-                  aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span id="password-error" className="form-error" role="alert">
-                  {errors.password}
-                </span>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">角色</label>
-              <div className="input-with-icon">
-                <div className="input-icon-wrapper">
-                  <Shield className="input-icon" size={18} />
-                  <div className="input-icon-divider"></div>
-                </div>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="form-input appearance-none"
-                >
-                  <option value="USER">普通用户</option>
-                  <option value="ADMIN">管理员</option>
-                </select>
-              </div>
-            </div>
-
-            {error && <div className="error-message">{error}</div>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="auth-btn flex justify-center items-center gap-2"
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            layout="vertical"
+            size="large"
+            initialValues={{ role: "USER" }}
+          >
+            <Form.Item
+              name="username"
+              label="用户名"
+              rules={[
+                { required: true, message: "用户名不能为空" },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const error = validateUsername(value);
+                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                  },
+                },
+              ]}
             >
-              {loading ? (
-                "注册中..."
-              ) : (
-                <>
-                  注册
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </button>
-          </form>
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="请输入用户名"
+              />
+            </Form.Item>
 
-          <div className="auth-footer">
-            已有账号？
-            <Link to="/login" className="auth-link">
+            <Form.Item
+              name="password"
+              label="密码"
+              rules={[
+                { required: true, message: "密码不能为空" },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const error = validatePassword(value);
+                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="请输入密码"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="role"
+              label="角色"
+            >
+              <Select
+                prefix={<SafetyOutlined />}
+                options={[
+                  { label: "普通用户", value: "USER" },
+                  { label: "管理员", value: "ADMIN" },
+                ]}
+              />
+            </Form.Item>
+
+            {error && (
+              <Alert
+                message={error}
+                type="error"
+                showIcon
+                style={{ marginBottom: "1.5rem" }}
+              />
+            )}
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                loading={loading}
+                icon={<ArrowRightOutlined />}
+              >
+                注册
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.875rem" }}>
+            <Text type="secondary">已有账号？</Text>{" "}
+            <Link to="/login" style={{ fontWeight: 500 }}>
               立即登录
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          .auth-welcome-section {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

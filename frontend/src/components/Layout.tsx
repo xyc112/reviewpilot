@@ -1,12 +1,14 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Layout as AntLayout, Button, Space, Typography, theme as antdTheme } from "antd";
+import { LogoutOutlined, UserOutlined, DashboardOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "./ThemeProvider";
-import { LogOut, User, LayoutDashboard, Moon, Sun } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { useGlobalShortcuts } from "../hooks/useKeyboardShortcuts";
-import "../styles/Auth.css";
-import "../styles/CourseUI.css";
+
+const { Header, Content } = AntLayout;
+const { Text } = Typography;
 
 const Layout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -21,48 +23,72 @@ const Layout: React.FC = () => {
     navigate("/login");
   };
 
+  const {
+    token: { colorBgContainer },
+  } = antdTheme.useToken();
+
   return (
-    <div className="layout-container">
-      {/* Sidebar */}
+    <AntLayout style={{ minHeight: "100vh" }}>
       <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="main-content-area">
-        {/* Top Navbar */}
-        <header className="navbar-card" role="banner">
-          <div className="brand">
-            <LayoutDashboard size={24} strokeWidth={1.5} />
-            <span>ReviewPilot</span>
-          </div>
-
-          <div className="nav-right">
-            <div className="flex items-center gap-2 text-sm text-stone-600">
-              <User size={16} strokeWidth={1.5} />
-              <span className="user-name">{user?.username}</span>
-            </div>
-            <button
-              className="theme-toggle-btn"
+      <AntLayout
+        style={{
+          marginLeft: 260,
+        }}
+        className="main-layout"
+      >
+        <Header
+          style={{
+            padding: "0 2rem",
+            background: colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            position: "sticky",
+            top: 0,
+            zIndex: 100,
+            borderBottom: "1px solid #f0f0f0",
+          }}
+        >
+          <Space>
+            <DashboardOutlined style={{ fontSize: 20 }} />
+            <Text strong style={{ fontSize: 18 }}>
+              ReviewPilot
+            </Text>
+          </Space>
+          <Space>
+            <Space>
+              <UserOutlined />
+              <Text>{user?.username}</Text>
+            </Space>
+            <Button
+              icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
               onClick={toggleTheme}
               title={theme === "light" ? "切换到暗色模式" : "切换到亮色模式"}
-              aria-label="切换主题"
-            >
-              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
-            <button className="logout-btn" onClick={handleLogout}>
-              <LogOut size={16} strokeWidth={1.5} />
-              <span>退出</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="main-wrapper">
-          <div className="main-inner">
-            <Outlet />
-          </div>
-        </main>
-      </div>
-    </div>
+            />
+            <Button icon={<LogoutOutlined />} onClick={handleLogout}>
+              退出
+            </Button>
+          </Space>
+        </Header>
+        <Content
+          style={{
+            margin: "2rem",
+            padding: 0,
+            minHeight: 280,
+            background: colorBgContainer,
+          }}
+        >
+          <Outlet />
+        </Content>
+      </AntLayout>
+      <style>{`
+        @media (max-width: 1024px) {
+          .main-layout {
+            margin-left: 0 !important;
+          }
+        }
+      `}</style>
+    </AntLayout>
   );
 };
 
