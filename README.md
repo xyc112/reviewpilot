@@ -31,7 +31,7 @@ ReviewPilot 是一个前后端分离的学习管理系统，后端采用 Spring 
 
 前端配置文件位于 `frontend/vite.config.ts`：
 
-- **开发服务器端口**: 3000
+- **开发服务器端口**: 5173
 - **API 代理**: `/api` 请求代理到 `http://localhost:8080`
 
 ## 运行步骤
@@ -65,29 +65,21 @@ npm i
 npm run dev
 ```
 
-前端服务将在 `http://localhost:3000` 启动。
+前端服务将在 `http://localhost:5173` 启动。
 
 ## 访问地址
 
-- **前端应用**: http://localhost:3000
+- **前端应用**: http://localhost:5173
 - **后端 API**: http://localhost:8080/api
-- **H2 数据库控制台**: http://localhost:8080/h2-console
   - JDBC URL: `jdbc:h2:mem:testdb`
   - 用户名: `sa`
   - 密码: （空）
-
-## 初始账户
-
-系统初始化时会创建以下测试账户（密码均为 `123456`）：
-
-- **管理员**: `admin` (ADMIN 角色)
-- **普通用户**: `胡久鸣`, `蔡烨培`, `吴迪`, `居远谋`, `钟定博`, `杨舒文`, `谢宇成` (USER 角色)
 
 ## 常见问题
 
 ### 后端启动失败
 
-1. **检查 Java 版本**: 确保已安装 JDK 21
+1. **检查 Java 版本**: 确保已安装 JDK 25
    ```bash
    java -version
    ```
@@ -101,7 +93,7 @@ npm run dev
 
 ### 前端启动失败
 
-1. **检查 Node.js 版本**: 确保 Node.js 版本 >= 18
+1. **检查 Node.js 版本**: 确保已安装 Node.js 24
    ```bash
    node -version
    ```
@@ -112,8 +104,6 @@ npm run dev
    rm -rf node_modules package-lock.json
    npm i
    ```
-
-3. **端口占用**: 如果 3000 端口被占用，Vite 会自动尝试其他端口
 
 ### 前后端连接问题
 
@@ -139,3 +129,5 @@ npm run dev
 - `npm run dev` - 启动开发服务器
 - `npm run build` - 构建生产版本
 - `npm run preview` - 预览生产构建
+- `npm run format` - 格式化代码
+- `npm run update` - 升级项目依赖
