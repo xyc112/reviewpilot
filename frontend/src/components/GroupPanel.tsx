@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface GroupPanelProps {
   title: string;
@@ -19,16 +19,24 @@ const GroupPanel: React.FC<GroupPanelProps> = ({
 
   return (
     <div className="group-panel">
-      <div 
-        className="group-panel-header" 
+      <div
+        className="group-panel-header"
         onClick={() => setExpanded(!expanded)}
-        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        style={{
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
         <h3>
           {title}
           {showCount && <span className="count-badge">({count})</span>}
         </h3>
-        <span className={`expand-icon ${expanded ? 'expanded' : ''}`} style={{ transition: 'transform 0.2s' }}>
+        <span
+          className={`expand-icon ${expanded ? "expanded" : ""}`}
+          style={{ transition: "transform 0.2s" }}
+        >
           ▼
         </span>
       </div>

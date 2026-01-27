@@ -1,16 +1,19 @@
-import React from 'react';
+import React from "react";
 
 interface SearchHighlightProps {
   text: string;
   searchQuery: string;
 }
 
-const SearchHighlight: React.FC<SearchHighlightProps> = ({ text, searchQuery }) => {
+const SearchHighlight: React.FC<SearchHighlightProps> = ({
+  text,
+  searchQuery,
+}) => {
   if (!searchQuery) {
     return <>{text}</>;
   }
 
-  const regex = new RegExp(`(${searchQuery})`, 'gi');
+  const regex = new RegExp(`(${searchQuery})`, "gi");
   const parts = text.split(regex);
 
   return (
@@ -22,7 +25,7 @@ const SearchHighlight: React.FC<SearchHighlightProps> = ({ text, searchQuery }) 
           </mark>
         ) : (
           <span key={index}>{part}</span>
-        )
+        ),
       )}
     </>
   );

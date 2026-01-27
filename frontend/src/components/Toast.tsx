@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-type ToastType = 'success' | 'error' | 'info' | 'warning';
+type ToastType = "success" | "error" | "info" | "warning";
 
 interface Toast {
   id: string;
@@ -19,13 +19,15 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ToastProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (type: ToastType, message: string) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast = { id, message, type };
-    
+
     setToasts((prev) => [...prev, newToast]);
 
     setTimeout(() => {
@@ -37,10 +39,10 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
-  const success = (message: string) => addToast('success', message);
-  const error = (message: string) => addToast('error', message);
-  const info = (message: string) => addToast('info', message);
-  const warning = (message: string) => addToast('warning', message);
+  const success = (message: string) => addToast("success", message);
+  const error = (message: string) => addToast("error", message);
+  const info = (message: string) => addToast("info", message);
+  const warning = (message: string) => addToast("warning", message);
 
   return (
     <ToastContext.Provider
@@ -65,7 +67,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 };
