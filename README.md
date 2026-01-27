@@ -7,19 +7,19 @@ ReviewPilot 是一个前后端分离的学习管理系统，后端采用 Spring 
 ## 系统要求
 
 ### 后端环境要求
-- **Java**: JDK 21 或更高版本
-- **Maven**: 3.6+ 
+- **Java**: JDK 25
+- **Maven**: 3.9 
 - **数据库**: H2 内存数据库（已集成，无需额外安装）
 
 ### 前端环境要求
-- **Node.js**: 建议使用 Node.js 18+ 或更高版本
+- **Node.js**: Node.js 24
 - **npm**: 随 Node.js 一起安装
 
 ## 系统配置
 
 ### 后端配置
 
-后端配置文件位于 `backend/src/main/resources/application.yml`：
+后端配置文件位于 `backend/src/main/resources/application.yaml`：
 
 - **应用名称**: backend
 - **数据库**: H2 内存数据库（`jdbc:h2:mem:testdb;MODE=MySQL`）
@@ -97,7 +97,7 @@ npm run dev
    mvn -version
    ```
 
-3. **端口占用**: 如果 8080 端口被占用，可以修改 `application.yml` 中的端口配置
+3. **端口占用**: 如果 8080 端口被占用，可以修改 `application.yaml` 中的端口配置
 
 ### 前端启动失败
 
