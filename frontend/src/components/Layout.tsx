@@ -58,7 +58,9 @@ const Layout: React.FC = () => {
             position: "sticky",
             top: 0,
             zIndex: 100,
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
           }}
         >
           <Space>
@@ -88,6 +90,10 @@ const Layout: React.FC = () => {
             padding: 0,
             minHeight: 280,
             background: colorBgContainer,
+            maxWidth: 1400,
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "100%",
           }}
         >
           <Outlet />

@@ -1,22 +1,38 @@
-// src/pages/QuizList.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  Input,
+  Button,
+  Space,
+  Typography,
+  Card,
+  List,
+  Empty,
+  Alert,
+  Tag,
+  Spin,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import { Quiz } from "../types";
 import { quizAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useCourse } from "../context/CourseContext";
-import { useTheme } from "../components/ThemeProvider";
-import { Plus, ClipboardList, Edit, Trash2, Search, X } from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { Search } = Input;
+const { Title, Text, Paragraph } = Typography;
 
 const QuizList: React.FC = () => {
   const navigate = useNavigate();
   const { selectedCourse, currentStudyingCourse } = useCourse();
   const course = selectedCourse || currentStudyingCourse;
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { isAdmin } = useAuth();
   const { success, error: showError } = useToast();
 
@@ -86,199 +102,167 @@ const QuizList: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">请先选择一个课程</div>
-        <button
-          onClick={() => navigate("/courses")}
-          className="btn btn-primary"
-        >
-          前往课程列表
-        </button>
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        action={
+          <Button type="primary" onClick={() => navigate("/courses")}>
+            前往课程列表
+          </Button>
+        }
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  if (loading) return <div className="loading">加载中...</div>;
-  if (error) return <div className="error-message">{error}</div>;
+  if (error) {
+    return (
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+    );
+  }
 
   return (
-    <div className="notes-view">
-      {course && isAdmin && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <Link to="/quizzes/new" className="btn btn-primary">
-            <Plus size={18} />
-            创建测验
-          </Link>
-        </div>
-      )}
-
-      {error && <div className="error-message mb-4">{error}</div>}
-
-      {/* 搜索栏 */}
-      <div className="search-filter-bar" style={{ marginBottom: "1.5rem" }}>
-        <div className="search-box">
-          <div className="input-icon-wrapper">
-            <Search size={20} className="input-icon" />
-            <div className="input-icon-divider"></div>
-          </div>
-          <input
-            type="text"
-            placeholder="搜索测验标题..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="search-clear"
-              aria-label="清除搜索"
-            >
-              <X size={16} />
-            </button>
-          )}
-          <span className="search-shortcut-hint" title="快捷键">
-            <kbd>Ctrl</kbd> + <kbd>K</kbd>
-          </span>
-        </div>
-      </div>
-
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        title="删除测验"
-        message="确定要删除这个测验吗？此操作无法撤销，将删除测验及其所有相关数据。"
-        confirmText="删除"
-        cancelText="取消"
-        type="danger"
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({ isOpen: false, quizId: null })}
-      />
-
-      <div className="notes-container">
-        {quizzes.length === 0 ? (
-          <div className="empty-state">
-            <ClipboardList size={48} className="text-stone-400 mb-4" />
-            <p className="text-lg font-semibold mb-2">暂无测验</p>
-            <p className="text-stone-500 mb-4">
-              {isAdmin ? "立即创建第一个测验吧！" : "请等待管理员创建测验。"}
-            </p>
-            {isAdmin && course && (
-              <Link to="/quizzes/new" className="btn btn-primary">
-                <Plus size={18} />
-                创建新测验
-              </Link>
-            )}
-          </div>
-        ) : filteredQuizzes.length === 0 && searchQuery ? (
-          <div className="empty-state">
-            <ClipboardList size={48} className="text-stone-400 mb-4" />
-            <p className="text-lg font-semibold mb-2">未找到匹配的测验</p>
-            <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
-            <button
-              onClick={() => setSearchQuery("")}
-              className="btn btn-primary"
-            >
-              清除搜索
-            </button>
-          </div>
-        ) : (
-          <div className="quizzes-list">
-            {filteredQuizzes.map((quiz) => (
-              <div key={quiz.id} className="quiz-list-item">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    flex: 1,
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        marginBottom: "0.5rem",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <h3
-                        style={{
-                          margin: 0,
-                          fontSize: "1.125rem",
-                          fontWeight: 600,
-                          color: isDark ? "#f9fafb" : "#1c1917",
-                        }}
-                      >
-                        {quiz.title}
-                      </h3>
-                      <span
-                        style={{
-                          padding: "0.25rem 0.75rem",
-                          borderRadius: "9999px",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          background: "#dbeafe",
-                          color: "#1e40af",
-                        }}
-                      >
-                        {quiz.questions.length} 题
-                      </span>
-                    </div>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.875rem",
-                        color: "#78716c",
-                      }}
-                    >
-                      包含 {quiz.questions.length}{" "}
-                      道题目，测试您对课程知识的掌握程度
-                    </p>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Link to={`/quizzes/${quiz.id}`} className="btn btn-primary">
-                    开始测验
-                  </Link>
-                  {isAdmin && (
-                    <>
-                      <button
-                        onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
-                        className="btn btn-outline btn-small"
-                        title="编辑测验"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(quiz.id)}
-                        className="btn btn-danger btn-small"
-                        title="删除测验"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        {course && isAdmin && (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Link to="/quizzes/new">
+              <Button type="primary" icon={<PlusOutlined />}>
+                创建测验
+              </Button>
+            </Link>
           </div>
         )}
-      </div>
+
+        <Search
+          placeholder="搜索测验标题..."
+          allowClear
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ maxWidth: 600 }}
+        />
+
+        <ConfirmDialog
+          isOpen={deleteConfirm.isOpen}
+          title="删除测验"
+          message="确定要删除这个测验吗？此操作无法撤销，将删除测验及其所有相关数据。"
+          confirmText="删除"
+          cancelText="取消"
+          type="danger"
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteConfirm({ isOpen: false, quizId: null })}
+        />
+
+        {quizzes.length === 0 ? (
+          <Empty
+            image={
+              <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+            }
+            description={
+              <Space direction="vertical" size="small">
+                <Title level={4} style={{ margin: 0 }}>
+                  暂无测验
+                </Title>
+                <Text type="secondary">
+                  {isAdmin
+                    ? "立即创建第一个测验吧！"
+                    : "请等待管理员创建测验。"}
+                </Text>
+              </Space>
+            }
+          >
+            {isAdmin && course && (
+              <Link to="/quizzes/new">
+                <Button type="primary" icon={<PlusOutlined />}>
+                  创建新测验
+                </Button>
+              </Link>
+            )}
+          </Empty>
+        ) : filteredQuizzes.length === 0 && searchQuery ? (
+          <Empty
+            image={
+              <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+            }
+            description={
+              <Space direction="vertical" size="small">
+                <Title level={4} style={{ margin: 0 }}>
+                  未找到匹配的测验
+                </Title>
+                <Text type="secondary">尝试调整搜索条件</Text>
+              </Space>
+            }
+          >
+            <Button type="primary" onClick={() => setSearchQuery("")}>
+              清除搜索
+            </Button>
+          </Empty>
+        ) : (
+          <List
+            dataSource={filteredQuizzes}
+            renderItem={(quiz) => (
+              <List.Item
+                style={{
+                  background: "#fff",
+                  marginBottom: "1rem",
+                  padding: "1.5rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                }}
+              >
+                <Space
+                  style={{ width: "100%", justifyContent: "space-between" }}
+                >
+                  <Space direction="vertical" size="small" style={{ flex: 1 }}>
+                    <Space wrap>
+                      <Title
+                        level={4}
+                        style={{ margin: 0, fontSize: "1.125rem" }}
+                      >
+                        {quiz.title}
+                      </Title>
+                      <Tag color="blue">{quiz.questions.length} 题</Tag>
+                    </Space>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      包含 {quiz.questions.length}{" "}
+                      道题目，测试您对课程知识的掌握程度
+                    </Text>
+                  </Space>
+                  <Space>
+                    <Link to={`/quizzes/${quiz.id}`}>
+                      <Button type="primary">开始测验</Button>
+                    </Link>
+                    {isAdmin && (
+                      <>
+                        <Button
+                          icon={<EditOutlined />}
+                          onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
+                          title="编辑测验"
+                        />
+                        <Button
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => handleDelete(quiz.id)}
+                          title="删除测验"
+                        />
+                      </>
+                    )}
+                  </Space>
+                </Space>
+              </List.Item>
+            )}
+          />
+        )}
+      </Space>
     </div>
   );
 };

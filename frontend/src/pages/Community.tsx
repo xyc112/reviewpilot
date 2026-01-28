@@ -1,25 +1,37 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import {
+  Card,
+  Input,
+  Button,
+  Space,
+  Typography,
+  Empty,
+  Alert,
+  Divider,
+  Tag,
+} from "antd";
+import {
+  PlusOutlined,
+  MessageOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SendOutlined,
+  CloseOutlined,
+  DownOutlined,
+  UpOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { Post, Comment, Course } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useCourse } from "../context/CourseContext";
-import {
-  Plus,
-  MessageSquare,
-  Edit,
-  Trash2,
-  Send,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Search,
-} from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import MarkdownRenderer from "../components/MarkdownRenderer";
-import "../styles/Community.css";
-import "../styles/Course.css";
+
+const { TextArea } = Input;
+const { Text, Title, Paragraph } = Typography;
 
 const Community: React.FC = () => {
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
@@ -321,108 +333,149 @@ const Community: React.FC = () => {
     if (filteredComments.length === 0) return null;
 
     return (
-      <div
-        className={`comments-list ${level > 0 ? "nested-comments" : ""}`}
-        style={{ marginLeft: level > 0 ? "2rem" : "0" }}
+      <Space
+        direction="vertical"
+        size="small"
+        style={{
+          width: "100%",
+          marginLeft: level > 0 ? "2rem" : "0",
+          borderLeft: level > 0 ? "2px solid #f0f0f0" : "none",
+          paddingLeft: level > 0 ? "1rem" : "0",
+        }}
       >
         {filteredComments.map((comment) => (
-          <div key={comment.id} className="comment-item">
-            <div className="comment-header">
-              <span className="comment-author">
-                {comment.authorUsername || `用户 ${comment.authorId}`}
-              </span>
-              <span className="comment-date">
-                {formatDate(comment.createdAt)}
-              </span>
-              {(isAdmin || user?.id === comment.authorId) && (
-                <button
-                  onClick={() =>
-                    setDeleteConfirm({
-                      type: "comment",
-                      id: comment.id,
-                      postId,
-                    })
-                  }
-                  className="btn-icon btn-icon-danger"
-                  title="删除评论"
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
-            </div>
-            <div className="comment-content">
-              <MarkdownRenderer content={comment.content} />
-            </div>
-            <div className="comment-actions">
-              <button
+          <Card
+            key={comment.id}
+            size="small"
+            style={{
+              backgroundColor: "#fafafa",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Space direction="vertical" size="small" style={{ width: "100%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Space>
+                  <Text strong style={{ fontSize: "0.875rem" }}>
+                    {comment.authorUsername || `用户 ${comment.authorId}`}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
+                    {formatDate(comment.createdAt)}
+                  </Text>
+                </Space>
+                {(isAdmin || user?.id === comment.authorId) && (
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={() =>
+                      setDeleteConfirm({
+                        type: "comment",
+                        id: comment.id,
+                        postId,
+                      })
+                    }
+                    title="删除评论"
+                  />
+                )}
+              </div>
+              <div>
+                <MarkdownRenderer content={comment.content} />
+              </div>
+              <Button
+                type="link"
+                size="small"
+                icon={<MessageOutlined />}
                 onClick={() => {
                   setShowReplyForm({ postId, parentId: comment.id });
                   setTimeout(() => commentInputRef.current?.focus(), 100);
                 }}
-                className="btn-link"
               >
-                <MessageSquare size={14} />
                 回复
-              </button>
-            </div>
-            {showReplyForm?.postId === postId &&
-              showReplyForm?.parentId === comment.id && (
-                <div className="reply-form">
-                  <textarea
-                    ref={commentInputRef}
-                    value={getReplyContent(postId, comment.id)}
-                    onChange={(e) =>
-                      setReplyContent(postId, comment.id, e.target.value)
-                    }
-                    placeholder="输入回复..."
-                    rows={3}
-                    className="form-textarea"
-                  />
-                  <div className="form-actions">
-                    <button
-                      onClick={() => handleCreateComment(postId, comment.id)}
-                      className="btn btn-primary btn-small"
+              </Button>
+              {showReplyForm?.postId === postId &&
+                showReplyForm?.parentId === comment.id && (
+                  <Card
+                    size="small"
+                    style={{
+                      marginTop: "0.75rem",
+                      backgroundColor: "#fff",
+                      border: "1px solid #d9d9d9",
+                    }}
+                  >
+                    <Space
+                      direction="vertical"
+                      size="small"
+                      style={{ width: "100%" }}
                     >
-                      <Send size={14} />
-                      发送
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowReplyForm(null);
-                        clearReplyContent(postId, comment.id);
-                      }}
-                      className="btn btn-outline btn-small"
-                    >
-                      取消
-                    </button>
-                  </div>
-                </div>
-              )}
-            {renderComments(postId, comment.id, level + 1)}
-          </div>
+                      <TextArea
+                        ref={commentInputRef}
+                        value={getReplyContent(postId, comment.id)}
+                        onChange={(e) =>
+                          setReplyContent(postId, comment.id, e.target.value)
+                        }
+                        placeholder="输入回复..."
+                        rows={3}
+                      />
+                      <Space>
+                        <Button
+                          type="primary"
+                          size="small"
+                          icon={<SendOutlined />}
+                          onClick={() =>
+                            handleCreateComment(postId, comment.id)
+                          }
+                        >
+                          发送
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            setShowReplyForm(null);
+                            clearReplyContent(postId, comment.id);
+                          }}
+                        >
+                          取消
+                        </Button>
+                      </Space>
+                    </Space>
+                  </Card>
+                )}
+              {renderComments(postId, comment.id, level + 1)}
+            </Space>
+          </Card>
         ))}
-      </div>
+      </Space>
     );
   };
 
   if (!courseId) {
     return (
-      <div className="container">
-        <div className="error-message">课程ID无效</div>
-      </div>
+      <Alert
+        message="课程ID无效"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
     );
   }
 
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">加载中...</div>
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Text>加载中...</Text>
       </div>
     );
   }
 
   return (
-    <div className="container">
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 1rem" }}>
       <ConfirmDialog
         isOpen={deleteConfirm !== null}
         title={deleteConfirm?.type === "post" ? "删除帖子" : "删除评论"}
@@ -440,268 +493,303 @@ const Community: React.FC = () => {
         onCancel={() => setDeleteConfirm(null)}
       />
 
-      <div className="community-page">
-        {error && <div className="error-message mb-4">{error}</div>}
+      {error && (
+        <Alert
+          message={error}
+          type="error"
+          showIcon
+          style={{ marginBottom: "1.5rem" }}
+        />
+      )}
 
-        {/* 搜索栏 */}
-        <div className="search-filter-bar" style={{ marginBottom: "1.5rem" }}>
-          <div className="search-box">
-            <div className="input-icon-wrapper">
-              <Search size={20} className="input-icon" />
-              <div className="input-icon-divider"></div>
-            </div>
-            <input
-              type="text"
-              placeholder="搜索帖子标题、内容或作者..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="search-clear"
-                aria-label="清除搜索"
-              >
-                <X size={16} />
-              </button>
-            )}
-            <span className="search-shortcut-hint" title="快捷键">
-              <kbd>Ctrl</kbd> + <kbd>K</kbd>
-            </span>
-          </div>
-
-          <button
+      {/* 搜索栏 */}
+      <Space
+        style={{ width: "100%", marginBottom: "1.5rem" }}
+        direction="vertical"
+        size="middle"
+      >
+        <Space.Compact style={{ width: "100%" }}>
+          <Input
+            placeholder="搜索帖子标题、内容或作者..."
+            prefix={<SearchOutlined />}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            allowClear
+            style={{ flex: 1 }}
+          />
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
             onClick={() => setShowCreatePost(!showCreatePost)}
-            className="btn btn-primary"
           >
-            <Plus size={18} />
             {showCreatePost ? "取消发布" : "发布新帖"}
-          </button>
-        </div>
+          </Button>
+        </Space.Compact>
+      </Space>
 
-        {showCreatePost && (
-          <div className="content-section" style={{ marginBottom: "2rem" }}>
-            <div className="note-edit-page">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleCreatePost();
-                }}
-                className="note-edit-form"
-              >
-                <div className="form-group">
-                  <label>标题:</label>
-                  <input
+      {showCreatePost && (
+        <Card style={{ marginBottom: "2rem" }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCreatePost();
+            }}
+          >
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <div>
+                <Text strong>标题:</Text>
+                <Input
+                  value={newPost.title}
+                  onChange={(e) =>
+                    setNewPost({ ...newPost, title: e.target.value })
+                  }
+                  required
+                  placeholder="输入帖子标题"
+                  style={{ marginTop: "0.5rem" }}
+                />
+              </div>
+
+              <div>
+                <Text strong>内容:</Text>
+                <TextArea
+                  value={newPost.content}
+                  onChange={(e) =>
+                    setNewPost({ ...newPost, content: e.target.value })
+                  }
+                  rows={15}
+                  required
+                  placeholder="输入帖子内容，支持 Markdown 格式"
+                  style={{ marginTop: "0.5rem" }}
+                />
+              </div>
+
+              <Space>
+                <Button
+                  onClick={() => {
+                    setShowCreatePost(false);
+                    setNewPost({ title: "", content: "" });
+                  }}
+                >
+                  <CloseOutlined />
+                  取消
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SendOutlined />}
+                >
+                  发布
+                </Button>
+              </Space>
+            </Space>
+          </form>
+        </Card>
+      )}
+
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        {posts.length === 0 && !showCreatePost ? (
+          <Empty
+            image={
+              <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+            }
+            description={
+              <Space direction="vertical" size="small">
+                <Title level={4}>还没有帖子</Title>
+                <Text type="secondary">成为第一个发布帖子的人吧！</Text>
+              </Space>
+            }
+          />
+        ) : filteredPosts.length === 0 && searchQuery ? (
+          <Empty
+            image={
+              <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+            }
+            description={
+              <Space direction="vertical" size="small">
+                <Title level={4}>未找到匹配的帖子</Title>
+                <Text type="secondary">尝试调整搜索条件</Text>
+              </Space>
+            }
+          >
+            <Button type="primary" onClick={() => setSearchQuery("")}>
+              清除搜索
+            </Button>
+          </Empty>
+        ) : filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
+            <Card
+              key={post.id}
+              hoverable
+              style={{ border: "1px solid #d9d9d9" }}
+              actions={[
+                <Space key="actions">
+                  {(isAdmin || user?.id === post.authorId) && (
+                    <>
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={() => startEditPost(post)}
+                        title="编辑"
+                      />
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() =>
+                          setDeleteConfirm({ type: "post", id: post.id })
+                        }
+                        title="删除"
+                      />
+                    </>
+                  )}
+                  <Button
                     type="text"
-                    value={newPost.title}
-                    onChange={(e) =>
-                      setNewPost({ ...newPost, title: e.target.value })
-                    }
-                    required
-                    placeholder="输入帖子标题"
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>内容:</label>
-                  <textarea
-                    value={newPost.content}
-                    onChange={(e) =>
-                      setNewPost({ ...newPost, content: e.target.value })
-                    }
-                    rows={15}
-                    required
-                    placeholder="输入帖子内容，支持 Markdown 格式"
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowCreatePost(false);
-                      setNewPost({ title: "", content: "" });
-                    }}
-                    className="btn btn-outline"
-                  >
-                    <X size={18} />
-                    取消
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    <Send size={18} />
-                    发布
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <div className="posts-list">
-          {posts.length === 0 && !showCreatePost ? (
-            <div className="empty-state">
-              <MessageSquare size={48} className="text-stone-400 mb-4" />
-              <p className="text-lg font-semibold mb-2">还没有帖子</p>
-              <p className="text-stone-500 mb-4">成为第一个发布帖子的人吧！</p>
-            </div>
-          ) : filteredPosts.length === 0 && searchQuery ? (
-            <div className="empty-state">
-              <MessageSquare size={48} className="text-stone-400 mb-4" />
-              <p className="text-lg font-semibold mb-2">未找到匹配的帖子</p>
-              <p className="text-stone-500 mb-4">尝试调整搜索条件</p>
-              <button
-                onClick={() => setSearchQuery("")}
-                className="btn btn-primary"
-              >
-                清除搜索
-              </button>
-            </div>
-          ) : filteredPosts.length > 0 ? (
-            filteredPosts.map((post) => (
-              <div key={post.id} className="post-card card">
-                <div className="post-header">
-                  <div className="post-title-section">
-                    <h3 className="post-title">{post.title}</h3>
-                    <div className="post-meta">
-                      <span className="post-author">
-                        {post.authorUsername || `用户 ${post.authorId}`}
-                      </span>
-                      <span className="post-date">
-                        {formatDate(post.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="post-actions">
-                    {(isAdmin || user?.id === post.authorId) && (
-                      <>
-                        <button
-                          onClick={() => startEditPost(post)}
-                          className="btn-icon"
-                          title="编辑"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            setDeleteConfirm({ type: "post", id: post.id })
-                          }
-                          className="btn-icon btn-icon-danger"
-                          title="删除"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={() => handleTogglePost(post.id)}
-                      className="btn-icon"
-                      title={expandedPost === post.id ? "收起" : "展开"}
-                    >
-                      {expandedPost === post.id ? (
-                        <ChevronUp size={16} />
+                    icon={
+                      expandedPost === post.id ? (
+                        <UpOutlined />
                       ) : (
-                        <ChevronDown size={16} />
-                      )}
-                    </button>
-                  </div>
+                        <DownOutlined />
+                      )
+                    }
+                    onClick={() => handleTogglePost(post.id)}
+                    title={expandedPost === post.id ? "收起" : "展开"}
+                  />
+                </Space>,
+              ]}
+            >
+              <Space
+                direction="vertical"
+                size="middle"
+                style={{ width: "100%" }}
+              >
+                <div>
+                  <Title
+                    level={4}
+                    style={{ margin: 0, marginBottom: "0.5rem" }}
+                  >
+                    {post.title}
+                  </Title>
+                  <Space>
+                    <Text type="secondary" strong>
+                      {post.authorUsername || `用户 ${post.authorId}`}
+                    </Text>
+                    <Text type="secondary">{formatDate(post.createdAt)}</Text>
+                  </Space>
                 </div>
 
                 {editingPost === post.id ? (
-                  <div className="post-edit-form">
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        value={editPostData.title}
-                        onChange={(e) =>
-                          setEditPostData({
-                            ...editPostData,
-                            title: e.target.value,
-                          })
-                        }
-                        className="form-input"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <textarea
-                        value={editPostData.content}
-                        onChange={(e) =>
-                          setEditPostData({
-                            ...editPostData,
-                            content: e.target.value,
-                          })
-                        }
-                        rows={6}
-                        className="form-textarea"
-                      />
-                    </div>
-                    <div className="form-actions">
-                      <button
+                  <Space
+                    direction="vertical"
+                    size="middle"
+                    style={{ width: "100%" }}
+                  >
+                    <Input
+                      value={editPostData.title}
+                      onChange={(e) =>
+                        setEditPostData({
+                          ...editPostData,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                    <TextArea
+                      value={editPostData.content}
+                      onChange={(e) =>
+                        setEditPostData({
+                          ...editPostData,
+                          content: e.target.value,
+                        })
+                      }
+                      rows={6}
+                    />
+                    <Space>
+                      <Button
+                        type="primary"
+                        size="small"
                         onClick={() => handleUpdatePost(post.id)}
-                        className="btn btn-primary btn-small"
                       >
                         保存
-                      </button>
-                      <button
-                        onClick={cancelEditPost}
-                        className="btn btn-outline btn-small"
-                      >
+                      </Button>
+                      <Button size="small" onClick={cancelEditPost}>
                         取消
-                      </button>
-                    </div>
-                  </div>
+                      </Button>
+                    </Space>
+                  </Space>
                 ) : (
-                  <div className="post-content">
+                  <div>
                     <MarkdownRenderer content={post.content} />
                   </div>
                 )}
 
                 {expandedPost === post.id && (
-                  <div className="post-comments">
-                    <div className="comments-section-header">
-                      <h4 className="text-lg font-semibold">评论</h4>
-                      {loadingComments[post.id] && (
-                        <span className="text-sm text-stone-500">
-                          加载中...
-                        </span>
-                      )}
-                    </div>
-
-                    {!showReplyForm ||
-                    showReplyForm.postId !== post.id ||
-                    showReplyForm.parentId !== null ? (
-                      <div className="comment-form">
-                        <textarea
-                          value={getReplyContent(post.id, null)}
-                          onChange={(e) =>
-                            setReplyContent(post.id, null, e.target.value)
-                          }
-                          placeholder="输入评论..."
-                          rows={3}
-                          className="form-textarea"
-                        />
-                        <div className="form-actions">
-                          <button
-                            onClick={() => handleCreateComment(post.id, null)}
-                            className="btn btn-primary btn-small"
-                          >
-                            <Send size={14} />
-                            发布评论
-                          </button>
-                        </div>
+                  <div
+                    style={{
+                      marginTop: "1.5rem",
+                      paddingTop: "1.5rem",
+                      borderTop: "1px solid #f0f0f0",
+                    }}
+                  >
+                    <Space
+                      direction="vertical"
+                      size="middle"
+                      style={{ width: "100%" }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Title level={5} style={{ margin: 0 }}>
+                          评论
+                        </Title>
+                        {loadingComments[post.id] && (
+                          <Text type="secondary">加载中...</Text>
+                        )}
                       </div>
-                    ) : null}
 
-                    {renderComments(post.id)}
+                      {!showReplyForm ||
+                      showReplyForm.postId !== post.id ||
+                      showReplyForm.parentId !== null ? (
+                        <Card
+                          size="small"
+                          style={{ backgroundColor: "#fafafa" }}
+                        >
+                          <Space
+                            direction="vertical"
+                            size="small"
+                            style={{ width: "100%" }}
+                          >
+                            <TextArea
+                              value={getReplyContent(post.id, null)}
+                              onChange={(e) =>
+                                setReplyContent(post.id, null, e.target.value)
+                              }
+                              placeholder="输入评论..."
+                              rows={3}
+                            />
+                            <Button
+                              type="primary"
+                              size="small"
+                              icon={<SendOutlined />}
+                              onClick={() => handleCreateComment(post.id, null)}
+                            >
+                              发布评论
+                            </Button>
+                          </Space>
+                        </Card>
+                      ) : null}
+
+                      {renderComments(post.id)}
+                    </Space>
                   </div>
                 )}
-              </div>
-            ))
-          ) : null}
-        </div>
-      </div>
+              </Space>
+            </Card>
+          ))
+        ) : null}
+      </Space>
     </div>
   );
 };

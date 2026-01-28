@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Spin,
+  Button,
+  Card,
+  Space,
+  Typography,
+  Input,
+  Select,
+  Form,
+  Divider,
+} from "antd";
+import { EditOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Node, Relation } from "../types";
 import { graphAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -7,7 +20,9 @@ import { useCourse } from "../context/CourseContext";
 import GraphCanvas from "../components/GraphCanvas";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import { Edit2, X, Trash2 } from "lucide-react";
+
+const { TextArea } = Input;
+const { Title, Text } = Typography;
 
 const GraphView: React.FC = () => {
   const navigate = useNavigate();
@@ -327,23 +342,35 @@ const GraphView: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">请先选择一个课程</div>
-        <button
-          onClick={() => navigate("/courses")}
-          className="btn btn-primary"
-        >
-          前往课程列表
-        </button>
-      </div>
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        action={
+          <Button type="primary" onClick={() => navigate("/courses")}>
+            前往课程列表
+          </Button>
+        }
+        style={{ margin: "2rem" }}
+      />
     );
   }
 
-  if (loading) return <div className="loading">加载知识图谱中...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+    );
+  }
 
   return (
-    <div className="graph-view-fullscreen">
+    <div style={{ width: "100%", height: "100vh", padding: 0 }}>
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={deleteConfirm.type === "node" ? "删除节点" : "删除关系"}
@@ -361,8 +388,8 @@ const GraphView: React.FC = () => {
         }
       />
 
-      <div className="graph-container-fullscreen">
-        <div className="graph-main-fullscreen">
+      <div style={{ width: "100%", height: "100%" }}>
+        <div style={{ width: "100%", height: "100%" }}>
           <GraphCanvas
             nodes={nodes}
             relations={relations}
@@ -411,29 +438,42 @@ const GraphView: React.FC = () => {
 
         {/* 节点 / 关系详情浮动面板 */}
         {(selectedNode || selectedRelation) && (
-          <div className="node-details-panel">
-            <div className="node-details-header">
-              <h3>{selectedNode ? "节点详情" : "关系详情"}</h3>
-              <button
-                onClick={() => {
-                  setSelectedNode(null);
-                  setEditingNode(null);
-                  setSelectedRelation(null);
+          <Card
+            style={{
+              position: "absolute",
+              top: "1rem",
+              right: "1rem",
+              width: 320,
+              zIndex: 1000,
+            }}
+            title={
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
-                className="btn-icon"
-                aria-label="关闭"
               >
-                <X size={18} />
-              </button>
-            </div>
-
+                <Title level={4} style={{ margin: 0 }}>
+                  {selectedNode ? "节点详情" : "关系详情"}
+                </Title>
+                <Button
+                  type="text"
+                  icon={<CloseOutlined />}
+                  onClick={() => {
+                    setSelectedNode(null);
+                    setEditingNode(null);
+                    setSelectedRelation(null);
+                  }}
+                />
+              </div>
+            }
+          >
             {selectedNode ? (
               editingNode && editingNode.id === selectedNode.id ? (
-                <div className="node-edit-form">
-                  <div className="form-group">
-                    <label className="form-label">节点标签:</label>
-                    <input
-                      type="text"
+                <Form layout="vertical">
+                  <Form.Item label="节点标签" required>
+                    <Input
                       value={editNodeForm.label}
                       onChange={(e) =>
                         setEditNodeForm({
@@ -441,16 +481,12 @@ const GraphView: React.FC = () => {
                           label: e.target.value,
                         })
                       }
-                      className="form-input"
                       placeholder="输入节点名称"
-                      required
                       autoFocus
                     />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">节点类型:</label>
-                    <input
-                      type="text"
+                  </Form.Item>
+                  <Form.Item label="节点类型">
+                    <Input
                       value={editNodeForm.type}
                       onChange={(e) =>
                         setEditNodeForm({
@@ -458,13 +494,11 @@ const GraphView: React.FC = () => {
                           type: e.target.value,
                         })
                       }
-                      className="form-input"
                       placeholder="例如: concept, topic"
                     />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">描述:</label>
-                    <textarea
+                  </Form.Item>
+                  <Form.Item label="描述">
+                    <TextArea
                       value={editNodeForm.description}
                       onChange={(e) =>
                         setEditNodeForm({
@@ -472,105 +506,107 @@ const GraphView: React.FC = () => {
                           description: e.target.value,
                         })
                       }
-                      className="form-input"
                       rows={3}
                       placeholder="输入节点描述（可选）"
                     />
-                  </div>
-                  <div className="form-actions">
-                    <button
-                      onClick={handleSaveEditNode}
-                      className="btn btn-primary btn-small"
-                    >
-                      保存
-                    </button>
-                    <button
-                      onClick={handleCancelEditNode}
-                      className="btn btn-outline btn-small"
-                    >
-                      取消
-                    </button>
-                  </div>
-                </div>
+                  </Form.Item>
+                  <Form.Item>
+                    <Space>
+                      <Button
+                        type="primary"
+                        size="small"
+                        onClick={handleSaveEditNode}
+                      >
+                        保存
+                      </Button>
+                      <Button size="small" onClick={handleCancelEditNode}>
+                        取消
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Form>
               ) : (
-                <>
-                  <div className="node-info">
-                    <div className="node-info-item">
-                      <span className="node-info-label">标签:</span>
-                      <span className="node-info-value">
-                        {selectedNode.label || "未命名节点"}
-                      </span>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      标签:
+                    </Text>
+                    <div>
+                      <Text strong>{selectedNode.label || "未命名节点"}</Text>
                     </div>
-                    {selectedNode.type && (
-                      <div className="node-info-item">
-                        <span className="node-info-label">类型:</span>
-                        <span className="node-info-value">
-                          {selectedNode.type}
-                        </span>
-                      </div>
-                    )}
-                    {selectedNode.description && (
-                      <div className="node-info-item">
-                        <span className="node-info-label">描述:</span>
-                        <p className="node-info-description">
-                          {selectedNode.description}
-                        </p>
-                      </div>
-                    )}
                   </div>
-
-                  {isAdmin && (
-                    <div className="node-actions">
-                      <button
-                        onClick={() => handleStartEditNode(selectedNode)}
-                        className="btn btn-primary btn-small"
-                      >
-                        <Edit2 size={16} />
-                        编辑
-                      </button>
-                      <button
-                        onClick={() => handleDeleteNode(selectedNode.id!)}
-                        className="btn btn-danger btn-small"
-                      >
-                        <Trash2 size={16} />
-                        删除
-                      </button>
+                  {selectedNode.type && (
+                    <div>
+                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                        类型:
+                      </Text>
+                      <div>
+                        <Text strong>{selectedNode.type}</Text>
+                      </div>
                     </div>
                   )}
-                </>
+                  {selectedNode.description && (
+                    <div>
+                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                        描述:
+                      </Text>
+                      <Paragraph style={{ margin: "0.25rem 0 0 0" }}>
+                        {selectedNode.description}
+                      </Paragraph>
+                    </div>
+                  )}
+                  {isAdmin && (
+                    <Space>
+                      <Button
+                        size="small"
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={() => handleStartEditNode(selectedNode)}
+                      >
+                        编辑
+                      </Button>
+                      <Button
+                        size="small"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDeleteNode(selectedNode.id!)}
+                      >
+                        删除
+                      </Button>
+                    </Space>
+                  )}
+                </Space>
               )
             ) : selectedRelation ? (
               editingRelation && editingRelation.id === selectedRelation.id ? (
-                <div className="node-edit-form">
-                  <div className="form-group">
-                    <label className="form-label">关系类型:</label>
-                    <select
+                <Form layout="vertical">
+                  <Form.Item label="关系类型">
+                    <Select
                       value={editRelationForm.type}
-                      onChange={(e) =>
+                      onChange={(value) =>
                         setEditRelationForm({
                           ...editRelationForm,
-                          type: e.target.value as
-                            | "prerequisite"
-                            | "related"
-                            | "part_of",
+                          type: value as "prerequisite" | "related" | "part_of",
                         })
                       }
-                      className="form-input"
                     >
-                      <option value="prerequisite">前置 (prerequisite)</option>
-                      <option value="related">相关 (related)</option>
-                      <option value="part_of">包含 (part_of)</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        cursor: "pointer",
-                      }}
-                    >
+                      <Select.Option value="prerequisite">
+                        前置 (prerequisite)
+                      </Select.Option>
+                      <Select.Option value="related">
+                        相关 (related)
+                      </Select.Option>
+                      <Select.Option value="part_of">
+                        包含 (part_of)
+                      </Select.Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item>
+                    <Space>
                       <input
                         type="checkbox"
                         id="relation-directed"
@@ -595,11 +631,10 @@ const GraphView: React.FC = () => {
                       >
                         有向关系
                       </label>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">权重:</label>
-                    <input
+                    </Space>
+                  </Form.Item>
+                  <Form.Item label="权重">
+                    <Input
                       type="number"
                       min={0}
                       max={1}
@@ -614,104 +649,123 @@ const GraphView: React.FC = () => {
                           ),
                         })
                       }
-                      className="form-input"
                     />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">从:</label>
-                    <span className="node-info-value">
+                  </Form.Item>
+                  <Form.Item label="从">
+                    <Text>
                       {nodes.find((n) => n.id === selectedRelation.from)
                         ?.label || selectedRelation.from}
-                    </span>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">到:</label>
-                    <span className="node-info-value">
+                    </Text>
+                  </Form.Item>
+                  <Form.Item label="到">
+                    <Text>
                       {nodes.find((n) => n.id === selectedRelation.to)?.label ||
                         selectedRelation.to}
-                    </span>
-                  </div>
-                  <div className="form-actions">
-                    <button
-                      onClick={handleSaveEditRelation}
-                      className="btn btn-primary btn-small"
-                    >
-                      保存
-                    </button>
-                    <button
-                      onClick={handleCancelEditRelation}
-                      className="btn btn-outline btn-small"
-                    >
-                      取消
-                    </button>
-                  </div>
-                </div>
+                    </Text>
+                  </Form.Item>
+                  <Form.Item>
+                    <Space>
+                      <Button
+                        type="primary"
+                        size="small"
+                        onClick={handleSaveEditRelation}
+                      >
+                        保存
+                      </Button>
+                      <Button size="small" onClick={handleCancelEditRelation}>
+                        取消
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Form>
               ) : (
-                <>
-                  <div className="node-info">
-                    <div className="node-info-item">
-                      <span className="node-info-label">类型:</span>
-                      <span className="node-info-value">
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      类型:
+                    </Text>
+                    <div>
+                      <Text strong>
                         {{
                           prerequisite: "前置 (prerequisite)",
                           related: "相关 (related)",
                           part_of: "包含 (part_of)",
                         }[selectedRelation.type] || selectedRelation.type}
-                      </span>
+                      </Text>
                     </div>
-                    <div className="node-info-item">
-                      <span className="node-info-label">方向:</span>
-                      <span className="node-info-value">
+                  </div>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      方向:
+                    </Text>
+                    <div>
+                      <Text strong>
                         {selectedRelation.directed ? "有向" : "无向"}
-                      </span>
+                      </Text>
                     </div>
-                    <div className="node-info-item">
-                      <span className="node-info-label">权重:</span>
-                      <span className="node-info-value">
-                        {selectedRelation.weight ?? 0}
-                      </span>
+                  </div>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      权重:
+                    </Text>
+                    <div>
+                      <Text strong>{selectedRelation.weight ?? 0}</Text>
                     </div>
-                    <div className="node-info-item">
-                      <span className="node-info-label">从:</span>
-                      <span className="node-info-value">
+                  </div>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      从:
+                    </Text>
+                    <div>
+                      <Text strong>
                         {nodes.find((n) => n.id === selectedRelation.from)
                           ?.label || selectedRelation.from}
-                      </span>
+                      </Text>
                     </div>
-                    <div className="node-info-item">
-                      <span className="node-info-label">到:</span>
-                      <span className="node-info-value">
+                  </div>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
+                      到:
+                    </Text>
+                    <div>
+                      <Text strong>
                         {nodes.find((n) => n.id === selectedRelation.to)
                           ?.label || selectedRelation.to}
-                      </span>
+                      </Text>
                     </div>
                   </div>
                   {isAdmin && (
-                    <div className="node-actions">
-                      <button
+                    <Space>
+                      <Button
+                        size="small"
+                        type="primary"
+                        icon={<EditOutlined />}
                         onClick={() =>
                           handleStartEditRelation(selectedRelation)
                         }
-                        className="btn btn-primary btn-small"
                       >
-                        <Edit2 size={16} />
                         编辑
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        size="small"
+                        danger
+                        icon={<DeleteOutlined />}
                         onClick={() =>
                           handleDeleteRelation(selectedRelation.id!)
                         }
-                        className="btn btn-danger btn-small"
                       >
-                        <Trash2 size={16} />
                         删除
-                      </button>
-                    </div>
+                      </Button>
+                    </Space>
                   )}
-                </>
+                </Space>
               )
             ) : null}
-          </div>
+          </Card>
         )}
       </div>
     </div>

@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Card,
+  Button,
+  Space,
+  Typography,
+  Tag,
+  Alert,
+  Spin,
+  Divider,
+} from "antd";
+import {
+  ArrowLeftOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { Note } from "../types";
 import { noteAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useCourse } from "../context/CourseContext";
 import { useTheme } from "../components/ThemeProvider";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { Title, Text } = Typography;
 
 const NoteDetail: React.FC = () => {
   const { noteId } = useParams<{ noteId: string }>();
@@ -17,8 +32,6 @@ const NoteDetail: React.FC = () => {
   const { selectedCourse, currentStudyingCourse } = useCourse();
   const course = selectedCourse || currentStudyingCourse;
   const { user, isAdmin } = useAuth();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { success, error: showError } = useToast();
 
   const [note, setNote] = useState<Note | null>(null);
@@ -85,24 +98,47 @@ const NoteDetail: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">请先选择一个课程</div>
-        <button
-          onClick={() => navigate("/courses")}
-          className="btn btn-primary"
-        >
-          前往课程列表
-        </button>
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        action={
+          <Button type="primary" onClick={() => navigate("/courses")}>
+            前往课程列表
+          </Button>
+        }
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  if (loading) return <div className="loading">加载笔记中...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!note) return <div className="error-message">笔记不存在</div>;
+  if (error) {
+    return (
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+    );
+  }
+
+  if (!note) {
+    return (
+      <Alert
+        message="笔记不存在"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
 
   return (
-    <div className="container">
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除笔记"
@@ -114,57 +150,65 @@ const NoteDetail: React.FC = () => {
         onCancel={() => setDeleteConfirm(false)}
       />
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
-        <Link to="/notes" className="btn btn-outline">
-          <ArrowLeft size={18} />
-          返回笔记列表
-        </Link>
-        {canEdit() && (
-          <div style={{ display: "flex", gap: "0.75rem" }}>
-            <Link to={`/notes/${noteId}/edit`} className="btn btn-primary">
-              <Edit size={18} />
-              编辑笔记
-            </Link>
-            <button
-              onClick={() => setDeleteConfirm(true)}
-              className="btn btn-danger"
-            >
-              <Trash2 size={18} />
-              删除笔记
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="note-detail-page">
-        <div className="note-detail-header">
-          <h1 style={{ color: isDark ? "#f9fafb" : "#1e293b" }}>
-            {note.title}
-          </h1>
-          <div className="note-meta">
-            <span className={`visibility-badge ${note.visibility}`}>
-              {note.visibility === "public" ? "公开" : "私有"}
-            </span>
-            <span>创建于: {formatDate(note.createdAt)}</span>
-            {note.updatedAt && (
-              <span>更新于: {formatDate(note.updatedAt)}</span>
-            )}
-          </div>
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1rem",
+          }}
+        >
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/notes")}
+          >
+            返回笔记列表
+          </Button>
+          {canEdit() && (
+            <Space>
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/notes/${noteId}/edit`)}
+              >
+                编辑笔记
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => setDeleteConfirm(true)}
+              >
+                删除笔记
+              </Button>
+            </Space>
+          )}
         </div>
 
-        <div className="note-detail-content">
-          <MarkdownRenderer content={note.content} />
-        </div>
-      </div>
+        <Card>
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <Title level={1} style={{ margin: 0 }}>
+              {note.title}
+            </Title>
+            <Space wrap>
+              <Tag color={note.visibility === "public" ? "blue" : "default"}>
+                {note.visibility === "public" ? "公开" : "私有"}
+              </Tag>
+              <Text type="secondary">创建于: {formatDate(note.createdAt)}</Text>
+              {note.updatedAt && (
+                <Text type="secondary">
+                  更新于: {formatDate(note.updatedAt)}
+                </Text>
+              )}
+            </Space>
+            <Divider />
+            <div style={{ minHeight: "400px" }}>
+              <MarkdownRenderer content={note.content} />
+            </div>
+          </Space>
+        </Card>
+      </Space>
     </div>
   );
 };

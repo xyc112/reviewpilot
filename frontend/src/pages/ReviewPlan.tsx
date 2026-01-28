@@ -1,22 +1,38 @@
 import React, { useState, useEffect, useMemo } from "react";
+import {
+  Card,
+  Button,
+  Space,
+  Typography,
+  Spin,
+  Tag,
+  Alert,
+  Input,
+  Select,
+  DatePicker,
+  Divider,
+  Form,
+} from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import {
+  CalendarOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  ClockCircleOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services/api";
 import { useToast } from "../components/Toast";
 import { useTheme } from "../components/ThemeProvider";
-import {
-  Calendar,
-  Plus,
-  Edit,
-  Trash2,
-  Check,
-  X,
-  Clock,
-  GraduationCap,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
-import "../styles/CourseUI.css";
+
+const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 const ReviewPlanPage: React.FC = () => {
   const { theme } = useTheme();
@@ -278,22 +294,14 @@ const ReviewPlanPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container">
-        <div
-          style={{
-            textAlign: "center",
-            padding: "2rem",
-            color: isDark ? "#f9fafb" : "#1c1917",
-          }}
-        >
-          加载中...
-        </div>
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div className="container">
+    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 1rem" }}>
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title="删除复习计划"
@@ -315,7 +323,7 @@ const ReviewPlanPage: React.FC = () => {
         }}
       >
         {/* 日历 */}
-        <div className="content-section">
+        <Card>
           <div style={{ padding: "1rem" }}>
             {/* 月份导航 */}
             <div
@@ -326,29 +334,20 @@ const ReviewPlanPage: React.FC = () => {
                 marginBottom: "1rem",
               }}
             >
-              <button
+              <Button
+                size="small"
+                icon={<LeftOutlined />}
                 onClick={handlePrevMonth}
-                className="btn btn-outline btn-small"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: "1.125rem",
-                  fontWeight: 600,
-                  color: isDark ? "#f9fafb" : "#1c1917",
-                }}
-              >
+              />
+              <Title level={4} style={{ margin: 0 }}>
                 {currentDate.getFullYear()}年{" "}
                 {monthNames[currentDate.getMonth()]}
-              </h3>
-              <button
+              </Title>
+              <Button
+                size="small"
+                icon={<RightOutlined />}
                 onClick={handleNextMonth}
-                className="btn btn-outline btn-small"
-              >
-                <ChevronRight size={18} />
-              </button>
+              />
             </div>
 
             {/* 星期标题 */}
@@ -501,7 +500,7 @@ const ReviewPlanPage: React.FC = () => {
               })}
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* 右侧：新建计划表单、选中日期的计划和即将到来的计划 */}
         <div
@@ -509,195 +508,90 @@ const ReviewPlanPage: React.FC = () => {
         >
           {/* 新建/编辑计划表单 */}
           {showPlanForm && (
-            <div className="content-section">
-              <div style={{ padding: "1rem" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1rem",
+            <Card>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1rem",
+                }}
+              >
+                <Title level={4} style={{ margin: 0 }}>
+                  {editingPlan ? "编辑计划" : "新建计划"}
+                </Title>
+                <Button
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={() => {
+                    setShowPlanForm(false);
+                    setEditingPlan(null);
+                    setFormData({
+                      title: "",
+                      description: "",
+                      type: "plan",
+                      planDate: "",
+                    });
                   }}
-                >
-                  <h3
-                    style={{
-                      margin: 0,
-                      fontSize: "1rem",
-                      fontWeight: 600,
-                      color: isDark ? "#f9fafb" : "#1c1917",
-                    }}
+                />
+              </div>
+              <Form layout="vertical">
+                <Form.Item label="标题" required>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    placeholder="输入计划标题"
+                  />
+                </Form.Item>
+                <Form.Item label="日期" required>
+                  <DatePicker
+                    value={
+                      formData.planDate ? dayjs(formData.planDate) : undefined
+                    }
+                    onChange={(date) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        planDate: date ? date.format("YYYY-MM-DD") : "",
+                      }))
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+                <Form.Item label="类型" required>
+                  <Select
+                    value={formData.type}
+                    onChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        type: value as "plan" | "exam",
+                      }))
+                    }
                   >
-                    {editingPlan ? "编辑计划" : "新建计划"}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setShowPlanForm(false);
-                      setEditingPlan(null);
-                      setFormData({
-                        title: "",
-                        description: "",
-                        type: "plan",
-                        planDate: "",
-                      });
-                    }}
-                    className="btn btn-outline btn-small"
-                    title="关闭"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                  }}
-                >
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "0.5rem",
-                        fontSize: "0.875rem",
-                        fontWeight: 500,
-                        color: isDark ? "#d1d5db" : "#44403c",
-                      }}
-                    >
-                      标题 *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      className="form-input"
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: `1px solid ${isDark ? "#4b5563" : "#e7e5e4"}`,
-                        borderRadius: "0.5rem",
-                        fontSize: "0.875rem",
-                        background: isDark ? "#374151" : "#ffffff",
-                        color: isDark ? "#f9fafb" : "#1c1917",
-                      }}
-                      placeholder="输入计划标题"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "0.5rem",
-                        fontSize: "0.875rem",
-                        fontWeight: 500,
-                        color: isDark ? "#d1d5db" : "#44403c",
-                      }}
-                    >
-                      日期 *
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.planDate}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          planDate: e.target.value,
-                        }))
-                      }
-                      className="form-input"
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: `1px solid ${isDark ? "#4b5563" : "#e7e5e4"}`,
-                        borderRadius: "0.5rem",
-                        fontSize: "0.875rem",
-                        background: isDark ? "#374151" : "#ffffff",
-                        color: isDark ? "#f9fafb" : "#1c1917",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "0.5rem",
-                        fontSize: "0.875rem",
-                        fontWeight: 500,
-                        color: isDark ? "#d1d5db" : "#44403c",
-                      }}
-                    >
-                      类型 *
-                    </label>
-                    <select
-                      value={formData.type}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          type: e.target.value as "plan" | "exam",
-                        }))
-                      }
-                      className="form-input"
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: `1px solid ${isDark ? "#4b5563" : "#e7e5e4"}`,
-                        borderRadius: "0.5rem",
-                        fontSize: "0.875rem",
-                        background: isDark ? "#374151" : "#ffffff",
-                        color: isDark ? "#f9fafb" : "#1c1917",
-                      }}
-                    >
-                      <option value="plan">计划</option>
-                      <option value="exam">考试</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "0.5rem",
-                        fontSize: "0.875rem",
-                        fontWeight: 500,
-                        color: isDark ? "#d1d5db" : "#44403c",
-                      }}
-                    >
-                      描述
-                    </label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                      className="form-input"
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        border: `1px solid ${isDark ? "#4b5563" : "#e7e5e4"}`,
-                        borderRadius: "0.5rem",
-                        fontSize: "0.875rem",
-                        minHeight: "80px",
-                        resize: "vertical",
-                        background: isDark ? "#374151" : "#ffffff",
-                        color: isDark ? "#f9fafb" : "#1c1917",
-                      }}
-                      placeholder="输入计划描述（可选）"
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "0.75rem",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <button
+                    <Select.Option value="plan">计划</Select.Option>
+                    <Select.Option value="exam">考试</Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item label="描述">
+                  <TextArea
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    rows={4}
+                    placeholder="输入计划描述（可选）"
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <Space style={{ justifyContent: "flex-end", width: "100%" }}>
+                    <Button
                       onClick={() => {
                         setShowPlanForm(false);
                         setEditingPlan(null);
@@ -708,58 +602,48 @@ const ReviewPlanPage: React.FC = () => {
                           planDate: "",
                         });
                       }}
-                      className="btn btn-outline btn-small"
                     >
                       取消
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      type="primary"
                       onClick={
                         editingPlan ? handleUpdatePlan : handleCreatePlan
                       }
-                      className="btn btn-primary btn-small"
                     >
                       {editingPlan ? "更新" : "创建"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+            </Card>
           )}
 
           {/* 如果没有显示表单，显示新建计划按钮 */}
           {!showPlanForm && (
-            <div className="content-section">
-              <div style={{ padding: "1rem" }}>
-                <button
-                  onClick={handleStartNewPlan}
-                  className="btn btn-primary"
-                  style={{ width: "100%" }}
-                >
-                  <Plus size={18} />
-                  新建计划
-                </button>
-              </div>
-            </div>
+            <Card>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleStartNewPlan}
+                block
+              >
+                新建计划
+              </Button>
+            </Card>
           )}
 
           {/* 选中日期的计划 */}
           {selectedDate && !showPlanForm && (
-            <div className="content-section">
+            <Card>
               <div style={{ padding: "1rem" }}>
-                <h3
-                  style={{
-                    margin: "0 0 1rem 0",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    color: isDark ? "#f9fafb" : "#1c1917",
-                  }}
-                >
+                <Title level={5} style={{ margin: "0 0 1rem 0" }}>
                   {selectedDate.toLocaleDateString("zh-CN", {
                     month: "long",
                     day: "numeric",
                   })}{" "}
                   的计划
-                </h3>
+                </Title>
                 {selectedDatePlans.length === 0 ? (
                   <p
                     style={{
@@ -804,21 +688,16 @@ const ReviewPlanPage: React.FC = () => {
                           }}
                         >
                           {plan.type === "exam" ? (
-                            <GraduationCap
-                              size={18}
-                              style={{
-                                color: "#ef4444",
-                                flexShrink: 0,
-                                marginTop: "2px",
-                              }}
-                            />
+                            <span
+                              style={{ color: "#ef4444", fontSize: "18px" }}
+                            >
+                              🎓
+                            </span>
                           ) : (
-                            <Clock
-                              size={18}
+                            <ClockCircleOutlined
                               style={{
                                 color: "#3b82f6",
-                                flexShrink: 0,
-                                marginTop: "2px",
+                                fontSize: "18px",
                               }}
                             />
                           )}
@@ -844,23 +723,11 @@ const ReviewPlanPage: React.FC = () => {
                               >
                                 {plan.title}
                               </h4>
-                              <span
-                                style={{
-                                  fontSize: "0.75rem",
-                                  padding: "0.125rem 0.5rem",
-                                  borderRadius: "9999px",
-                                  background:
-                                    plan.type === "exam"
-                                      ? "#fee2e2"
-                                      : "#dbeafe",
-                                  color:
-                                    plan.type === "exam"
-                                      ? "#991b1b"
-                                      : "#1e40af",
-                                }}
+                              <Tag
+                                color={plan.type === "exam" ? "red" : "blue"}
                               >
                                 {plan.type === "exam" ? "考试" : "计划"}
-                              </span>
+                              </Tag>
                             </div>
                             {plan.description && (
                               <p
@@ -882,151 +749,136 @@ const ReviewPlanPage: React.FC = () => {
                             marginTop: "0.5rem",
                           }}
                         >
-                          <button
+                          <Button
+                            size="small"
+                            icon={
+                              plan.completed ? (
+                                <CloseOutlined />
+                              ) : (
+                                <CheckOutlined />
+                              )
+                            }
                             onClick={() => handleToggleComplete(plan)}
-                            className="btn btn-outline btn-small"
                             style={{ flex: 1 }}
                           >
-                            {plan.completed ? (
-                              <X size={14} />
-                            ) : (
-                              <Check size={14} />
-                            )}
                             {plan.completed ? "未完成" : "完成"}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            size="small"
+                            icon={<EditOutlined />}
                             onClick={() => handleEditPlan(plan)}
-                            className="btn btn-outline btn-small"
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button
+                          />
+                          <Button
+                            size="small"
+                            danger
+                            icon={<DeleteOutlined />}
                             onClick={() => handleDeletePlan(plan.id)}
-                            className="btn btn-danger btn-small"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          />
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           )}
 
           {/* 即将到来的计划 */}
           {upcomingPlans.length > 0 && (
-            <div className="content-section">
-              <div style={{ padding: "1rem" }}>
-                <h3
-                  style={{
-                    margin: "0 0 1rem 0",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    color: isDark ? "#f9fafb" : "#1c1917",
-                  }}
-                >
-                  即将到来
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.75rem",
-                  }}
-                >
-                  {upcomingPlans.map((plan) => {
-                    const planDate = new Date(plan.planDate);
-                    const daysUntil = Math.ceil(
-                      (planDate.getTime() - today.getTime()) /
-                        (1000 * 60 * 60 * 24),
-                    );
-                    return (
+            <Card>
+              <Title level={5} style={{ margin: "0 0 1rem 0" }}>
+                即将到来
+              </Title>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                {upcomingPlans.map((plan) => {
+                  const planDate = new Date(plan.planDate);
+                  const daysUntil = Math.ceil(
+                    (planDate.getTime() - today.getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  );
+                  return (
+                    <div
+                      key={plan.id}
+                      onClick={() => {
+                        setSelectedDate(planDate);
+                        setShowPlanForm(false);
+                        setEditingPlan(null);
+                      }}
+                      style={{
+                        padding: "0.75rem",
+                        border: `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
+                        borderRadius: "0.5rem",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        background: isDark ? "#1f2937" : "white",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = isDark
+                          ? "#374151"
+                          : "#fafafa";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = isDark
+                          ? "#1f2937"
+                          : "white";
+                      }}
+                    >
                       <div
-                        key={plan.id}
-                        onClick={() => {
-                          setSelectedDate(planDate);
-                          setShowPlanForm(false);
-                          setEditingPlan(null);
-                        }}
                         style={{
-                          padding: "0.75rem",
-                          border: `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
-                          borderRadius: "0.5rem",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          background: isDark ? "#1f2937" : "white",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDark
-                            ? "#374151"
-                            : "#fafafa";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = isDark
-                            ? "#1f2937"
-                            : "white";
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          marginBottom: "0.25rem",
                         }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {plan.type === "exam" ? (
-                            <GraduationCap
-                              size={16}
-                              style={{ color: "#ef4444" }}
-                            />
-                          ) : (
-                            <Clock size={16} style={{ color: "#3b82f6" }} />
-                          )}
-                          <h4
-                            style={{
-                              margin: 0,
-                              fontSize: "0.875rem",
-                              fontWeight: 600,
-                              flex: 1,
-                              color: isDark ? "#f9fafb" : "#1c1917",
-                            }}
-                          >
-                            {plan.title}
-                          </h4>
-                          <span
-                            style={{
-                              fontSize: "0.75rem",
-                              color: isDark ? "#9ca3af" : "#78716c",
-                            }}
-                          >
-                            {daysUntil === 0
-                              ? "今天"
-                              : daysUntil === 1
-                                ? "明天"
-                                : `${daysUntil}天后`}
+                        {plan.type === "exam" ? (
+                          <span style={{ color: "#ef4444", fontSize: "16px" }}>
+                            🎓
                           </span>
-                        </div>
-                        <p
+                        ) : (
+                          <ClockCircleOutlined
+                            style={{ color: "#3b82f6", fontSize: "16px" }}
+                          />
+                        )}
+                        <Text strong style={{ fontSize: "0.875rem", flex: 1 }}>
+                          {plan.title}
+                        </Text>
+                        <span
                           style={{
-                            margin: 0,
                             fontSize: "0.75rem",
                             color: isDark ? "#9ca3af" : "#78716c",
                           }}
                         >
-                          {planDate.toLocaleDateString("zh-CN", {
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </p>
+                          {daysUntil === 0
+                            ? "今天"
+                            : daysUntil === 1
+                              ? "明天"
+                              : `${daysUntil}天后`}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.75rem",
+                          color: isDark ? "#9ca3af" : "#78716c",
+                        }}
+                      >
+                        {planDate.toLocaleDateString("zh-CN", {
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            </Card>
           )}
         </div>
       </div>

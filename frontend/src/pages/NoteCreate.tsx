@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Space,
+  Typography,
+  Select,
+  Alert,
+  Spin,
+} from "antd";
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { noteAPI } from "../services/api";
 import { useCourse } from "../context/CourseContext";
-import { ArrowLeft, Save, X } from "lucide-react";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { TextArea } = Input;
+const { Title } = Typography;
 
 const NoteCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -49,98 +66,116 @@ const NoteCreate: React.FC = () => {
     }
   };
 
+  if (!course) {
+    return (
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
+
   return (
-    <div className="container">
-      <div style={{ marginBottom: "1.5rem" }}>
-        <Link to="/notes" className="btn btn-outline">
-          <ArrowLeft size={18} />
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/notes")}>
           返回笔记列表
-        </Link>
-      </div>
+        </Button>
 
-      {error && <div className="error-message">{error}</div>}
+        {error && <Alert message={error} type="error" showIcon />}
 
-      <div className="note-edit-page">
-        <form onSubmit={handleSubmit} className="note-edit-form">
-          <div className="form-group">
-            <label>标题:</label>
-            <input
-              type="text"
-              value={noteForm.title}
-              onChange={(e) =>
-                setNoteForm({ ...noteForm, title: e.target.value })
-              }
-              required
-              placeholder="输入笔记标题"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>摘要:</label>
-            <textarea
-              value={noteForm.summary}
-              onChange={(e) =>
-                setNoteForm({ ...noteForm, summary: e.target.value })
-              }
-              rows={3}
-              placeholder="输入笔记摘要（可选，用于列表预览，建议50-150字）"
-              className="form-input"
-            />
-            <p className="form-hint">
-              摘要将显示在笔记列表中，如果不填写，将自动截取内容前150字作为预览
-            </p>
-          </div>
-
-          <div className="form-group">
-            <label>内容:</label>
-            <textarea
-              value={noteForm.content}
-              onChange={(e) =>
-                setNoteForm({ ...noteForm, content: e.target.value })
-              }
-              rows={20}
-              required
-              placeholder="输入笔记内容，支持 Markdown 格式"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>可见性:</label>
-            <select
-              value={noteForm.visibility}
-              onChange={(e) =>
-                setNoteForm({
-                  ...noteForm,
-                  visibility: e.target.value as "public" | "private",
-                })
-              }
-              className="form-input"
-              aria-label="笔记可见性"
+        <Card>
+          <Title level={2}>创建新笔记</Title>
+          <Form
+            layout="vertical"
+            onFinish={handleSubmit}
+            initialValues={noteForm}
+          >
+            <Form.Item
+              label="标题"
+              name="title"
+              rules={[{ required: true, message: "请输入笔记标题" }]}
             >
-              <option value="private">私有（仅自己可见）</option>
-              <option value="public">公开（所有人可见）</option>
-            </select>
-          </div>
+              <Input
+                value={noteForm.title}
+                onChange={(e) =>
+                  setNoteForm({ ...noteForm, title: e.target.value })
+                }
+                placeholder="输入笔记标题"
+              />
+            </Form.Item>
 
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={() => navigate("/notes")}
-              className="btn btn-outline"
-              disabled={saving}
+            <Form.Item
+              label="摘要"
+              name="summary"
+              extra="摘要将显示在笔记列表中，如果不填写，将自动截取内容前150字作为预览"
             >
-              <X size={18} />
-              取消
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              <Save size={18} />
-              {saving ? "创建中..." : "创建"}
-            </button>
-          </div>
-        </form>
-      </div>
+              <TextArea
+                rows={3}
+                value={noteForm.summary}
+                onChange={(e) =>
+                  setNoteForm({ ...noteForm, summary: e.target.value })
+                }
+                placeholder="输入笔记摘要（可选，用于列表预览，建议50-150字）"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="内容"
+              name="content"
+              rules={[{ required: true, message: "请输入笔记内容" }]}
+            >
+              <TextArea
+                rows={20}
+                value={noteForm.content}
+                onChange={(e) =>
+                  setNoteForm({ ...noteForm, content: e.target.value })
+                }
+                placeholder="输入笔记内容，支持 Markdown 格式"
+              />
+            </Form.Item>
+
+            <Form.Item label="可见性" name="visibility">
+              <Select
+                value={noteForm.visibility}
+                onChange={(value) =>
+                  setNoteForm({
+                    ...noteForm,
+                    visibility: value as "public" | "private",
+                  })
+                }
+              >
+                <Select.Option value="private">
+                  私有（仅自己可见）
+                </Select.Option>
+                <Select.Option value="public">公开（所有人可见）</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item>
+              <Space>
+                <Button
+                  icon={<CloseOutlined />}
+                  onClick={() => navigate("/notes")}
+                  disabled={saving}
+                >
+                  取消
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  htmlType="submit"
+                  loading={saving}
+                >
+                  创建
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Card>
+      </Space>
     </div>
   );
 };

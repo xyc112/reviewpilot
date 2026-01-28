@@ -1,21 +1,40 @@
-// src/pages/QuizDetail.tsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  Card,
+  Button,
+  Space,
+  Typography,
+  Radio,
+  Checkbox,
+  Alert,
+  Spin,
+  Tag,
+  Divider,
+  Statistic,
+  Row,
+  Col,
+} from "antd";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  BookOutlined,
+  ReloadOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
 import { Quiz, QuizAttempt } from "../types";
 import { quizAPI, wrongQuestionAPI } from "../services/api";
 import { useCourse } from "../context/CourseContext";
-import { useTheme } from "../components/ThemeProvider";
 import { useToast } from "../components/Toast";
-import { BookOpen } from "lucide-react";
-import "../styles/Course.css";
+
+const { Title, Text, Paragraph } = Typography;
+const { Countdown } = Statistic;
 
 const QuizDetail: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
   const { selectedCourse, currentStudyingCourse } = useCourse();
   const course = selectedCourse || currentStudyingCourse;
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,19 +78,15 @@ const QuizDetail: React.FC = () => {
       const currentAnswers = prev[questionId] || [];
 
       if (questionType === "single" || questionType === "truefalse") {
-        // 单选题和判断题，直接替换答案
         return {
           ...prev,
           [questionId]: [optionIndex],
         };
       } else {
-        // 多选题，切换选项的选中状态
         let newAnswers;
         if (currentAnswers.includes(optionIndex)) {
-          // 如果已经选中，则取消选中
           newAnswers = currentAnswers.filter((idx) => idx !== optionIndex);
         } else {
-          // 否则添加到选中项中
           newAnswers = [...currentAnswers, optionIndex].sort((a, b) => a - b);
         }
 
@@ -89,7 +104,6 @@ const QuizDetail: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // 构造提交数据
       const submitData = Object.entries(answers).map(
         ([questionId, answer]) => ({
           questionId,
@@ -105,7 +119,6 @@ const QuizDetail: React.FC = () => {
       );
       setAttempt(response.data);
 
-      // 自动添加错题到错题本
       if (response.data?.results) {
         const wrongQuestions: Array<{
           questionEntityId: number;
@@ -124,7 +137,6 @@ const QuizDetail: React.FC = () => {
           }
         });
 
-        // 批量添加错题
         for (const wq of wrongQuestions) {
           try {
             await wrongQuestionAPI.addWrongQuestion(
@@ -180,275 +192,422 @@ const QuizDetail: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">请先选择一个课程</div>
-        <button
-          onClick={() => navigate("/courses")}
-          className="btn btn-primary"
-        >
-          前往课程列表
-        </button>
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        action={
+          <Button type="primary" onClick={() => navigate("/courses")}>
+            前往课程列表
+          </Button>
+        }
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  if (loading) return <div className="loading">加载中...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!quiz) return <div className="error-message">测验不存在</div>;
+  if (error) {
+    return (
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+    );
+  }
+
+  if (!quiz) {
+    return (
+      <Alert
+        message="测验不存在"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
+    );
+  }
 
   if (attempt) {
     const scorePercentage = Math.round((attempt.score / attempt.total) * 100);
     const isPassed = scorePercentage >= 60;
 
     return (
-      <div className="container">
-        <div className="quiz-result">
-          <div className={`result-summary ${isPassed ? "passed" : "failed"}`}>
-            <div className="result-icon">{isPassed ? "🎉" : "📝"}</div>
-            <h2 style={{ color: isDark ? "#f9fafb" : "#1e293b" }}>测验完成</h2>
-            <div className="score-display">
-              <div className="score-main">
-                <span className="score-value">{attempt.score}</span>
-                <span className="score-separator">/</span>
-                <span className="score-total">{attempt.total}</span>
-              </div>
-              <div
-                className={`score-percentage ${isPassed ? "passed" : "failed"}`}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+          {/* 结果摘要 */}
+          <Card
+            style={{
+              background: isPassed
+                ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+              border: "none",
+              textAlign: "center",
+            }}
+            bodyStyle={{ padding: "3rem 2rem" }}
+          >
+            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+              <div style={{ fontSize: "4rem" }}>{isPassed ? "🎉" : "📝"}</div>
+              <Title level={2} style={{ color: "#fff", margin: 0 }}>
+                测验完成
+              </Title>
+              <Row gutter={16} justify="center">
+                <Col>
+                  <Statistic
+                    value={attempt.score}
+                    suffix={`/ ${attempt.total}`}
+                    valueStyle={{ color: "#fff", fontSize: "3rem" }}
+                  />
+                </Col>
+              </Row>
+              <Tag
+                color={isPassed ? "success" : "error"}
+                style={{
+                  fontSize: "1.5rem",
+                  padding: "0.5rem 1.5rem",
+                  borderRadius: "2rem",
+                }}
               >
                 {scorePercentage}%
-              </div>
-            </div>
-            <p className="result-message">
-              {isPassed
-                ? `恭喜！您通过了本次测验`
-                : `还需要继续努力，建议重新学习相关内容`}
-            </p>
-          </div>
+              </Tag>
+              <Text style={{ color: "#fff", fontSize: "1.125rem" }}>
+                {isPassed
+                  ? "恭喜！您通过了本次测验"
+                  : "还需要继续努力，建议重新学习相关内容"}
+              </Text>
+            </Space>
+          </Card>
 
-          <div className="result-details">
-            <h3 style={{ color: isDark ? "#f9fafb" : "#1e293b" }}>题目解析</h3>
-            {quiz.questions.map((question, index) => {
-              const result = attempt.results.find(
-                (r) => r.questionId === question.id,
-              );
-              const userAnswer = answers[question.id] || [];
-              const isCorrect = result?.correct || false;
-              const correctAnswerIndices = question.answer || [];
+          {/* 题目解析 */}
+          <Card>
+            <Title level={3}>题目解析</Title>
+            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+              {quiz.questions.map((question, index) => {
+                const result = attempt.results.find(
+                  (r) => r.questionId === question.id,
+                );
+                const userAnswer = answers[question.id] || [];
+                const isCorrect = result?.correct || false;
+                const correctAnswerIndices = question.answer || [];
 
-              return (
-                <div
-                  key={question.id}
-                  className={`question-result-card ${isCorrect ? "correct" : "incorrect"}`}
-                >
-                  <div className="question-result-header">
-                    <div className="question-number">题目 {index + 1}</div>
-                    <div
-                      className={`result-badge ${isCorrect ? "correct" : "incorrect"}`}
+                return (
+                  <Card
+                    key={question.id}
+                    style={{
+                      border: `2px solid ${isCorrect ? "#52c41a" : "#ff4d4f"}`,
+                      backgroundColor: isCorrect ? "#f6ffed" : "#fff2f0",
+                    }}
+                  >
+                    <Space
+                      direction="vertical"
+                      size="middle"
+                      style={{ width: "100%" }}
                     >
-                      {isCorrect ? (
-                        <>
-                          <span className="badge-icon">✓</span>
-                          <span>回答正确</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="badge-icon">✗</span>
-                          <span>回答错误</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="question-text-result">
-                    {question.question}
-                    {question.type === "multiple" && (
-                      <span className="question-type-badge">[多选]</span>
-                    )}
-                    {question.type === "truefalse" && (
-                      <span className="question-type-badge">[判断]</span>
-                    )}
-                  </div>
-
-                  <div className="options-result">
-                    {question.options?.map((option, optIndex) => {
-                      const isSelected = userAnswer.includes(optIndex);
-                      const isCorrectAnswer =
-                        correctAnswerIndices.includes(optIndex);
-                      // 如果题目整体正确，所有选中的选项都是正确的
-                      const isCorrectlySelected = isSelected && isCorrectAnswer;
-                      // 只有当题目整体错误时，才显示错误选中的选项
-                      const isIncorrectlySelected =
-                        !isCorrect && isSelected && !isCorrectAnswer;
-
-                      let optionClass = "option-result";
-                      if (isCorrectlySelected) {
-                        optionClass += " correct-selected";
-                      } else if (isIncorrectlySelected) {
-                        optionClass += " incorrect-selected";
-                      } else if (!isSelected && isCorrectAnswer) {
-                        optionClass += " correct-missing";
-                      }
-
-                      return (
-                        <div key={optIndex} className={optionClass}>
-                          <div className="option-result-content">
-                            <span className="option-result-indicator">
-                              {isCorrectlySelected ? (
-                                <span className="correct-mark">✓</span>
-                              ) : isIncorrectlySelected ? (
-                                <span className="incorrect-mark">✗</span>
-                              ) : isCorrectAnswer ? (
-                                <span className="correct-mark">✓</span>
-                              ) : (
-                                <span className="option-circle"></span>
-                              )}
-                            </span>
-                            <span className="option-result-label">
-                              {String.fromCharCode(65 + optIndex)}.
-                            </span>
-                            <span className="option-result-text">{option}</span>
-                          </div>
-                          <div className="answer-tags">
-                            {isSelected && (
-                              <span
-                                className={`answer-tag ${isCorrectlySelected ? "correct-answer-tag" : "your-answer-tag"}`}
-                              >
-                                {isCorrectlySelected
-                                  ? "你的答案（正确）"
-                                  : "你的答案"}
-                              </span>
-                            )}
-                            {!isSelected && isCorrectAnswer && (
-                              <span className="answer-tag correct-answer-tag">
-                                正确答案
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {question.explanation && (
-                    <div className="question-explanation">
-                      <div className="explanation-header">📖 解析</div>
-                      <div className="explanation-content">
-                        {question.explanation}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="question-score">
-                    <span className="score-label">本题得分：</span>
-                    <span
-                      className={`score-value ${isCorrect ? "correct" : "incorrect"}`}
-                    >
-                      {result?.score || 0} /{" "}
-                      {Math.round(100 / quiz.questions.length) +
-                        (index < 100 % quiz.questions.length ? 1 : 0)}
-                    </span>
-                  </div>
-
-                  {!isCorrect && result?.questionEntityId && (
-                    <div className="wrong-question-action mt-3">
-                      <button
-                        onClick={() =>
-                          handleAddToWrongBook(
-                            result.questionEntityId!,
-                            userAnswer,
-                            question.id,
-                          )
-                        }
-                        disabled={addingToWrongBook.has(question.id)}
-                        className="btn btn-outline btn-small"
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
                       >
-                        <BookOpen size={14} />
-                        {addingToWrongBook.has(question.id)
-                          ? "已添加"
-                          : "添加到错题本"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                        <Tag color="default">题目 {index + 1}</Tag>
+                        <Tag
+                          icon={
+                            isCorrect ? (
+                              <CheckCircleOutlined />
+                            ) : (
+                              <CloseCircleOutlined />
+                            )
+                          }
+                          color={isCorrect ? "success" : "error"}
+                        >
+                          {isCorrect ? "回答正确" : "回答错误"}
+                        </Tag>
+                      </div>
 
-          <div className="form-actions">
-            <button onClick={handleReset} className="btn btn-secondary">
+                      <Title level={4} style={{ margin: 0 }}>
+                        {question.question}
+                        {question.type === "multiple" && (
+                          <Tag color="blue" style={{ marginLeft: "0.5rem" }}>
+                            多选
+                          </Tag>
+                        )}
+                        {question.type === "truefalse" && (
+                          <Tag color="orange" style={{ marginLeft: "0.5rem" }}>
+                            判断
+                          </Tag>
+                        )}
+                      </Title>
+
+                      <Space
+                        direction="vertical"
+                        size="small"
+                        style={{ width: "100%" }}
+                      >
+                        {question.options?.map((option, optIndex) => {
+                          const isSelected = userAnswer.includes(optIndex);
+                          const isCorrectAnswer =
+                            correctAnswerIndices.includes(optIndex);
+                          const isCorrectlySelected =
+                            isSelected && isCorrectAnswer;
+                          const isIncorrectlySelected =
+                            !isCorrect && isSelected && !isCorrectAnswer;
+
+                          let borderColor = "#d9d9d9";
+                          let backgroundColor = "#fafafa";
+                          let borderStyle: "solid" | "dashed" = "solid";
+                          if (isCorrectlySelected) {
+                            borderColor = "#52c41a";
+                            backgroundColor = "#f6ffed";
+                          } else if (isIncorrectlySelected) {
+                            borderColor = "#ff4d4f";
+                            backgroundColor = "#fff2f0";
+                          } else if (!isSelected && isCorrectAnswer) {
+                            borderColor = "#52c41a";
+                            backgroundColor = "#f6ffed";
+                            borderStyle = "dashed";
+                          }
+
+                          return (
+                            <Card
+                              key={optIndex}
+                              size="small"
+                              style={{
+                                border: `2px ${borderStyle} ${borderColor}`,
+                                backgroundColor,
+                              }}
+                            >
+                              <Space>
+                                {isCorrectlySelected ? (
+                                  <CheckCircleOutlined
+                                    style={{
+                                      color: "#52c41a",
+                                      fontSize: "1.25rem",
+                                    }}
+                                  />
+                                ) : isIncorrectlySelected ? (
+                                  <CloseCircleOutlined
+                                    style={{
+                                      color: "#ff4d4f",
+                                      fontSize: "1.25rem",
+                                    }}
+                                  />
+                                ) : isCorrectAnswer ? (
+                                  <CheckCircleOutlined
+                                    style={{
+                                      color: "#52c41a",
+                                      fontSize: "1.25rem",
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    style={{
+                                      width: "1rem",
+                                      height: "1rem",
+                                      border: "2px solid #d9d9d9",
+                                      borderRadius: "50%",
+                                    }}
+                                  />
+                                )}
+                                <Text strong>
+                                  {String.fromCharCode(65 + optIndex)}.
+                                </Text>
+                                <Text>{option}</Text>
+                                <Space style={{ marginLeft: "auto" }}>
+                                  {isSelected && (
+                                    <Tag
+                                      color={
+                                        isCorrectlySelected
+                                          ? "success"
+                                          : "error"
+                                      }
+                                    >
+                                      {isCorrectlySelected
+                                        ? "你的答案（正确）"
+                                        : "你的答案"}
+                                    </Tag>
+                                  )}
+                                  {!isSelected && isCorrectAnswer && (
+                                    <Tag color="success">正确答案</Tag>
+                                  )}
+                                </Space>
+                              </Space>
+                            </Card>
+                          );
+                        })}
+                      </Space>
+
+                      {question.explanation && (
+                        <Card
+                          size="small"
+                          style={{
+                            backgroundColor: "#e6f7ff",
+                            borderLeft: "4px solid #1890ff",
+                          }}
+                        >
+                          <Space direction="vertical" size="small">
+                            <Text strong style={{ color: "#1890ff" }}>
+                              📖 解析
+                            </Text>
+                            <Paragraph style={{ margin: 0 }}>
+                              {question.explanation}
+                            </Paragraph>
+                          </Space>
+                        </Card>
+                      )}
+
+                      <Divider style={{ margin: "0.5rem 0" }} />
+
+                      <Space>
+                        <Text type="secondary">本题得分：</Text>
+                        <Text
+                          strong
+                          style={{
+                            color: isCorrect ? "#52c41a" : "#ff4d4f",
+                            fontSize: "1rem",
+                          }}
+                        >
+                          {result?.score || 0} /{" "}
+                          {Math.round(100 / quiz.questions.length) +
+                            (index < 100 % quiz.questions.length ? 1 : 0)}
+                        </Text>
+                      </Space>
+
+                      {!isCorrect && result?.questionEntityId && (
+                        <Button
+                          icon={<BookOutlined />}
+                          onClick={() =>
+                            handleAddToWrongBook(
+                              result.questionEntityId!,
+                              userAnswer,
+                              question.id,
+                            )
+                          }
+                          disabled={addingToWrongBook.has(question.id)}
+                          size="small"
+                        >
+                          {addingToWrongBook.has(question.id)
+                            ? "已添加"
+                            : "添加到错题本"}
+                        </Button>
+                      )}
+                    </Space>
+                  </Card>
+                );
+              })}
+            </Space>
+          </Card>
+
+          <Space>
+            <Button icon={<ReloadOutlined />} onClick={handleReset}>
               重新答题
-            </button>
-            <button
+            </Button>
+            <Button
+              type="primary"
+              icon={<ArrowLeftOutlined />}
               onClick={() => navigate("/quizzes")}
-              className="btn btn-primary"
             >
               返回测验列表
-            </button>
-          </div>
-        </div>
+            </Button>
+          </Space>
+        </Space>
       </div>
     );
   }
 
   return (
-    <div className="container">
-      <div className="quiz-container">
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
         {quiz.questions.map((question, index) => (
-          <div key={question.id} className="question-card">
-            <h3 style={{ color: isDark ? "#f9fafb" : "#1c1917" }}>
-              题目 {index + 1}: {question.question}
-              {question.type === "multiple" && (
-                <span className="question-type">[多选]</span>
-              )}
-              {question.type === "truefalse" && (
-                <span className="question-type">[判断]</span>
-              )}
-            </h3>
+          <Card key={question.id} title={`题目 ${index + 1}`}>
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <Title level={4} style={{ margin: 0 }}>
+                {question.question}
+                {question.type === "multiple" && (
+                  <Tag color="blue" style={{ marginLeft: "0.5rem" }}>
+                    多选
+                  </Tag>
+                )}
+                {question.type === "truefalse" && (
+                  <Tag color="orange" style={{ marginLeft: "0.5rem" }}>
+                    判断
+                  </Tag>
+                )}
+              </Title>
 
-            <div className="options">
-              {question.options?.map((option, optIndex) => {
-                // 确保正确检查选中状态
-                const questionAnswers = answers[question.id] || [];
-                const isSelected = questionAnswers.includes(optIndex);
-
-                return (
-                  <div
-                    key={optIndex}
-                    className={`option ${isSelected ? "selected" : ""}`}
-                    onClick={() =>
-                      handleOptionSelect(question.id, optIndex, question.type)
-                    }
-                  >
-                    <span className="option-indicator">
-                      {isSelected && <span className="selected-dot"></span>}
-                    </span>
-                    <span className="option-label">
-                      {String.fromCharCode(65 + optIndex)}.
-                    </span>
-                    <span className="option-text">{option}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+              {question.type === "single" || question.type === "truefalse" ? (
+                <Radio.Group
+                  value={
+                    answers[question.id] && answers[question.id].length > 0
+                      ? answers[question.id][0]
+                      : undefined
+                  }
+                  onChange={(e) =>
+                    handleOptionSelect(
+                      question.id,
+                      e.target.value,
+                      question.type,
+                    )
+                  }
+                >
+                  <Space direction="vertical" size="middle">
+                    {question.options?.map((option, optIndex) => (
+                      <Radio key={optIndex} value={optIndex}>
+                        <Text>
+                          {String.fromCharCode(65 + optIndex)}. {option}
+                        </Text>
+                      </Radio>
+                    ))}
+                  </Space>
+                </Radio.Group>
+              ) : (
+                <Checkbox.Group
+                  value={answers[question.id] || []}
+                  onChange={(values) => {
+                    const newAnswers = values as number[];
+                    setAnswers((prev) => ({
+                      ...prev,
+                      [question.id]: newAnswers,
+                    }));
+                  }}
+                >
+                  <Space direction="vertical" size="middle">
+                    {question.options?.map((option, optIndex) => (
+                      <Checkbox key={optIndex} value={optIndex}>
+                        <Text>
+                          {String.fromCharCode(65 + optIndex)}. {option}
+                        </Text>
+                      </Checkbox>
+                    ))}
+                  </Space>
+                </Checkbox.Group>
+              )}
+            </Space>
+          </Card>
         ))}
 
-        <div className="form-actions">
-          <button
+        <Space>
+          <Button
+            type="primary"
+            size="large"
             onClick={handleSubmit}
             disabled={submitting || Object.keys(answers).length === 0}
-            className="btn btn-primary"
+            loading={submitting}
           >
             {submitting ? "提交中..." : "提交答案"}
-          </button>
-          <button
+          </Button>
+          <Button
+            size="large"
+            icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/quizzes")}
-            className="btn btn-outline"
           >
             返回测验列表
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Space>
+      </Space>
     </div>
   );
 };

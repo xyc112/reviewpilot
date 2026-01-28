@@ -1,20 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import {
+  Card,
+  Button,
+  Space,
+  Typography,
+  Tag,
+  Alert,
+  Spin,
+  Divider,
+} from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  CalendarOutlined,
+  UserOutlined,
+  BarChartOutlined,
+  ArrowLeftOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
 import { Course } from "../types";
 import { courseAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import {
-  Edit,
-  Trash2,
-  Calendar,
-  User,
-  BarChart,
-  ArrowLeft,
-  MessageSquare,
-} from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { Title, Text, Paragraph } = Typography;
 
 const CourseDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -82,29 +93,39 @@ const CourseDetail: React.FC = () => {
 
   if (loading)
     return (
-      <div className="container">
-        <div className="loading">加载中...</div>
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
 
   if (error)
     return (
-      <div className="container">
-        <div className="error-message">{error}</div>
-      </div>
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
 
   if (!course)
     return (
-      <div className="container">
-        <div className="error-message">课程不存在</div>
-      </div>
+      <Alert
+        message="课程不存在"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
     );
 
   const canEdit = isAdmin || user?.id === course.authorId;
 
+  const getLevelColor = (level: string): string => {
+    const colors: Record<string, string> = {
+      BEGINNER: "green",
+      INTERMEDIATE: "orange",
+      ADVANCED: "red",
+    };
+    return colors[level] || "default";
+  };
+
   return (
-    <div className="container">
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除课程"
@@ -116,96 +137,75 @@ const CourseDetail: React.FC = () => {
         onCancel={() => setDeleteConfirm(false)}
       />
 
-      <div className="mb-6">
-        <Link
-          to="/courses"
-          className="btn btn-outline btn-small inline-flex items-center gap-2"
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate("/courses")}
         >
-          <ArrowLeft size={16} />
           返回课程列表
-        </Link>
-      </div>
+        </Button>
 
-      <div className="course-detail">
-        <div className="course-content">
-          <div className="content-section">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                marginBottom: "1.5rem",
-              }}
-            >
-              {canEdit && (
-                <>
-                  <Link
-                    to={`/courses/edit/${course.id}`}
-                    className="btn btn-secondary"
-                  >
-                    <Edit size={16} />
-                    编辑课程
-                  </Link>
-                  <button
-                    onClick={handleDelete}
-                    className="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-                  >
-                    <Trash2 size={16} />
-                    删除课程
-                  </button>
-                </>
-              )}
-            </div>
-
-            <div className="course-meta mb-6">
-              <div className="flex items-center gap-2">
-                <BarChart size={16} />
-                <span
-                  className={`level-badge level-${course.level.toLowerCase()}`}
-                >
-                  {getLevelText(course.level)}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar size={16} />
-                <span>{formatDate(course.createdAt)}</span>
-              </div>
-              {course.authorId && (
-                <div className="flex items-center gap-2">
-                  <User size={16} />
-                  <span>作者 ID: {course.authorId}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="description mb-6">
-              <h3 className="text-lg font-semibold mb-2 text-stone-800">
-                课程简介
-              </h3>
-              <p>{course.description || "暂无描述"}</p>
-            </div>
-
-            {course.tags.length > 0 && (
-              <div className="tags-container">
-                {course.tags.map((tag) => (
-                  <span key={tag} className="tag">
-                    {tag}
-                  </span>
-                ))}
+        <Card>
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            {canEdit && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.5rem",
+                }}
+              >
+                <Link to={`/courses/edit/${course.id}`}>
+                  <Button icon={<EditOutlined />}>编辑课程</Button>
+                </Link>
+                <Button danger icon={<DeleteOutlined />} onClick={handleDelete}>
+                  删除课程
+                </Button>
               </div>
             )}
 
-            <div className="mt-6 pt-6 border-t border-stone-200">
-              <Link
-                to={`/courses/${course.id}/community`}
-                className="btn btn-primary inline-flex items-center gap-2"
-              >
-                <MessageSquare size={18} />
-                进入课程社区
-              </Link>
+            <Space wrap>
+              <Space>
+                <BarChartOutlined />
+                <Tag color={getLevelColor(course.level)}>
+                  {getLevelText(course.level)}
+                </Tag>
+              </Space>
+              <Space>
+                <CalendarOutlined />
+                <Text type="secondary">{formatDate(course.createdAt)}</Text>
+              </Space>
+              {course.authorId && (
+                <Space>
+                  <UserOutlined />
+                  <Text type="secondary">作者 ID: {course.authorId}</Text>
+                </Space>
+              )}
+            </Space>
+
+            <div>
+              <Title level={4}>课程简介</Title>
+              <Paragraph>{course.description || "暂无描述"}</Paragraph>
             </div>
-          </div>
-        </div>
-      </div>
+
+            {course.tags.length > 0 && (
+              <Space wrap>
+                {course.tags.map((tag) => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </Space>
+            )}
+
+            <Divider />
+
+            <Link to={`/courses/${course.id}/community`}>
+              <Button type="primary" icon={<MessageOutlined />}>
+                进入课程社区
+              </Button>
+            </Link>
+          </Space>
+        </Card>
+      </Space>
     </div>
   );
 };

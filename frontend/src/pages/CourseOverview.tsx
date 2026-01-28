@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import {
+  Card,
+  Button,
+  Space,
+  Typography,
+  Tag,
+  Alert,
+  Spin,
+  Statistic,
+  Row,
+  Col,
+} from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  CalendarOutlined,
+  UserOutlined,
+  BarChartOutlined,
+  FileTextOutlined,
+  UnorderedListOutlined,
+  MessageOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
 import { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useCourse } from "../context/CourseContext";
 import { useTheme } from "../components/ThemeProvider";
-import {
-  Edit,
-  Trash2,
-  Calendar,
-  User,
-  BarChart,
-  FileText,
-  ClipboardList,
-  MessageSquare,
-  BookOpen,
-} from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { Title, Text } = Typography;
 
 const CourseOverview: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -104,6 +117,15 @@ const CourseOverview: React.FC = () => {
     return levels[level as keyof typeof levels] || level;
   };
 
+  const getLevelColor = (level: string): string => {
+    const colors: Record<string, string> = {
+      BEGINNER: "green",
+      INTERMEDIATE: "orange",
+      ADVANCED: "red",
+    };
+    return colors[level] || "default";
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("zh-CN", {
       year: "numeric",
@@ -112,32 +134,36 @@ const CourseOverview: React.FC = () => {
     });
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="container">
-        <div className="loading">加载中...</div>
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
-      <div className="container">
-        <div className="error-message">{error}</div>
-      </div>
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
+  }
 
-  if (!course)
+  if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">课程不存在</div>
-      </div>
+      <Alert
+        message="课程不存在"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
     );
+  }
 
   const canEdit = isAdmin || user?.id === course.authorId;
   const isCurrentCourse = currentStudyingCourse?.id === course.id;
 
   return (
-    <div className="container">
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除课程"
@@ -149,184 +175,108 @@ const CourseOverview: React.FC = () => {
         onCancel={() => setDeleteConfirm(false)}
       />
 
-      <div className="course-detail">
-        <div className="course-content">
-          <div className="content-section">
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Card>
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "1.5rem",
                 flexWrap: "wrap",
                 gap: "1rem",
               }}
             >
               {isCurrentCourse && (
-                <span className="inline-flex items-center gap-1 text-sm text-amber-600">
-                  <BookOpen size={14} />
+                <Tag color="gold" icon={<BookOutlined />}>
                   当前学习课程
-                </span>
+                </Tag>
               )}
               {canEdit && (
-                <>
-                  <Link
-                    to={`/courses/edit/${course.id}`}
-                    className="btn btn-secondary"
-                  >
-                    <Edit size={16} />
-                    编辑课程
+                <Space>
+                  <Link to={`/courses/edit/${course.id}`}>
+                    <Button icon={<EditOutlined />}>编辑课程</Button>
                   </Link>
-                  <button
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
                     onClick={handleDelete}
-                    className="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
                   >
-                    <Trash2 size={16} />
                     删除课程
-                  </button>
-                </>
+                  </Button>
+                </Space>
               )}
             </div>
 
-            <div className="course-meta mb-6">
-              <div className="flex items-center gap-2">
-                <BarChart
-                  size={16}
-                  style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                />
-                <span
-                  className={`level-badge level-${course.level.toLowerCase()}`}
-                >
+            <Space wrap>
+              <Space>
+                <BarChartOutlined />
+                <Tag color={getLevelColor(course.level)}>
                   {getLevelText(course.level)}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar
-                  size={16}
-                  style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                />
-                <span style={{ color: isDark ? "#9ca3af" : "#78716c" }}>
-                  {formatDate(course.createdAt)}
-                </span>
-              </div>
+                </Tag>
+              </Space>
+              <Space>
+                <CalendarOutlined />
+                <Text type="secondary">{formatDate(course.createdAt)}</Text>
+              </Space>
               {course.authorId && (
-                <div className="flex items-center gap-2">
-                  <User
-                    size={16}
-                    style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                  />
-                  <span style={{ color: isDark ? "#9ca3af" : "#78716c" }}>
-                    作者 ID: {course.authorId}
-                  </span>
-                </div>
+                <Space>
+                  <UserOutlined />
+                  <Text type="secondary">作者 ID: {course.authorId}</Text>
+                </Space>
               )}
-            </div>
+            </Space>
 
-            <div className="description mb-6">
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ color: isDark ? "#f9fafb" : "#1c1917" }}
-              >
-                课程简介
-              </h3>
-              <div className="prose max-w-none">
-                <p
-                  className="leading-relaxed whitespace-pre-wrap"
-                  style={{ color: isDark ? "#d1d5db" : "#44403c" }}
-                >
-                  {course.description || "暂无描述"}
-                </p>
-              </div>
+            <div>
+              <Title level={4}>课程简介</Title>
+              <Text style={{ whiteSpace: "pre-wrap" }}>
+                {course.description || "暂无描述"}
+              </Text>
             </div>
 
             {course.tags.length > 0 && (
-              <div className="tags-container mb-6">
+              <Space wrap>
                 {course.tags.map((tag) => (
-                  <span key={tag} className="tag">
-                    {tag}
-                  </span>
+                  <Tag key={tag}>{tag}</Tag>
                 ))}
-              </div>
+              </Space>
             )}
 
             {/* 统计信息卡片 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="card p-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: isDark ? "#1e3a8a" : "#dbeafe" }}
-                  >
-                    <FileText size={24} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <p
-                      className="text-sm"
-                      style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                    >
-                      笔记数量
-                    </p>
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: isDark ? "#f9fafb" : "#1c1917" }}
-                    >
-                      {stats?.noteCount ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="card p-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: isDark ? "#166534" : "#d1fae5" }}
-                  >
-                    <ClipboardList size={24} className="text-green-600" />
-                  </div>
-                  <div>
-                    <p
-                      className="text-sm"
-                      style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                    >
-                      测验数量
-                    </p>
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: isDark ? "#f9fafb" : "#1c1917" }}
-                    >
-                      {stats?.quizCount ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="card p-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: isDark ? "#6b21a8" : "#f3e8ff" }}
-                  >
-                    <MessageSquare size={24} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <p
-                      className="text-sm"
-                      style={{ color: isDark ? "#9ca3af" : "#78716c" }}
-                    >
-                      帖子数量
-                    </p>
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: isDark ? "#f9fafb" : "#1c1917" }}
-                    >
-                      {stats?.postCount ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            <Row gutter={16}>
+              <Col xs={24} sm={8}>
+                <Card>
+                  <Statistic
+                    title="笔记数量"
+                    value={stats?.noteCount ?? 0}
+                    prefix={<FileTextOutlined style={{ color: "#1890ff" }} />}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card>
+                  <Statistic
+                    title="测验数量"
+                    value={stats?.quizCount ?? 0}
+                    prefix={
+                      <UnorderedListOutlined style={{ color: "#52c41a" }} />
+                    }
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card>
+                  <Statistic
+                    title="帖子数量"
+                    value={stats?.postCount ?? 0}
+                    prefix={<MessageOutlined style={{ color: "#722ed1" }} />}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </Space>
+        </Card>
+      </Space>
     </div>
   );
 };

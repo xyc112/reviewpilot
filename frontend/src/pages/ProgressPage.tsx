@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  Card,
+  Alert,
+  Spin,
+  Statistic,
+  Row,
+  Col,
+  Typography,
+  Space,
+  Progress,
+  Table,
+  Tag,
+  Empty,
+  Button,
+} from "antd";
+import {
+  BookOutlined,
+  CheckCircleOutlined,
+  FileTextOutlined,
+  TrophyOutlined,
+  TargetOutlined,
+  StarOutlined,
+} from "@ant-design/icons";
 import { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services/api";
 import { useCourse } from "../context/CourseContext";
 import { useTheme } from "../components/ThemeProvider";
-import {
-  BookOpen,
-  CheckCircle2,
-  FileText,
-  Trophy,
-  Target,
-  Star,
-} from "lucide-react";
 import { SkeletonGrid } from "../components/Skeleton";
 import {
   CircularProgressChart,
   ScoreDistributionChart,
 } from "../components/ProgressChart";
-import "../styles/Course.css";
-import "../styles/CourseUI.css";
+
+const { Title, Text } = Typography;
 
 const ProgressPage: React.FC = () => {
   const { currentStudyingCourse } = useCourse();
@@ -88,7 +103,7 @@ const ProgressPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container progress-container-fullscreen">
+      <div style={{ width: "100%", height: "100vh", padding: "0.625rem" }}>
         <SkeletonGrid count={4} />
       </div>
     );
@@ -96,9 +111,7 @@ const ProgressPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="container progress-container-fullscreen">
-        <div className="error-message">{error}</div>
-      </div>
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -122,35 +135,22 @@ const ProgressPage: React.FC = () => {
 
     return (
       <div
-        className="container progress-container-fullscreen"
         style={{
           display: "flex",
           flexDirection: "column",
           padding: "0.625rem",
+          minHeight: "100vh",
         }}
       >
         {/* 顶部：标题 */}
-        <div style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: "1.125rem",
-              fontWeight: 600,
-              color: isDark ? "#f9fafb" : "#1c1917",
-            }}
-          >
+        <Card style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
+          <Title level={3} style={{ margin: 0 }}>
             当前学习课程进度
-          </h2>
-          <p
-            style={{
-              margin: "0.125rem 0 0 0",
-              color: isDark ? "#9ca3af" : "#78716c",
-              fontSize: "0.8125rem",
-            }}
-          >
+          </Title>
+          <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
             显示您正在学习课程的详细进度
-          </p>
-        </div>
+          </Text>
+        </Card>
 
         {/* 主体内容：使用 Grid 布局 */}
         <div
@@ -174,14 +174,14 @@ const ProgressPage: React.FC = () => {
             }}
           >
             <CompactStatCard
-              icon={<CheckCircle2 size={18} />}
+              icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
               title="完成测验"
               value={`${progressData.completedQuizzes}/${progressData.totalQuizzes}`}
               subtitle={`完成率 ${progressData.completionRate}%`}
               color="#22c55e"
             />
             <CompactStatCard
-              icon={<Trophy size={18} />}
+              icon={<TrophyOutlined style={{ fontSize: 18 }} />}
               title="平均分数"
               value={
                 progressData.averageScore !== null
@@ -192,7 +192,7 @@ const ProgressPage: React.FC = () => {
               color="#f59e0b"
             />
             <CompactStatCard
-              icon={<FileText size={18} />}
+              icon={<FileTextOutlined style={{ fontSize: 18 }} />}
               title="笔记数量"
               value={progressData.noteCount.toString()}
               subtitle="篇笔记"
@@ -211,20 +211,10 @@ const ProgressPage: React.FC = () => {
             }}
           >
             {/* 完成度圆形图 */}
-            <div
-              className="content-section"
-              style={{ flex: "0 0 auto", padding: "0.875rem" }}
-            >
-              <h3
-                style={{
-                  margin: "0 0 0.625rem 0",
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  color: isDark ? "#f9fafb" : "#1c1917",
-                }}
-              >
+            <Card style={{ flex: "0 0 auto" }}>
+              <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
                 课程完成度
-              </h3>
+              </Title>
               <div
                 style={{
                   display: "flex",
@@ -238,30 +228,21 @@ const ProgressPage: React.FC = () => {
                   size={110}
                 />
               </div>
-            </div>
+            </Card>
 
             {/* 分数分布图 */}
             {progressData.quizProgressList.length > 0 ? (
-              <div
-                className="content-section"
+              <Card
                 style={{
                   flex: 1,
-                  padding: "0.875rem",
                   minHeight: 0,
                   display: "flex",
                   flexDirection: "column",
                 }}
               >
-                <h3
-                  style={{
-                    margin: "0 0 0.625rem 0",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
-                    color: isDark ? "#f9fafb" : "#1c1917",
-                  }}
-                >
+                <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
                   分数分布
-                </h3>
+                </Title>
                 <div
                   style={{
                     flex: 1,
@@ -300,43 +281,21 @@ const ProgressPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </Card>
             ) : (
-              <div
-                className="content-section"
+              <Card
                 style={{
                   flex: 1,
-                  padding: "0.875rem",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   minHeight: 0,
                 }}
               >
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: isDark ? "#9ca3af" : "#78716c",
-                  }}
-                >
-                  <Target
-                    size={28}
-                    style={{
-                      margin: "0 auto 0.5rem",
-                      color: isDark ? "#9ca3af" : "#78716c",
-                    }}
-                  />
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "0.8125rem",
-                      color: isDark ? "#9ca3af" : "#78716c",
-                    }}
-                  >
-                    暂无测验记录
-                  </p>
-                </div>
-              </div>
+                <Empty
+                  description={<Text type="secondary">暂无测验记录</Text>}
+                />
+              </Card>
             )}
           </div>
 
@@ -350,25 +309,16 @@ const ProgressPage: React.FC = () => {
             }}
           >
             {progressData.quizProgressList.length > 0 ? (
-              <div
-                className="content-section"
+              <Card
                 style={{
                   flex: 1,
-                  padding: "0.875rem",
                   overflowY: "auto",
                   minHeight: 0,
                 }}
               >
-                <h3
-                  style={{
-                    margin: "0 0 0.625rem 0",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
-                    color: isDark ? "#f9fafb" : "#1c1917",
-                  }}
-                >
+                <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
                   测验成绩
-                </h3>
+                </Title>
                 <div
                   style={{
                     display: "flex",
@@ -410,42 +360,20 @@ const ProgressPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             ) : (
-              <div
-                className="content-section"
+              <Card
                 style={{
                   flex: 1,
-                  padding: "1rem",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: isDark ? "#9ca3af" : "#78716c",
-                  }}
-                >
-                  <Target
-                    size={28}
-                    style={{
-                      margin: "0 auto 0.5rem",
-                      color: isDark ? "#9ca3af" : "#78716c",
-                    }}
-                  />
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "0.8125rem",
-                      color: isDark ? "#9ca3af" : "#78716c",
-                    }}
-                  >
-                    暂无测验记录
-                  </p>
-                </div>
-              </div>
+                <Empty
+                  description={<Text type="secondary">暂无测验记录</Text>}
+                />
+              </Card>
             )}
           </div>
         </div>
@@ -456,35 +384,22 @@ const ProgressPage: React.FC = () => {
   // 没有当前学习课程时，显示整体学习列表视图
   return (
     <div
-      className="container progress-container-fullscreen"
       style={{
         display: "flex",
         flexDirection: "column",
         padding: "0.625rem",
+        minHeight: "100vh",
       }}
     >
       {/* 顶部标题 */}
-      <div style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
-        <h2
-          style={{
-            margin: 0,
-            fontSize: "1.125rem",
-            fontWeight: 600,
-            color: isDark ? "#f9fafb" : "#1c1917",
-          }}
-        >
+      <Card style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
+        <Title level={3} style={{ margin: 0 }}>
           学习进度总览
-        </h2>
-        <p
-          style={{
-            margin: "0.125rem 0 0 0",
-            color: isDark ? "#9ca3af" : "#78716c",
-            fontSize: "0.8125rem",
-          }}
-        >
+        </Title>
+        <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
           显示您在学习列表中所有课程的整体进度
-        </p>
-      </div>
+        </Text>
+      </Card>
 
       {/* 主体内容 */}
       <div
@@ -510,7 +425,7 @@ const ProgressPage: React.FC = () => {
           {overallStats && (
             <>
               <CompactStatCard
-                icon={<BookOpen size={24} />}
+                icon={<BookOutlined style={{ fontSize: 24 }} />}
                 title="学习课程"
                 value={overallStats.totalCourses.toString()}
                 subtitle="门课程"
@@ -518,7 +433,7 @@ const ProgressPage: React.FC = () => {
                 large
               />
               <CompactStatCard
-                icon={<CheckCircle2 size={24} />}
+                icon={<CheckCircleOutlined style={{ fontSize: 24 }} />}
                 title="完成测验"
                 value={`${overallStats.completedQuizzes}/${overallStats.totalQuizzes}`}
                 subtitle={`完成率 ${overallStats.completionRate}%`}
@@ -526,7 +441,7 @@ const ProgressPage: React.FC = () => {
                 large
               />
               <CompactStatCard
-                icon={<Trophy size={24} />}
+                icon={<TrophyOutlined style={{ fontSize: 24 }} />}
                 title="平均分数"
                 value={
                   overallStats.averageScore !== null
@@ -540,7 +455,7 @@ const ProgressPage: React.FC = () => {
                 large
               />
               <CompactStatCard
-                icon={<FileText size={24} />}
+                icon={<FileTextOutlined style={{ fontSize: 24 }} />}
                 title="笔记数量"
                 value={overallStats.totalNotes.toString()}
                 subtitle="篇笔记"
@@ -562,20 +477,10 @@ const ProgressPage: React.FC = () => {
           }}
         >
           {overallStats && overallStats.totalQuizzes > 0 ? (
-            <div
-              className="content-section"
-              style={{ padding: "1rem", textAlign: "center", width: "100%" }}
-            >
-              <h3
-                style={{
-                  margin: "0 0 0.75rem 0",
-                  fontSize: "0.9375rem",
-                  fontWeight: 600,
-                  color: isDark ? "#f9fafb" : "#1c1917",
-                }}
-              >
+            <Card style={{ textAlign: "center", width: "100%" }}>
+              <Title level={5} style={{ margin: "0 0 0.75rem 0" }}>
                 整体完成度
-              </h3>
+              </Title>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <CircularProgressChart
                   completed={overallStats.completedQuizzes}
@@ -583,32 +488,22 @@ const ProgressPage: React.FC = () => {
                   size={150}
                 />
               </div>
-            </div>
+            </Card>
           ) : (
-            <div
-              className="content-section"
-              style={{ padding: "1rem", textAlign: "center", width: "100%" }}
-            >
-              <Target
-                size={36}
-                style={{
-                  margin: "0 auto 0.625rem",
-                  color: isDark ? "#9ca3af" : "#78716c",
-                }}
+            <Card style={{ textAlign: "center", width: "100%" }}>
+              <Empty
+                description={
+                  <Space direction="vertical" size="small">
+                    <Text type="secondary">暂无学习记录</Text>
+                    <Link to="/courses">
+                      <Button type="primary" size="small">
+                        浏览课程
+                      </Button>
+                    </Link>
+                  </Space>
+                }
               />
-              <p
-                style={{
-                  color: isDark ? "#9ca3af" : "#78716c",
-                  margin: "0 0 0.625rem 0",
-                  fontSize: "0.8125rem",
-                }}
-              >
-                暂无学习记录
-              </p>
-              <Link to="/courses" className="btn btn-primary btn-small">
-                浏览课程
-              </Link>
-            </div>
+            </Card>
           )}
         </div>
 
@@ -622,25 +517,16 @@ const ProgressPage: React.FC = () => {
           }}
         >
           {courseProgressList.length > 0 ? (
-            <div
-              className="content-section"
+            <Card
               style={{
                 flex: 1,
-                padding: "0.875rem",
                 overflowY: "auto",
                 minHeight: 0,
               }}
             >
-              <h3
-                style={{
-                  margin: "0 0 0.625rem 0",
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  color: isDark ? "#f9fafb" : "#1c1917",
-                }}
-              >
+              <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
                 课程进度
-              </h3>
+              </Title>
               <div
                 style={{
                   display: "flex",
@@ -667,42 +553,18 @@ const ProgressPage: React.FC = () => {
                   );
                 })}
               </div>
-            </div>
+            </Card>
           ) : (
-            <div
-              className="content-section"
+            <Card
               style={{
                 flex: 1,
-                padding: "1rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <div
-                style={{
-                  textAlign: "center",
-                  color: isDark ? "#9ca3af" : "#78716c",
-                }}
-              >
-                <Target
-                  size={28}
-                  style={{
-                    margin: "0 auto 0.5rem",
-                    color: isDark ? "#9ca3af" : "#78716c",
-                  }}
-                />
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: "0.8125rem",
-                    color: isDark ? "#9ca3af" : "#78716c",
-                  }}
-                >
-                  暂无课程进度
-                </p>
-              </div>
-            </div>
+              <Empty description={<Text type="secondary">暂无课程进度</Text>} />
+            </Card>
           )}
         </div>
       </div>
@@ -722,59 +584,52 @@ const CompactStatCard: React.FC<{
   const { theme } = useTheme();
   const isDark = theme === "dark";
   return (
-    <div
-      className="content-section"
+    <Card
+      size="small"
       style={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: large ? "0.875rem" : "0.75rem",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          marginBottom: large ? "0.625rem" : "0.5rem",
-        }}
-      >
-        <div style={{ color, display: "flex", alignItems: "center" }}>
-          {icon}
+      <Space direction="vertical" size="small" style={{ width: "100%" }}>
+        <Space>
+          <div style={{ color, display: "flex", alignItems: "center" }}>
+            {icon}
+          </div>
+          <Text
+            type="secondary"
+            style={{
+              fontSize: large ? "0.875rem" : "0.75rem",
+            }}
+          >
+            {title}
+          </Text>
+        </Space>
+        <div>
+          <Text
+            strong
+            style={{
+              fontSize: large ? "1.625rem" : "1.25rem",
+              lineHeight: 1.2,
+            }}
+          >
+            {value}
+          </Text>
+          <div>
+            <Text
+              type="secondary"
+              style={{
+                fontSize: "0.625rem",
+                marginTop: "0.25rem",
+              }}
+            >
+              {subtitle}
+            </Text>
+          </div>
         </div>
-        <h3
-          style={{
-            margin: 0,
-            fontSize: large ? "0.875rem" : "0.75rem",
-            fontWeight: 500,
-            color: isDark ? "#9ca3af" : "#78716c",
-          }}
-        >
-          {title}
-        </h3>
-      </div>
-      <div>
-        <div
-          style={{
-            fontSize: large ? "1.625rem" : "1.25rem",
-            fontWeight: 700,
-            color: isDark ? "#f9fafb" : "#1c1917",
-            lineHeight: 1.2,
-          }}
-        >
-          {value}
-        </div>
-        <div
-          style={{
-            fontSize: "0.625rem",
-            color: isDark ? "#9ca3af" : "#78716c",
-            marginTop: "0.25rem",
-          }}
-        >
-          {subtitle}
-        </div>
-      </div>
-    </div>
+      </Space>
+    </Card>
   );
 };
 

@@ -1,21 +1,37 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  Input,
+  Button,
+  Space,
+  Typography,
+  Card,
+  List,
+  Empty,
+  Alert,
+  Tag,
+  Spin,
+} from "antd";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import { Note } from "../types";
 import { noteAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useCourse } from "../context/CourseContext";
 import { useTheme } from "../components/ThemeProvider";
-import { Search, X, Plus } from "lucide-react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import "../styles/Course.css";
+
+const { Search } = Input;
+const { Title, Text, Paragraph } = Typography;
 
 const NoteList: React.FC = () => {
   const navigate = useNavigate();
   const { selectedCourse, currentStudyingCourse } = useCourse();
   const course = selectedCourse || currentStudyingCourse;
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,69 +118,61 @@ const NoteList: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="container">
-        <div className="error-message">请先选择一个课程</div>
-        <button
-          onClick={() => navigate("/courses")}
-          className="btn btn-primary"
-        >
-          前往课程列表
-        </button>
-      </div>
+      <Alert
+        message="请先选择一个课程"
+        type="warning"
+        showIcon
+        action={
+          <Button type="primary" onClick={() => navigate("/courses")}>
+            前往课程列表
+          </Button>
+        }
+        style={{ margin: "2rem" }}
+      />
     );
   }
 
-  if (loading) return <div className="loading">加载笔记列表中...</div>;
+  if (loading)
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <Spin size="large" />
+      </div>
+    );
 
   return (
-    <div className="notes-view">
-      {error && <div className="error">{error}</div>}
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+      {error && (
+        <Alert
+          message={error}
+          type="error"
+          showIcon
+          style={{ marginBottom: "1.5rem" }}
+        />
+      )}
 
       {/* 搜索和过滤栏 */}
-      <div className="search-filter-bar">
-        <div className="search-box">
-          <div className="input-icon-wrapper">
-            <Search size={20} className="input-icon" />
-            <div className="input-icon-divider"></div>
-          </div>
-          <input
-            type="text"
+      <Space
+        direction="vertical"
+        size="middle"
+        style={{ width: "100%", marginBottom: "1.5rem" }}
+      >
+        <Space.Compact style={{ width: "100%" }}>
+          <Search
             placeholder="搜索笔记标题或内容..."
+            allowClear
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            style={{ flex: 1 }}
           />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="search-clear"
-              aria-label="清除搜索"
-            >
-              <X size={16} />
-            </button>
+          {course && (
+            <Link to="/notes/new">
+              <Button type="primary" icon={<PlusOutlined />}>
+                创建笔记
+              </Button>
+            </Link>
           )}
-          <span className="search-shortcut-hint" title="快捷键">
-            <kbd>Ctrl</kbd> + <kbd>K</kbd>
-          </span>
-        </div>
-
-        {course && (
-          <Link to="/notes/new" className="btn btn-primary">
-            <Plus size={18} />
-            创建笔记
-          </Link>
-        )}
-
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery("")}
-            className="btn btn-outline btn-small"
-          >
-            <X size={16} />
-            清除搜索
-          </button>
-        )}
-      </div>
+        </Space.Compact>
+      </Space>
 
       {/* 确认删除对话框 */}
       <ConfirmDialog
@@ -178,104 +186,106 @@ const NoteList: React.FC = () => {
         onCancel={() => setDeleteConfirm({ isOpen: false, noteId: null })}
       />
 
-      <div className="notes-container">
-        {notes.length === 0 ? (
-          <div className="empty-state">
-            <p>暂无笔记</p>
-            <p>点击"创建笔记"按钮开始记录你的学习心得</p>
-          </div>
-        ) : filteredNotes.length === 0 ? (
-          <div className="empty-state">
-            <p>未找到匹配的笔记</p>
-            <p>尝试调整搜索条件</p>
-            <button
-              onClick={() => setSearchQuery("")}
-              className="btn btn-primary"
+      {notes.length === 0 ? (
+        <Empty
+          image={
+            <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+          }
+          description={
+            <Space direction="vertical" size="small">
+              <Text>暂无笔记</Text>
+              <Text type="secondary">
+                点击"创建笔记"按钮开始记录你的学习心得
+              </Text>
+            </Space>
+          }
+        >
+          {course && (
+            <Link to="/notes/new">
+              <Button type="primary" icon={<PlusOutlined />}>
+                创建笔记
+              </Button>
+            </Link>
+          )}
+        </Empty>
+      ) : filteredNotes.length === 0 ? (
+        <Empty
+          image={
+            <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+          }
+          description={
+            <Space direction="vertical" size="small">
+              <Text>未找到匹配的笔记</Text>
+              <Text type="secondary">尝试调整搜索条件</Text>
+            </Space>
+          }
+        >
+          <Button type="primary" onClick={() => setSearchQuery("")}>
+            清除搜索
+          </Button>
+        </Empty>
+      ) : (
+        <List
+          dataSource={filteredNotes}
+          renderItem={(note) => (
+            <List.Item
+              style={{
+                background: "#fff",
+                marginBottom: "1rem",
+                padding: "1.5rem",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              }}
             >
-              清除搜索
-            </button>
-          </div>
-        ) : (
-          <div className="notes-list">
-            {filteredNotes.map((note) => (
-              <div key={note.id} className="note-list-item">
-                <Link
-                  to={`/notes/${note.id}`}
-                  style={{ flex: 1, textDecoration: "none", color: "inherit" }}
+              <Link
+                to={`/notes/${note.id}`}
+                style={{
+                  width: "100%",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                <Space
+                  direction="vertical"
+                  size="small"
+                  style={{ width: "100%" }}
                 >
-                  <div
+                  <Space wrap>
+                    <Title
+                      level={4}
+                      style={{ margin: 0, fontSize: "1.125rem" }}
+                    >
+                      {note.title}
+                    </Title>
+                    <Tag
+                      color={note.visibility === "public" ? "blue" : "default"}
+                    >
+                      {note.visibility === "public" ? "公开" : "私有"}
+                    </Tag>
+                  </Space>
+                  <Paragraph
+                    ellipsis={{ rows: 2, expandable: false }}
                     style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "1rem",
-                      flex: 1,
+                      margin: 0,
+                      fontSize: "0.875rem",
+                      color: "#78716c",
                     }}
                   >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.75rem",
-                          marginBottom: "0.5rem",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <h3
-                          style={{
-                            margin: 0,
-                            fontSize: "1.125rem",
-                            fontWeight: 600,
-                            color: isDark ? "#f9fafb" : "#1c1917",
-                          }}
-                        >
-                          {note.title}
-                        </h3>
-                        <span
-                          className={`visibility-badge ${note.visibility}`}
-                          style={{
-                            padding: "0.25rem 0.75rem",
-                            borderRadius: "9999px",
-                            fontSize: "0.75rem",
-                            fontWeight: 600,
-                            background:
-                              note.visibility === "public"
-                                ? "#dbeafe"
-                                : "#f5f5f4",
-                            color:
-                              note.visibility === "public"
-                                ? "#1e40af"
-                                : "#57534e",
-                          }}
-                        >
-                          {note.visibility === "public" ? "公开" : "私有"}
-                        </span>
-                      </div>
-                      <p
-                        style={{
-                          margin: "0 0 0.5rem 0",
-                          fontSize: "0.875rem",
-                          color: "#78716c",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {note.summary ||
-                          (note.content.length > 150
-                            ? note.content.substring(0, 150) + "..."
-                            : note.content
-                          ).replace(/\\n/g, " ")}
-                      </p>
-                      <span style={{ fontSize: "0.8125rem", color: "#a8a29e" }}>
-                        {formatDate(note.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                    {note.summary ||
+                      (note.content.length > 150
+                        ? note.content.substring(0, 150) + "..."
+                        : note.content
+                      ).replace(/\\n/g, " ")}
+                  </Paragraph>
+                  <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
+                    {formatDate(note.createdAt)}
+                  </Text>
+                </Space>
+              </Link>
+            </List.Item>
+          )}
+        />
+      )}
     </div>
   );
 };

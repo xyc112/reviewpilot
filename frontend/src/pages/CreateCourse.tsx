@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Space,
+  Typography,
+  Select,
+  Alert,
+} from "antd";
 import { courseAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import "../styles/Course.css";
+
+const { TextArea } = Input;
+const { Title } = Typography;
 
 const CreateCourse: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -56,89 +68,91 @@ const CreateCourse: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <div className="container">
-        <div className="error-message">无权限访问此页面</div>
-      </div>
+      <Alert
+        message="无权限访问此页面"
+        type="error"
+        showIcon
+        style={{ margin: "2rem" }}
+      />
     );
   }
 
   return (
-    <div className="container">
-      <div className="content-section">
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="title">课程标题 *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 1rem" }}>
+      <Card>
+        <Title level={2}>创建新课程</Title>
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={formData}
+        >
+          <Form.Item
+            label="课程标题"
+            name="title"
+            rules={[{ required: true, message: "请输入课程标题" }]}
+          >
+            <Input
               value={formData.title}
-              onChange={handleChange}
-              required
-              className="form-control"
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
             />
-          </div>
+          </Form.Item>
 
-          <div className="form-group">
-            <label htmlFor="description">课程描述</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+          <Form.Item label="课程描述" name="description">
+            <TextArea
               rows={4}
-              className="form-control"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
             />
-          </div>
+          </Form.Item>
 
-          <div className="form-group">
-            <label htmlFor="tags">标签 (用逗号分隔)</label>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
+          <Form.Item
+            label="标签 (用逗号分隔)"
+            name="tags"
+            extra="例如: 数学, 基础, 入门"
+          >
+            <Input
               value={formData.tags}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData({ ...formData, tags: e.target.value })
+              }
               placeholder="例如: 数学, 基础, 入门"
-              className="form-control"
             />
-          </div>
+          </Form.Item>
 
-          <div className="form-group">
-            <label htmlFor="level">难度等级</label>
-            <select
-              id="level"
-              name="level"
+          <Form.Item label="难度等级" name="level">
+            <Select
               value={formData.level}
-              onChange={handleChange}
-              className="form-control"
+              onChange={(value) => setFormData({ ...formData, level: value })}
             >
-              <option value="BEGINNER">初级</option>
-              <option value="INTERMEDIATE">中级</option>
-              <option value="ADVANCED">高级</option>
-            </select>
-          </div>
+              <Select.Option value="BEGINNER">初级</Select.Option>
+              <Select.Option value="INTERMEDIATE">中级</Select.Option>
+              <Select.Option value="ADVANCED">高级</Select.Option>
+            </Select>
+          </Form.Item>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <Alert
+              message={error}
+              type="error"
+              showIcon
+              style={{ marginBottom: "1rem" }}
+            />
+          )}
 
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="btn btn-outline"
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary"
-            >
-              {loading ? "创建中..." : "创建课程"}
-            </button>
-          </div>
-        </form>
-      </div>
+          <Form.Item>
+            <Space>
+              <Button onClick={() => navigate(-1)}>取消</Button>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                创建课程
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 };
