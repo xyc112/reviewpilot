@@ -8,11 +8,9 @@ import {
   Space,
   Typography,
   Tag,
-  Empty,
   Statistic,
   Row,
   Col,
-  Input,
   Radio,
   Checkbox,
   Divider,
@@ -23,12 +21,18 @@ import {
   ReloadOutlined,
   DeleteOutlined,
   ArrowLeftOutlined,
-  SearchOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import { WrongQuestion, Question } from "../types";
 import { wrongQuestionAPI, quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
-import { useTheme, ConfirmDialog, useToast } from "../components";
+import {
+  useTheme,
+  ConfirmDialog,
+  useToast,
+  SearchBox,
+  ListEmptyState,
+} from "../components";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -308,12 +312,11 @@ const WrongQuestionBook = () => {
       </Space>
 
       {/* 搜索栏 */}
-      <Input.Search
+      <SearchBox
         placeholder="搜索错题内容..."
-        allowClear
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ marginBottom: "2rem", maxWidth: 600 }}
+        onChange={setSearchQuery}
+        style={{ marginBottom: "2rem" }}
       />
 
       {error && (
@@ -583,8 +586,9 @@ const WrongQuestionBook = () => {
 
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         {!loading && wrongQuestions.length === 0 ? (
-          <Empty
-            image={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+          <ListEmptyState
+            variant="empty"
+            icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
             description={
               <Space direction="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
@@ -601,8 +605,9 @@ const WrongQuestionBook = () => {
             }
           />
         ) : filteredWrongQuestions.length === 0 && searchQuery ? (
-          <Empty
-            image={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+          <ListEmptyState
+            variant="noResults"
+            icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
             description={
               <Space direction="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
@@ -611,11 +616,9 @@ const WrongQuestionBook = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-          >
-            <Button type="primary" onClick={() => setSearchQuery("")}>
-              清除搜索
-            </Button>
-          </Empty>
+            onClearFilter={() => setSearchQuery("")}
+            clearFilterLabel="清除搜索"
+          />
         ) : filteredWrongQuestions.length > 0 ? (
           filteredWrongQuestions.map((wq) => (
             <Card

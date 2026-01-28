@@ -20,12 +20,17 @@ import {
   CloseOutlined,
   DownOutlined,
   UpOutlined,
-  SearchOutlined,
 } from "@ant-design/icons";
 import { Post, Comment, Course } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
-import { ConfirmDialog, useToast, MarkdownRenderer } from "../components";
+import {
+  ConfirmDialog,
+  useToast,
+  MarkdownRenderer,
+  SearchBox,
+  ListEmptyState,
+} from "../components";
 
 const { TextArea } = Input;
 const { Text, Title, Paragraph } = Typography;
@@ -510,12 +515,11 @@ const Community = () => {
         size="middle"
       >
         <Space.Compact style={{ width: "100%" }}>
-          <Input
+          <SearchBox
             placeholder="搜索帖子标题、内容或作者..."
-            prefix={<SearchOutlined />}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            allowClear
+            onChange={setSearchQuery}
+            maxWidth={undefined}
             style={{ flex: 1 }}
           />
           <Button
@@ -589,8 +593,9 @@ const Community = () => {
 
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         {posts.length === 0 && !showCreatePost ? (
-          <Empty
-            image={
+          <ListEmptyState
+            variant="empty"
+            icon={
               <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
@@ -601,8 +606,9 @@ const Community = () => {
             }
           />
         ) : filteredPosts.length === 0 && searchQuery ? (
-          <Empty
-            image={
+          <ListEmptyState
+            variant="noResults"
+            icon={
               <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
@@ -611,11 +617,9 @@ const Community = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-          >
-            <Button type="primary" onClick={() => setSearchQuery("")}>
-              清除搜索
-            </Button>
-          </Empty>
+            onClearFilter={() => setSearchQuery("")}
+            clearFilterLabel="清除搜索"
+          />
         ) : filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <Card

@@ -1,17 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Input,
   Button,
   Tag,
   Space,
   Typography,
-  Card,
   List,
-  Empty,
   Alert,
-  Row,
-  Col,
   Badge,
 } from "antd";
 import {
@@ -31,6 +26,10 @@ import {
   useToast,
   SkeletonGrid,
   SearchHighlight,
+  SearchBox,
+  ListEmptyState,
+  FilterBar,
+  ListItemCard,
 } from "../components";
 
 const { Title, Text, Paragraph } = Typography;
@@ -268,112 +267,85 @@ const CourseList = () => {
 
       {/* 搜索和过滤栏 */}
       <Space
-        orientation="vertical"
+        direction="vertical"
         size="middle"
         style={{ width: "100%", marginBottom: "1.5rem" }}
       >
-        <Input.Search
+        <SearchBox
           placeholder="搜索课程标题、描述或标签..."
-          allowClear
-          enterButton={<SearchOutlined />}
-          size="large"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ maxWidth: 600, borderRadius: 8 }}
+          onChange={setSearchQuery}
+          enterButton
         />
-
-        {hasActiveFilters && (
-          <Button onClick={clearFilters} icon={<CloseOutlined />}>
-            清除筛选
-          </Button>
-        )}
-
-        {/* 标签过滤 */}
-        {allTags.length > 0 && (
-          <div>
-            <Text strong style={{ marginRight: "0.5rem" }}>
-              标签：
-            </Text>
-            <Space wrap>
-              {allTags.map((tag) => (
-                <Tag
-                  key={tag}
-                  color={selectedTags.has(tag) ? "blue" : "default"}
-                  onClick={() => toggleTag(tag)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {tag}
-                </Tag>
-              ))}
-            </Space>
-          </div>
-        )}
-
-        {/* 结果统计 */}
-        {hasActiveFilters && (
-          <Text type="secondary">
-            找到 {filteredCourses.length} 个课程（共 {courses.length} 个）
-          </Text>
-        )}
+        <FilterBar
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+          clearLabel="清除筛选"
+          extra={
+            allTags.length > 0 ? (
+              <div>
+                <Text strong style={{ marginRight: "0.5rem" }}>
+                  标签：
+                </Text>
+                <Space wrap>
+                  {allTags.map((tag) => (
+                    <Tag
+                      key={tag}
+                      color={selectedTags.has(tag) ? "blue" : "default"}
+                      onClick={() => toggleTag(tag)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {tag}
+                    </Tag>
+                  ))}
+                </Space>
+              </div>
+            ) : undefined
+          }
+          resultSummary={
+            hasActiveFilters
+              ? `找到 ${filteredCourses.length} 个课程（共 ${courses.length} 个）`
+              : undefined
+          }
+        />
       </Space>
 
       {/* 课程列表 */}
       {courses.length === 0 ? (
-        <Empty
-          image={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+        <ListEmptyState
+          variant="empty"
+          icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
           description={
             <span>
               还没有创建任何课程，
               {isAdmin ? "立即创建第一个课程吧！" : "请等待管理员创建课程。"}
             </span>
           }
-        >
-          {isAdmin && (
-            <Link to="/courses/new">
-              <Button type="primary" icon={<PlusOutlined />}>
-                创建新课程
-              </Button>
-            </Link>
-          )}
-        </Empty>
+          action={
+            isAdmin ? (
+              <Link to="/courses/new">
+                <Button type="primary" icon={<PlusOutlined />}>
+                  创建新课程
+                </Button>
+              </Link>
+            ) : undefined
+          }
+        />
       ) : filteredCourses.length === 0 ? (
-        <Empty
-          image={<SearchOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+        <ListEmptyState
+          variant="noResults"
+          icon={<SearchOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
           description="未找到匹配的课程，尝试调整搜索条件或筛选器"
-        >
-          {hasActiveFilters && (
-            <Button type="primary" onClick={clearFilters}>
-              清除所有筛选
-            </Button>
-          )}
-        </Empty>
+          onClearFilter={clearFilters}
+          clearFilterLabel="清除所有筛选"
+        />
       ) : (
         <List
           dataSource={filteredCourses}
           renderItem={(course) => {
             const state = getCourseState(course);
             return (
-              <List.Item
-                style={{
-                  background: "#fff",
-                  marginBottom: "1rem",
-                  padding: "1.5rem",
-                  borderRadius: 12,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                  transition: "all 0.3s",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0,0,0,0.12)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(0,0,0,0.08)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
+              <ListItemCard cursor="pointer">
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <Space
                     orientation="vertical"
@@ -440,7 +412,10 @@ const CourseList = () => {
                   {state === 0 && (
                     <Button
                       icon={<BookOutlined />}
-                      onClick={() => handleAddToStudyList(course)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToStudyList(course);
+                      }}
                     >
                       添加到学习
                     </Button>
@@ -450,20 +425,29 @@ const CourseList = () => {
                       <Button
                         type="primary"
                         icon={<StarOutlined />}
-                        onClick={() => handleSetCurrentStudying(course)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetCurrentStudying(course);
+                        }}
                       >
                         开始学习
                       </Button>
                       <Button
                         icon={<CloseOutlined />}
-                        onClick={() => handleRemoveFromStudyList(course)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveFromStudyList(course);
+                        }}
                       />
                     </>
                   )}
                   {state === 2 && (
                     <Button
                       icon={<StarOutlined />}
-                      onClick={() => handleEndStudying(course)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEndStudying(course);
+                      }}
                     >
                       结束学习
                     </Button>
@@ -472,17 +456,23 @@ const CourseList = () => {
                     <>
                       <Button
                         icon={<EditOutlined />}
-                        onClick={() => navigate(`/courses/edit/${course.id}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/courses/edit/${course.id}`);
+                        }}
                       />
                       <Button
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => handleDeleteCourse(course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCourse(course.id);
+                        }}
                       />
                     </>
                   )}
                 </Space>
-              </List.Item>
+              </ListItemCard>
             );
           }}
         />

@@ -1,13 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Input,
   Button,
   Space,
   Typography,
-  Card,
   List,
-  Empty,
   Alert,
   Tag,
   Spin,
@@ -16,16 +13,20 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
 import { Quiz } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
-import { ConfirmDialog, useToast } from "../components";
+import {
+  ConfirmDialog,
+  useToast,
+  SearchBox,
+  ListEmptyState,
+  ListItemCard,
+} from "../components";
 
-const { Search } = Input;
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const QuizList = () => {
   const navigate = useNavigate();
@@ -145,12 +146,10 @@ const QuizList = () => {
           </div>
         )}
 
-        <Search
+        <SearchBox
           placeholder="搜索测验标题..."
-          allowClear
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ maxWidth: 600 }}
+          onChange={setSearchQuery}
         />
 
         <ConfirmDialog
@@ -165,8 +164,9 @@ const QuizList = () => {
         />
 
         {quizzes.length === 0 ? (
-          <Empty
-            image={
+          <ListEmptyState
+            variant="empty"
+            icon={
               <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
@@ -181,18 +181,20 @@ const QuizList = () => {
                 </Text>
               </Space>
             }
-          >
-            {isAdmin && course && (
-              <Link to="/quizzes/new">
-                <Button type="primary" icon={<PlusOutlined />}>
-                  创建新测验
-                </Button>
-              </Link>
-            )}
-          </Empty>
+            action={
+              isAdmin && course ? (
+                <Link to="/quizzes/new">
+                  <Button type="primary" icon={<PlusOutlined />}>
+                    创建新测验
+                  </Button>
+                </Link>
+              ) : undefined
+            }
+          />
         ) : filteredQuizzes.length === 0 && searchQuery ? (
-          <Empty
-            image={
+          <ListEmptyState
+            variant="noResults"
+            icon={
               <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
@@ -203,35 +205,14 @@ const QuizList = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-          >
-            <Button type="primary" onClick={() => setSearchQuery("")}>
-              清除搜索
-            </Button>
-          </Empty>
+            onClearFilter={() => setSearchQuery("")}
+            clearFilterLabel="清除搜索"
+          />
         ) : (
           <List
             dataSource={filteredQuizzes}
             renderItem={(quiz) => (
-              <List.Item
-                style={{
-                  background: "#fff",
-                  marginBottom: "1rem",
-                  padding: "1.5rem",
-                  borderRadius: 12,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                  transition: "all 0.3s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0,0,0,0.12)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(0,0,0,0.08)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
+              <ListItemCard>
                 <Space
                   style={{ width: "100%", justifyContent: "space-between" }}
                 >
@@ -271,7 +252,7 @@ const QuizList = () => {
                     )}
                   </Space>
                 </Space>
-              </List.Item>
+              </ListItemCard>
             )}
           />
         )}
