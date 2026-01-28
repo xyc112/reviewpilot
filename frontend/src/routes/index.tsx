@@ -1,7 +1,10 @@
 import { lazy, Suspense, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute, Layout, LoadingSpinner } from "../components";
-import { ROUTES } from "../constants";
+import { ROUTES } from "./routes";
+
+// 导出路由常量供其他模块使用
+export { ROUTES };
 
 // 页面组件懒加载
 const Login = lazy(() => import("../pages/Login"));
