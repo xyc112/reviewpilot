@@ -7,13 +7,13 @@ ReviewPilot 是一个前后端分离的学习管理系统，后端采用 Spring 
 ## 系统要求
 
 ### 后端环境要求
-- **Java**: JDK 25
-- **Maven**: 3.9 
-- **数据库**: H2 内存数据库（已集成，无需额外安装）
+1. Java: JDK 25 
+2. Maven: 3.9 
+3. 数据库: H2 数据库
 
 ### 前端环境要求
-- **Node.js**: Node.js 24
-- **npm**: 随 Node.js 一起安装
+1. Node.js: Node.js 24
+2. npm: 随 Node.js 一起安装
 
 ## 系统配置
 
@@ -24,7 +24,6 @@ ReviewPilot 是一个前后端分离的学习管理系统，后端采用 Spring 
 - **应用名称**: backend
 - **数据库**: H2 内存数据库（`jdbc:h2:mem:testdb;MODE=MySQL`）
 - **默认端口**: 8080
-- **H2 控制台**: 启用，访问路径 `/h2-console`
 - **数据初始化**: 自动执行 `data.sql` 初始化数据
 
 ### 前端配置
@@ -48,11 +47,11 @@ mvn spring-boot:run
 
 后端服务将在 `http://localhost:8080` 启动。
 
-**注意**: 首次运行时会自动下载 Maven 依赖，可能需要一些时间。应用启动时会自动执行 `data.sql` 初始化数据。
+注意: 首次运行时会自动下载 Maven 依赖，可能需要一些时间。应用启动时会自动执行 `data.sql` 初始化数据。
 
 ### 2. 启动前端服务
 
-打开**新的终端窗口**，执行以下命令：
+打开新的终端窗口，执行以下命令：
 
 ```bash
 # 进入前端目录
@@ -71,9 +70,6 @@ npm run dev
 
 - **前端应用**: http://localhost:5173
 - **后端 API**: http://localhost:8080/api
-  - JDBC URL: `jdbc:h2:mem:testdb`
-  - 用户名: `sa`
-  - 密码: （空）
 
 ## 常见问题
 

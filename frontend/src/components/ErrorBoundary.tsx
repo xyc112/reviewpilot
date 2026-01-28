@@ -92,10 +92,7 @@ const ErrorFallback: React.FC<{
             >
               刷新页面
             </Button>
-            <Button
-              icon={<HomeOutlined />}
-              onClick={handleGoHome}
-            >
+            <Button icon={<HomeOutlined />} onClick={handleGoHome}>
               返回首页
             </Button>
           </Space>
@@ -111,20 +108,40 @@ const ErrorFallback: React.FC<{
               textAlign: "left",
             }}
           >
-            <summary style={{ cursor: "pointer", fontWeight: 500, marginBottom: "0.5rem" }}>
+            <summary
+              style={{
+                cursor: "pointer",
+                fontWeight: 500,
+                marginBottom: "0.5rem",
+              }}
+            >
               错误详情
             </summary>
             <div style={{ marginTop: "1rem" }}>
               <div style={{ marginBottom: "1rem" }}>
                 <strong>错误信息：</strong>
-                <pre style={{ background: "#fff", padding: "0.5rem", borderRadius: "4px", overflow: "auto" }}>
+                <pre
+                  style={{
+                    background: "#fff",
+                    padding: "0.5rem",
+                    borderRadius: "4px",
+                    overflow: "auto",
+                  }}
+                >
                   {error.toString()}
                 </pre>
               </div>
               {errorInfo && (
                 <div>
                   <strong>组件堆栈：</strong>
-                  <pre style={{ background: "#fff", padding: "0.5rem", borderRadius: "4px", overflow: "auto" }}>
+                  <pre
+                    style={{
+                      background: "#fff",
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      overflow: "auto",
+                    }}
+                  >
                     {errorInfo.componentStack}
                   </pre>
                 </div>

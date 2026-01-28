@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Form, Input, Button, Typography, Alert, Space, Card } from "antd";
-import { UserOutlined, LockOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
 import { authAPI } from "../services/api";
 import { validateUsername, validatePassword } from "../utils/validation";
@@ -16,7 +20,10 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: { username: string; password: string }) => {
+  const handleSubmit = async (values: {
+    username: string;
+    password: string;
+  }) => {
     setLoading(true);
     setError("");
 
@@ -66,29 +73,75 @@ const Login: React.FC = () => {
           <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
             欢迎来到 ReviewPilot
           </Title>
-          <Text style={{ fontSize: "1.125rem", opacity: 0.95, display: "block", marginBottom: "2rem" }}>
+          <Text
+            style={{
+              fontSize: "1.125rem",
+              opacity: 0.95,
+              display: "block",
+              marginBottom: "2rem",
+            }}
+          >
             一体化复习平台，让学习更高效，让复习更系统
           </Text>
           <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.875rem",
+                padding: "0.875rem",
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "0.75rem",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
               <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📚</div>
               <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>课程与知识图谱</div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>管理课程，可视化知识关联</div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                  课程与知识图谱
+                </div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                  管理课程，可视化知识关联
+                </div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.875rem",
+                padding: "0.875rem",
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "0.75rem",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
               <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📝</div>
               <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>笔记与测验</div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>记录笔记，检验学习成果</div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                  笔记与测验
+                </div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                  记录笔记，检验学习成果
+                </div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.875rem", padding: "0.875rem", background: "rgba(255,255,255,0.1)", borderRadius: "0.75rem", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.875rem",
+                padding: "0.875rem",
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "0.75rem",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
               <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📅</div>
               <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>复习计划与社区</div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>制定计划，交流学习心得</div>
+                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                  复习计划与社区
+                </div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                  制定计划，交流学习心得
+                </div>
               </div>
             </div>
           </Space>
@@ -112,7 +165,10 @@ const Login: React.FC = () => {
             maxWidth: 450,
           }}
         >
-          <Title level={2} style={{ textAlign: "center", marginBottom: "0.75rem" }}>
+          <Title
+            level={2}
+            style={{ textAlign: "center", marginBottom: "0.75rem" }}
+          >
             登录
           </Title>
           <Text
@@ -141,15 +197,14 @@ const Login: React.FC = () => {
                   validator: (_, value) => {
                     if (!value) return Promise.resolve();
                     const error = validateUsername(value);
-                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                    return error
+                      ? Promise.reject(new Error(error))
+                      : Promise.resolve();
                   },
                 },
               ]}
             >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="请输入用户名"
-              />
+              <Input prefix={<UserOutlined />} placeholder="请输入用户名" />
             </Form.Item>
 
             <Form.Item
@@ -161,7 +216,9 @@ const Login: React.FC = () => {
                   validator: (_, value) => {
                     if (!value) return Promise.resolve();
                     const error = validatePassword(value);
-                    return error ? Promise.reject(new Error(error)) : Promise.resolve();
+                    return error
+                      ? Promise.reject(new Error(error))
+                      : Promise.resolve();
                   },
                 },
               ]}
@@ -194,7 +251,13 @@ const Login: React.FC = () => {
             </Form.Item>
           </Form>
 
-          <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.875rem" }}>
+          <div
+            style={{
+              marginTop: "2rem",
+              textAlign: "center",
+              fontSize: "0.875rem",
+            }}
+          >
             <Text type="secondary">没有账号？</Text>{" "}
             <Link to="/register" style={{ fontWeight: 500 }}>
               立即注册

@@ -1,7 +1,19 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Layout as AntLayout, Button, Space, Typography, theme as antdTheme } from "antd";
-import { LogoutOutlined, UserOutlined, DashboardOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import {
+  Layout as AntLayout,
+  Button,
+  Space,
+  Typography,
+  theme as antdTheme,
+} from "antd";
+import {
+  LogoutOutlined,
+  UserOutlined,
+  DashboardOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "./ThemeProvider";
 import Sidebar from "./Sidebar";

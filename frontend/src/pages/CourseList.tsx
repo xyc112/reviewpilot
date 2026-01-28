@@ -220,13 +220,21 @@ const CourseList: React.FC = () => {
   }
 
   if (error) {
-    return <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />;
+    return (
+      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+    );
   }
 
   return (
     <div style={{ padding: "2rem", maxWidth: 1400, margin: "0 auto" }}>
       {isAdmin && (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.5rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "1.5rem",
+          }}
+        >
           <Link to="/courses/new">
             <Button type="primary" icon={<PlusOutlined />}>
               创建新课程
@@ -247,7 +255,11 @@ const CourseList: React.FC = () => {
       />
 
       {/* 搜索和过滤栏 */}
-      <Space orientation="vertical" size="middle" style={{ width: "100%", marginBottom: "1.5rem" }}>
+      <Space
+        orientation="vertical"
+        size="middle"
+        style={{ width: "100%", marginBottom: "1.5rem" }}
+      >
         <Input.Search
           placeholder="搜索课程标题、描述或标签..."
           allowClear
@@ -267,7 +279,9 @@ const CourseList: React.FC = () => {
         {/* 标签过滤 */}
         {allTags.length > 0 && (
           <div>
-            <Text strong style={{ marginRight: "0.5rem" }}>标签：</Text>
+            <Text strong style={{ marginRight: "0.5rem" }}>
+              标签：
+            </Text>
             <Space wrap>
               {allTags.map((tag) => (
                 <Tag
@@ -337,12 +351,31 @@ const CourseList: React.FC = () => {
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <Space orientation="vertical" size="small" style={{ width: "100%" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-                      <Title level={4} style={{ margin: 0, fontSize: "1.125rem" }}>
-                        <SearchHighlight text={course.title} searchQuery={searchQuery} />
+                  <Space
+                    orientation="vertical"
+                    size="small"
+                    style={{ width: "100%" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Title
+                        level={4}
+                        style={{ margin: 0, fontSize: "1.125rem" }}
+                      >
+                        <SearchHighlight
+                          text={course.title}
+                          searchQuery={searchQuery}
+                        />
                       </Title>
-                      <Tag color={getLevelColor(course.level)}>{getLevelText(course.level)}</Tag>
+                      <Tag color={getLevelColor(course.level)}>
+                        {getLevelText(course.level)}
+                      </Tag>
                       {currentStudyingCourse?.id === course.id && (
                         <Badge
                           count="正在学习"
@@ -353,16 +386,26 @@ const CourseList: React.FC = () => {
                     {course.description && (
                       <Paragraph
                         ellipsis={{ rows: 2, expandable: false }}
-                        style={{ margin: 0, fontSize: "0.875rem", color: "#78716c" }}
+                        style={{
+                          margin: 0,
+                          fontSize: "0.875rem",
+                          color: "#78716c",
+                        }}
                       >
-                        <SearchHighlight text={course.description} searchQuery={searchQuery} />
+                        <SearchHighlight
+                          text={course.description}
+                          searchQuery={searchQuery}
+                        />
                       </Paragraph>
                     )}
                     {course.tags.length > 0 && (
                       <Space wrap>
                         {course.tags.map((tag) => (
                           <Tag key={tag}>
-                            <SearchHighlight text={tag} searchQuery={searchQuery} />
+                            <SearchHighlight
+                              text={tag}
+                              searchQuery={searchQuery}
+                            />
                           </Tag>
                         ))}
                       </Space>
