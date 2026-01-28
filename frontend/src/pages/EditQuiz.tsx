@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -17,17 +17,18 @@ import {
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
 import { Quiz } from "../types";
 import { quizAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
+import { useAuthStore, useCourseStore } from "../stores";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const EditQuiz: React.FC = () => {
+const EditQuiz = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";

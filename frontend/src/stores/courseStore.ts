@@ -88,8 +88,8 @@ export const useCourseStore = create<CourseState>()(
       partialize: (state) => ({
         selectedCourse: state.selectedCourse,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // 监听用户状态变化，自动刷新课程数据
@@ -103,5 +103,5 @@ useAuthStore.subscribe(
       // 用户已登录，刷新用户课程
       useCourseStore.getState().refreshUserCourses();
     }
-  }
+  },
 );

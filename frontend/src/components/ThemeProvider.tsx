@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { ConfigProvider, theme as antdTheme } from "antd";
 import type { ThemeConfig } from "antd";
 
@@ -12,9 +18,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     // 从 localStorage 读取主题，默认为 light
     const savedTheme = localStorage.getItem("theme") as Theme;
@@ -46,32 +50,32 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       colorWarning: "#faad14",
       colorError: "#ff4d4f",
       colorInfo: "#1677ff",
-      
+
       // 圆角
       borderRadius: 8,
       borderRadiusLG: 12,
       borderRadiusSM: 6,
-      
+
       // 字体
       fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif`,
       fontSize: 14,
       fontSizeLG: 16,
       fontSizeSM: 12,
-      
+
       // 间距
       padding: 16,
       paddingLG: 24,
       paddingSM: 12,
       paddingXS: 8,
-      
+
       // 阴影
       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
       boxShadowSecondary: "0 4px 12px rgba(0, 0, 0, 0.12)",
-      
+
       // 边框
       lineWidth: 1,
       lineType: "solid",
-      
+
       // 动画
       motionDurationFast: "0.1s",
       motionDurationMid: "0.2s",
@@ -87,9 +91,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         itemBorderRadius: 8,
         itemMarginInline: 4,
         itemMarginBlock: 4,
-        itemHoverBg: theme === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
-        itemSelectedBg: theme === "dark" ? "rgba(22, 119, 255, 0.2)" : "rgba(22, 119, 255, 0.1)",
-        itemActiveBg: theme === "dark" ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.06)",
+        itemHoverBg:
+          theme === "dark"
+            ? "rgba(255, 255, 255, 0.08)"
+            : "rgba(0, 0, 0, 0.04)",
+        itemSelectedBg:
+          theme === "dark"
+            ? "rgba(22, 119, 255, 0.2)"
+            : "rgba(22, 119, 255, 0.1)",
+        itemActiveBg:
+          theme === "dark"
+            ? "rgba(255, 255, 255, 0.12)"
+            : "rgba(0, 0, 0, 0.06)",
       },
       Card: {
         borderRadiusLG: 12,

@@ -1,4 +1,3 @@
-import React from "react";
 import * as d3 from "d3";
 import { useTheme } from "./ThemeProvider";
 
@@ -12,12 +11,12 @@ interface ProgressChartProps {
 /**
  * 圆形进度图组件（使用 D3 和 SVG）
  */
-export const CircularProgressChart: React.FC<ProgressChartProps> = ({
+export const CircularProgressChart = ({
   completed,
   total,
   size = 120,
   strokeWidth = 12,
-}) => {
+}: ProgressChartProps) => {
   const { theme } = useTheme();
   const percentage = total > 0 ? (completed / total) * 100 : 0;
   const radius = (size - strokeWidth) / 2;
@@ -102,10 +101,7 @@ interface BarChartProps {
 /**
  * 简单的柱状图组件
  */
-export const SimpleBarChart: React.FC<BarChartProps> = ({
-  data,
-  height = 200,
-}) => {
+export const SimpleBarChart = ({ data, height = 200 }: BarChartProps) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const maxValue = Math.max(...data.map((d) => d.value), 1);
@@ -175,9 +171,7 @@ interface ScoreDistributionProps {
 /**
  * 分数分布图（柱状图）
  */
-export const ScoreDistributionChart: React.FC<ScoreDistributionProps> = ({
-  scores,
-}) => {
+export const ScoreDistributionChart = ({ scores }: ScoreDistributionProps) => {
   // 将分数分组：0-59, 60-69, 70-79, 80-89, 90-100
   const ranges = [
     { label: "0-59", min: 0, max: 59, color: "#ef4444" },

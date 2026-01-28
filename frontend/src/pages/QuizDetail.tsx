@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -24,17 +24,19 @@ import {
 } from "@ant-design/icons";
 import { Quiz, QuizAttempt } from "../types";
 import { quizAPI, wrongQuestionAPI } from "../services";
-import { useCourseStore } from "../stores/courseStore";
-import { useToast } from "../components/Toast";
+import { useCourseStore } from "../stores";
+import { useToast } from "../components";
 
 const { Title, Text, Paragraph } = Typography;
 const { Countdown } = Statistic;
 
-const QuizDetail: React.FC = () => {
+const QuizDetail = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);

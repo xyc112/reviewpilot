@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Card,
@@ -24,22 +24,21 @@ import {
 } from "@ant-design/icons";
 import { Post, Comment, Course } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services";
-import { useAuth } from "../stores/authStore";
-import { useCourse } from "../stores/courseStore";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
-import MarkdownRenderer from "../components/MarkdownRenderer";
+import { useAuthStore, useCourseStore } from "../stores";
+import { ConfirmDialog, useToast, MarkdownRenderer } from "../components";
 
 const { TextArea } = Input;
 const { Text, Title, Paragraph } = Typography;
 
-const Community: React.FC = () => {
+const Community = () => {
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const { success, error: showError } = useToast();
 
   // 优先使用URL参数，其次使用当前学习的课程，最后使用选中的课程

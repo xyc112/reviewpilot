@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Card,
@@ -21,13 +21,12 @@ import {
 } from "@ant-design/icons";
 import { Course } from "../types";
 import { courseAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore } from "../stores";
+import { ConfirmDialog, useToast } from "../components";
 
 const { Title, Text, Paragraph } = Typography;
 
-const CourseDetail: React.FC = () => {
+const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);

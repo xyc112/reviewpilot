@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -27,18 +27,17 @@ import {
 } from "@ant-design/icons";
 import { WrongQuestion, Question } from "../types";
 import { wrongQuestionAPI, quizAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import { useTheme } from "../components/ThemeProvider";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { useTheme, ConfirmDialog, useToast } from "../components";
 
 const { Title, Text, Paragraph } = Typography;
 
-const WrongQuestionBook: React.FC = () => {
+const WrongQuestionBook = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
   const { theme } = useTheme();
   const isDark = theme === "dark";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -13,12 +13,12 @@ import {
 } from "antd";
 import { Course } from "../types";
 import { courseAPI } from "../services";
-import { useAuth } from "../stores/authStore";
+import { useAuthStore } from "../stores";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const EditCourse: React.FC = () => {
+const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);

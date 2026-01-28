@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute, Layout, LoadingSpinner } from "../components";
 import { ROUTES } from "../constants";
@@ -26,11 +26,11 @@ const WrongQuestionBook = lazy(() => import("../pages/WrongQuestionBook"));
 const ReviewPlan = lazy(() => import("../pages/ReviewPlan"));
 
 // 懒加载包装组件
-const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const LazyWrapper = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
 );
 
-export const AppRoutes: React.FC = () => {
+export const AppRoutes = () => {
   return (
     <Routes>
       {/* 公开路由 */}

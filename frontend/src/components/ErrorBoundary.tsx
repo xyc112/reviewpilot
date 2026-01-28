@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Result, Button, Space } from "antd";
 import { ReloadOutlined, HomeOutlined } from "@ant-design/icons";
 
@@ -57,10 +57,13 @@ class ErrorBoundaryClass extends Component<Props, State> {
   }
 }
 
-const ErrorFallback: React.FC<{
+const ErrorFallback = ({
+  error,
+  errorInfo,
+}: {
   error: Error | null;
   errorInfo: ErrorInfo | null;
-}> = ({ error, errorInfo }) => {
+}) => {
   const handleReload = () => {
     window.location.reload();
   };
@@ -155,7 +158,7 @@ const ErrorFallback: React.FC<{
 };
 
 // Hook-based wrapper for functional components
-export const ErrorBoundary: React.FC<Props> = (props) => {
+export const ErrorBoundary = (props: Props) => {
   return <ErrorBoundaryClass {...props} />;
 };
 

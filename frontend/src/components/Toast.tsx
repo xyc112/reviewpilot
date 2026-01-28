@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { message } from "antd";
 
 interface ToastContextType {
@@ -10,9 +10,7 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const success = (msg: string) => {
     message.success(msg);
   };

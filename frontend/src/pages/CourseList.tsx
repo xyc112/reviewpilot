@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Input,
@@ -25,16 +25,17 @@ import {
 } from "@ant-design/icons";
 import { Course } from "../types";
 import { courseAPI, userCourseAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
-import { SkeletonGrid } from "../components/Skeleton";
-import { SearchHighlight } from "../components/SearchHighlight";
+import { useAuthStore, useCourseStore } from "../stores";
+import {
+  ConfirmDialog,
+  useToast,
+  SkeletonGrid,
+  SearchHighlight,
+} from "../components";
 
 const { Title, Text, Paragraph } = Typography;
 
-const CourseList: React.FC = () => {
+const CourseList = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,9 +51,13 @@ const CourseList: React.FC = () => {
   });
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const selectedCourseIds = useCourseStore((state) => state.selectedCourseIds);
-  const refreshUserCourses = useCourseStore((state) => state.refreshUserCourses);
+  const refreshUserCourses = useCourseStore(
+    (state) => state.refreshUserCourses,
+  );
   const { success, error: showError } = useToast();
 
   useEffect(() => {
@@ -359,11 +364,13 @@ const CourseList: React.FC = () => {
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 12px rgba(0,0,0,0.12)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(0,0,0,0.08)";
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >

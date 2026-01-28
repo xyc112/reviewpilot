@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { Node, Relation } from "../types";
 
@@ -43,7 +43,7 @@ interface D3Link extends d3.SimulationLinkDatum<D3Node> {
   weight?: number;
 }
 
-const GraphCanvas: React.FC<GraphCanvasProps> = ({
+const GraphCanvas = ({
   nodes,
   relations,
   onNodeClick,
@@ -61,7 +61,7 @@ const GraphCanvas: React.FC<GraphCanvasProps> = ({
   onRelationTypeChange,
   onRelationDirectedChange,
   onRelationWeightChange,
-}) => {
+}: GraphCanvasProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
   const draggingFromRef = useRef<string | null>(null);

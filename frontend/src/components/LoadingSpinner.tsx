@@ -1,7 +1,6 @@
-import React from "react";
 import { Spin } from "antd";
 
-const LoadingSpinner: React.FC = () => {
+const LoadingSpinner = () => {
   return (
     <div style={{ textAlign: "center", padding: "4rem 2rem" }}>
       <Spin size="large" />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -11,12 +11,12 @@ import {
   Alert,
 } from "antd";
 import { courseAPI } from "../services";
-import { useAuth } from "../stores/authStore";
+import { useAuthStore } from "../stores";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const CreateCourse: React.FC = () => {
+const CreateCourse = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",

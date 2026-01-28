@@ -43,7 +43,7 @@ export const isAuthenticated = (): boolean => {
 };
 
 // 表单验证工具函数
-import React from "react";
+import { useState, type ReactNode } from "react";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -114,8 +114,8 @@ export const useFieldValidation = <T extends Record<string, any>>(
   initialValues: T,
   validators: Partial<Record<keyof T, (value: any) => string | null>>,
 ) => {
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [touched, setTouched] = React.useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const validateField = (name: keyof T, value: any) => {
     const validator = validators[name];

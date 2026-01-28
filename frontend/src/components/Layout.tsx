@@ -1,4 +1,3 @@
-import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import {
   Layout as AntLayout,
@@ -14,15 +13,14 @@ import {
   MoonOutlined,
   SunOutlined,
 } from "@ant-design/icons";
-import { useAuthStore } from "../stores/authStore";
-import { useTheme } from "./ThemeProvider";
-import Sidebar from "./Sidebar";
+import { useAuthStore } from "../stores";
+import { useTheme, Sidebar } from "./index";
 import { useGlobalShortcuts } from "../hooks";
 
 const { Header, Content } = AntLayout;
 const { Text } = Typography;
 
-const Layout: React.FC = () => {
+const Layout = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { theme, toggleTheme } = useTheme();
@@ -74,7 +72,10 @@ const Layout: React.FC = () => {
             </Text>
           </Space>
           <Space size="middle">
-            <Space size="small" style={{ padding: "4px 12px", borderRadius: 8 }}>
+            <Space
+              size="small"
+              style={{ padding: "4px 12px", borderRadius: 8 }}
+            >
               <UserOutlined style={{ color: "#1677ff" }} />
               <Text style={{ fontWeight: 500 }}>{user?.username}</Text>
             </Space>

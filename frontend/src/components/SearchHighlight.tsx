@@ -1,14 +1,9 @@
-import React from "react";
-
 interface SearchHighlightProps {
   text: string;
   searchQuery: string;
 }
 
-const SearchHighlight: React.FC<SearchHighlightProps> = ({
-  text,
-  searchQuery,
-}) => {
+const SearchHighlight = ({ text, searchQuery }: SearchHighlightProps) => {
   if (!searchQuery) {
     return <>{text}</>;
   }

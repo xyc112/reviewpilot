@@ -1,4 +1,3 @@
-import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
@@ -13,7 +12,7 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+const ConfirmDialog = ({
   isOpen,
   title,
   message,

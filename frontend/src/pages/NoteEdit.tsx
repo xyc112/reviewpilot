@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -18,18 +18,19 @@ import {
 } from "@ant-design/icons";
 import { Note } from "../types";
 import { noteAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { useToast } from "../components";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const NoteEdit: React.FC = () => {
+const NoteEdit = () => {
   const { noteId } = useParams<{ noteId: string }>();
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";

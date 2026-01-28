@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -17,16 +17,18 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import { noteAPI } from "../services";
-import { useCourseStore } from "../stores/courseStore";
-import { useToast } from "../components/Toast";
+import { useCourseStore } from "../stores";
+import { useToast } from "../components";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const NoteCreate: React.FC = () => {
+const NoteCreate = () => {
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
   const { success, error: showError } = useToast();
 

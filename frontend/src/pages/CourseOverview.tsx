@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Card,
@@ -25,19 +25,18 @@ import {
 } from "@ant-design/icons";
 import { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
-import { useAuth } from "../stores/authStore";
-import { useCourse } from "../stores/courseStore";
-import { useTheme } from "../components/ThemeProvider";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { useTheme, ConfirmDialog, useToast } from "../components";
 
 const { Title, Text } = Typography;
 
-const CourseOverview: React.FC = () => {
+const CourseOverview = () => {
   const { id } = useParams<{ id: string }>();
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { success, error: showError } = useToast();

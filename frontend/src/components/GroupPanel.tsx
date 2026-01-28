@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 interface GroupPanelProps {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
   initiallyExpanded?: boolean;
   showCount?: boolean;
   count?: number;
 }
 
-const GroupPanel: React.FC<GroupPanelProps> = ({
+const GroupPanel = ({
   title,
   children,
   initiallyExpanded = true,
   showCount = false,
   count = 0,
-}) => {
+}: GroupPanelProps) => {
   const [expanded, setExpanded] = useState(initiallyExpanded);
 
   return (

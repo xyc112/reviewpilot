@@ -1,4 +1,3 @@
-import React from "react";
 import { Skeleton as AntSkeleton, Card, Row, Col } from "antd";
 
 interface SkeletonProps {
@@ -8,12 +7,12 @@ interface SkeletonProps {
   active?: boolean;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({
+const Skeleton = ({
   width = "100%",
   height = 16,
   className = "",
   active = true,
-}) => {
+}: SkeletonProps) => {
   return (
     <AntSkeleton.Button
       active={active}
@@ -27,7 +26,7 @@ interface SkeletonGridProps {
   count?: number;
 }
 
-const SkeletonGrid: React.FC<SkeletonGridProps> = ({ count = 3 }) => {
+const SkeletonGrid = ({ count = 3 }: SkeletonGridProps) => {
   return (
     <Row gutter={[16, 16]}>
       {Array.from({ length: count }).map((_, index) => (

@@ -2,7 +2,8 @@ import api from "./apiClient";
 import { Node, Relation } from "../types";
 
 export const graphAPI = {
-  getNodes: (courseId: number) => api.get<Node[]>(`/api/graphs/${courseId}/nodes`),
+  getNodes: (courseId: number) =>
+    api.get<Node[]>(`/api/graphs/${courseId}/nodes`),
   getNode: (courseId: number, nodeId: string) =>
     api.get<Node>(`/api/graphs/${courseId}/nodes/${nodeId}`),
   createNode: (courseId: number, nodeData: Partial<Node>) =>
@@ -19,7 +20,11 @@ export const graphAPI = {
     courseId: number,
     relationId: string,
     relationData: Partial<Relation>,
-  ) => api.put<Relation>(`/api/graphs/${courseId}/relations/${relationId}`, relationData),
+  ) =>
+    api.put<Relation>(
+      `/api/graphs/${courseId}/relations/${relationId}`,
+      relationData,
+    ),
   deleteRelation: (courseId: number, relationId: string) =>
     api.delete(`/api/graphs/${courseId}/relations/${relationId}`),
 };

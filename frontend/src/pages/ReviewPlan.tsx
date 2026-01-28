@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Card,
   Button,
@@ -27,14 +27,12 @@ import {
 } from "@ant-design/icons";
 import { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services";
-import { useToast } from "../components/Toast";
-import { useTheme } from "../components/ThemeProvider";
-import ConfirmDialog from "../components/ConfirmDialog";
+import { useToast, useTheme, ConfirmDialog } from "../components";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-const ReviewPlanPage: React.FC = () => {
+const ReviewPlanPage = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [plans, setPlans] = useState<ReviewPlanType[]>([]);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -25,18 +25,20 @@ import {
 } from "@ant-design/icons";
 import { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services";
-import { useCourseStore } from "../stores/courseStore";
-import { useTheme } from "../components/ThemeProvider";
-import { SkeletonGrid } from "../components/Skeleton";
+import { useCourseStore } from "../stores";
 import {
+  useTheme,
+  SkeletonGrid,
   CircularProgressChart,
   ScoreDistributionChart,
-} from "../components/ProgressChart";
+} from "../components";
 
 const { Title, Text } = Typography;
 
-const ProgressPage: React.FC = () => {
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+const ProgressPage = () => {
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
@@ -573,14 +575,21 @@ const ProgressPage: React.FC = () => {
 };
 
 // 紧凑的统计卡片组件
-const CompactStatCard: React.FC<{
-  icon: React.ReactNode;
+const CompactStatCard = ({
+  icon,
+  title,
+  value,
+  subtitle,
+  color,
+  large = false,
+}: {
+  icon: ReactNode;
   title: string;
   value: string;
   subtitle: string;
   color: string;
   large?: boolean;
-}> = ({ icon, title, value, subtitle, color, large = false }) => {
+}) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   return (
@@ -634,16 +643,7 @@ const CompactStatCard: React.FC<{
 };
 
 // 紧凑的课程卡片组件
-const CompactCourseCard: React.FC<{
-  title: string;
-  level: string;
-  completed: number;
-  total: number;
-  completionRate: number;
-  averageScore: number | null;
-  getLevelText: (level: string) => string;
-  getScoreColor: (score: number | null) => string;
-}> = ({
+const CompactCourseCard = ({
   title,
   level,
   completed,
@@ -652,6 +652,15 @@ const CompactCourseCard: React.FC<{
   averageScore,
   getLevelText,
   getScoreColor,
+}: {
+  title: string;
+  level: string;
+  completed: number;
+  total: number;
+  completionRate: number;
+  averageScore: number | null;
+  getLevelText: (level: string) => string;
+  getScoreColor: (score: number | null) => string;
 }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Input,
@@ -19,19 +19,18 @@ import {
 } from "@ant-design/icons";
 import { Note } from "../types";
 import { noteAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import { useTheme } from "../components/ThemeProvider";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { useTheme, ConfirmDialog, useToast } from "../components";
 
 const { Search } = Input;
 const { Title, Text, Paragraph } = Typography;
 
-const NoteList: React.FC = () => {
+const NoteList = () => {
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
 
   const [notes, setNotes] = useState<Note[]>([]);

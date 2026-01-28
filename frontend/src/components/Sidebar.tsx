@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, Drawer, Typography, Tag, Button } from "antd";
 import type { MenuProps } from "antd";
@@ -15,14 +15,15 @@ import {
   Info,
   Calendar,
 } from "lucide-react";
-import { useCourseStore } from "../stores/courseStore";
-import { useAuthStore } from "../stores/authStore";
+import { useCourseStore, useAuthStore } from "../stores";
 
 const { Title, Text } = Typography;
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const location = useLocation();
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Input,
@@ -21,18 +21,18 @@ import {
 } from "@ant-design/icons";
 import { Quiz } from "../types";
 import { quizAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { ConfirmDialog, useToast } from "../components";
 
 const { Search } = Input;
 const { Title, Text, Paragraph } = Typography;
 
-const QuizList: React.FC = () => {
+const QuizList = () => {
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
@@ -222,11 +222,13 @@ const QuizList: React.FC = () => {
                   transition: "all 0.3s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 12px rgba(0,0,0,0.12)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(0,0,0,0.08)";
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >

@@ -1,16 +1,13 @@
-import React from "react";
+import { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthStore } from "../stores/authStore";
+import { useAuthStore } from "../stores";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
   requireAdmin?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  requireAdmin = false,
-}) => {
+const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "ADMIN";

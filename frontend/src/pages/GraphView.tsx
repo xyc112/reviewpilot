@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -15,19 +15,18 @@ import {
 import { EditOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Node, Relation } from "../types";
 import { graphAPI } from "../services";
-import { useAuthStore } from "../stores/authStore";
-import { useCourseStore } from "../stores/courseStore";
-import GraphCanvas from "../components/GraphCanvas";
-import ConfirmDialog from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { useAuthStore, useCourseStore } from "../stores";
+import { GraphCanvas, ConfirmDialog, useToast } from "../components";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
 
-const GraphView: React.FC = () => {
+const GraphView = () => {
   const navigate = useNavigate();
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const currentStudyingCourse = useCourseStore(
+    (state) => state.currentStudyingCourse,
+  );
   const course = selectedCourse || currentStudyingCourse;
 
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -95,7 +94,7 @@ const GraphView: React.FC = () => {
       setEditingNode((prev) => {
         if (prev) {
           // @ts-ignore
-            const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
+          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
           return updatedNode || prev;
         }
         return prev;
@@ -104,7 +103,7 @@ const GraphView: React.FC = () => {
       setSelectedNode((prev) => {
         if (prev) {
           // @ts-ignore
-            const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
+          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
           return updatedNode || prev;
         }
         return prev;
@@ -113,8 +112,8 @@ const GraphView: React.FC = () => {
       setSelectedRelation((prev) => {
         if (prev) {
           // @ts-ignore
-            // @ts-ignore
-            const updatedRelation = fetchedRelations.find(
+          // @ts-ignore
+          const updatedRelation = fetchedRelations.find(
             (r) => r.id === prev.id,
           );
           return updatedRelation || null;

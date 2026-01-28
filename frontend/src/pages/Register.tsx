@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Form,
@@ -16,13 +16,13 @@ import {
   SafetyOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { useAuthStore } from "../stores/authStore";
+import { useAuthStore } from "../stores";
 import { authAPI } from "../services";
 import { validateUsername, validatePassword } from "../utils";
 
 const { Title, Text } = Typography;
 
-const Register: React.FC = () => {
+const Register = () => {
   const [form] = Form.useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

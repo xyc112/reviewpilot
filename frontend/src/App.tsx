@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useAuthStore } from "./stores";
 import { ToastProvider, ThemeProvider } from "./components";
 import { AppRoutes } from "./routes";
 
-const App: React.FC = () => {
+const App = () => {
   const initialize = useAuthStore((state) => state.initialize);
 
   useEffect(() => {
