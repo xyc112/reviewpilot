@@ -14,18 +14,20 @@ import {
   Divider,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
-import { quizAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { quizAPI } from "../services";
+import { useAuth } from "../stores/authStore";
+import { useCourse } from "../stores/courseStore";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
 const CreateQuiz: React.FC = () => {
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
-  const { isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
 
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([

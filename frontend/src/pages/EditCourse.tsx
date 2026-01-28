@@ -12,8 +12,8 @@ import {
   Spin,
 } from "antd";
 import { Course } from "../types";
-import { courseAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { courseAPI } from "../services";
+import { useAuth } from "../stores/authStore";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -21,7 +21,8 @@ const { Title } = Typography;
 const EditCourse: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
 
   const [formData, setFormData] = useState({
     title: "",

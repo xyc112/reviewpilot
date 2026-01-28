@@ -24,9 +24,9 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import { Course } from "../types";
-import { courseAPI, userCourseAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { courseAPI, userCourseAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
+import { useCourseStore } from "../stores/courseStore";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { SkeletonGrid } from "../components/Skeleton";
@@ -48,9 +48,11 @@ const CourseList: React.FC = () => {
     isOpen: false,
     courseId: null,
   });
-  const { isAdmin } = useAuth();
-  const { currentStudyingCourse, selectedCourseIds, refreshUserCourses } =
-    useCourse();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const selectedCourseIds = useCourseStore((state) => state.selectedCourseIds);
+  const refreshUserCourses = useCourseStore((state) => state.refreshUserCourses);
   const { success, error: showError } = useToast();
 
   useEffect(() => {
@@ -226,7 +228,7 @@ const CourseList: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 1400, margin: "0 auto" }}>
+    <div style={{ padding: "0", maxWidth: 1400, margin: "0 auto" }}>
       {isAdmin && (
         <div
           style={{
@@ -236,7 +238,12 @@ const CourseList: React.FC = () => {
           }}
         >
           <Link to="/courses/new">
-            <Button type="primary" icon={<PlusOutlined />}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ borderRadius: 8, fontWeight: 500 }}
+            >
               创建新课程
             </Button>
           </Link>
@@ -267,7 +274,7 @@ const CourseList: React.FC = () => {
           size="large"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ maxWidth: 600 }}
+          style={{ maxWidth: 600, borderRadius: 8 }}
         />
 
         {hasActiveFilters && (
@@ -346,8 +353,18 @@ const CourseList: React.FC = () => {
                   background: "#fff",
                   marginBottom: "1rem",
                   padding: "1.5rem",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  borderRadius: 12,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>

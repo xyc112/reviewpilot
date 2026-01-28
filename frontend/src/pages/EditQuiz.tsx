@@ -16,9 +16,9 @@ import {
 } from "antd";
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
 import { Quiz } from "../types";
-import { quizAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { quizAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
+import { useCourseStore } from "../stores/courseStore";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -26,9 +26,11 @@ const { Title } = Typography;
 const EditQuiz: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
-  const { isAdmin, user } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [title, setTitle] = useState("");

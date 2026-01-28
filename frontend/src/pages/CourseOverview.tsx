@@ -24,9 +24,9 @@ import {
   BookOutlined,
 } from "@ant-design/icons";
 import { Course } from "../types";
-import { courseAPI, noteAPI, quizAPI, postAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
+import { useAuth } from "../stores/authStore";
+import { useCourse } from "../stores/courseStore";
 import { useTheme } from "../components/ThemeProvider";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -35,8 +35,9 @@ const { Title, Text } = Typography;
 
 const CourseOverview: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, isAdmin } = useAuth();
-  const { currentStudyingCourse } = useCourse();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { success, error: showError } = useToast();

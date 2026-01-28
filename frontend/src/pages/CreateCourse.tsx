@@ -10,8 +10,8 @@ import {
   Select,
   Alert,
 } from "antd";
-import { courseAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { courseAPI } from "../services";
+import { useAuth } from "../stores/authStore";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -27,7 +27,8 @@ const CreateCourse: React.FC = () => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
 
   const handleChange = (
     e: React.ChangeEvent<

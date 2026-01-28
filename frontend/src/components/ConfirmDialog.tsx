@@ -35,10 +35,11 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   ? "#ff4d4f"
                   : type === "warning"
                     ? "#faad14"
-                    : "#1890ff",
+                    : "#1677ff",
+              fontSize: 20,
             }}
           />
-          <span>{title}</span>
+          <span style={{ fontWeight: 600, fontSize: 16 }}>{title}</span>
         </div>
       }
       onOk={onConfirm}
@@ -47,9 +48,16 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       cancelText={cancelText}
       okButtonProps={{
         danger: type === "danger",
+        style: { borderRadius: 8, fontWeight: 500 },
       }}
+      cancelButtonProps={{
+        style: { borderRadius: 8 },
+      }}
+      style={{ borderRadius: 12 }}
     >
-      <p>{message}</p>
+      <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(0, 0, 0, 0.88)" }}>
+        {message}
+      </p>
     </Modal>
   );
 };

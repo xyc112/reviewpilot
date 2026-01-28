@@ -14,16 +14,17 @@ import {
   MoonOutlined,
   SunOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../stores/authStore";
 import { useTheme } from "./ThemeProvider";
 import Sidebar from "./Sidebar";
-import { useGlobalShortcuts } from "../hooks/useKeyboardShortcuts";
+import { useGlobalShortcuts } from "../hooks";
 
 const { Header, Content } = AntLayout;
 const { Text } = Typography;
 
 const Layout: React.FC = () => {
-  const { user, logout } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -58,28 +59,39 @@ const Layout: React.FC = () => {
             position: "sticky",
             top: 0,
             zIndex: 100,
-            borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+            borderBottom: "1px solid",
+            borderBottomColor: "rgba(0, 0, 0, 0.06)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
+            height: 64,
           }}
         >
-          <Space>
-            <DashboardOutlined style={{ fontSize: 20 }} />
-            <Text strong style={{ fontSize: 18 }}>
+          <Space size="middle">
+            <DashboardOutlined style={{ fontSize: 22, color: "#1677ff" }} />
+            <Text strong style={{ fontSize: 20, fontWeight: 600 }}>
               ReviewPilot
             </Text>
           </Space>
-          <Space>
-            <Space>
-              <UserOutlined />
-              <Text>{user?.username}</Text>
+          <Space size="middle">
+            <Space size="small" style={{ padding: "4px 12px", borderRadius: 8 }}>
+              <UserOutlined style={{ color: "#1677ff" }} />
+              <Text style={{ fontWeight: 500 }}>{user?.username}</Text>
             </Space>
             <Button
+              type="text"
               icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
               onClick={toggleTheme}
               title={theme === "light" ? "切换到暗色模式" : "切换到亮色模式"}
+              style={{ borderRadius: 8 }}
             />
-            <Button icon={<LogoutOutlined />} onClick={handleLogout}>
+            <Button
+              type="text"
+              danger
+              icon={<LogoutOutlined />}
+              onClick={handleLogout}
+              style={{ borderRadius: 8 }}
+            >
               退出
             </Button>
           </Space>
@@ -89,7 +101,7 @@ const Layout: React.FC = () => {
             margin: "2rem",
             padding: 0,
             minHeight: 280,
-            background: colorBgContainer,
+            background: "transparent",
             maxWidth: 1400,
             marginLeft: "auto",
             marginRight: "auto",

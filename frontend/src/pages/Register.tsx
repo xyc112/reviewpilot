@@ -16,9 +16,9 @@ import {
   SafetyOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
-import { validateUsername, validatePassword } from "../utils/validation";
+import { useAuthStore } from "../stores/authStore";
+import { authAPI } from "../services";
+import { validateUsername, validatePassword } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
   const handleSubmit = async (values: {
@@ -175,11 +175,17 @@ const Register: React.FC = () => {
           style={{
             width: "100%",
             maxWidth: 450,
+            borderRadius: 16,
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
           }}
         >
           <Title
             level={2}
-            style={{ textAlign: "center", marginBottom: "0.75rem" }}
+            style={{
+              textAlign: "center",
+              marginBottom: "0.5rem",
+              fontWeight: 600,
+            }}
           >
             创建账号
           </Title>
@@ -189,6 +195,7 @@ const Register: React.FC = () => {
               display: "block",
               textAlign: "center",
               marginBottom: "2.5rem",
+              fontSize: 14,
             }}
           >
             欢迎加入学习辅助系统
@@ -261,13 +268,15 @@ const Register: React.FC = () => {
               />
             )}
 
-            <Form.Item>
+            <Form.Item style={{ marginBottom: 0 }}>
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 loading={loading}
                 icon={<ArrowRightOutlined />}
+                size="large"
+                style={{ height: 48, borderRadius: 8, fontWeight: 500 }}
               >
                 注册
               </Button>

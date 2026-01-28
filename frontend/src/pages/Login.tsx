@@ -6,9 +6,9 @@ import {
   LockOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
-import { validateUsername, validatePassword } from "../utils/validation";
+import { useAuthStore } from "../stores/authStore";
+import { authAPI } from "../services";
+import { validateUsername, validatePassword } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
   const handleSubmit = async (values: {
@@ -163,11 +163,17 @@ const Login: React.FC = () => {
           style={{
             width: "100%",
             maxWidth: 450,
+            borderRadius: 16,
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
           }}
         >
           <Title
             level={2}
-            style={{ textAlign: "center", marginBottom: "0.75rem" }}
+            style={{
+              textAlign: "center",
+              marginBottom: "0.5rem",
+              fontWeight: 600,
+            }}
           >
             登录
           </Title>
@@ -177,6 +183,7 @@ const Login: React.FC = () => {
               display: "block",
               textAlign: "center",
               marginBottom: "2.5rem",
+              fontSize: 14,
             }}
           >
             请登录继续访问学习辅助系统
@@ -238,13 +245,15 @@ const Login: React.FC = () => {
               />
             )}
 
-            <Form.Item>
+            <Form.Item style={{ marginBottom: 0 }}>
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 loading={loading}
                 icon={<ArrowRightOutlined />}
+                size="large"
+                style={{ height: 48, borderRadius: 8, fontWeight: 500 }}
               >
                 登录
               </Button>

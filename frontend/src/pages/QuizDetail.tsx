@@ -23,8 +23,8 @@ import {
   ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { Quiz, QuizAttempt } from "../types";
-import { quizAPI, wrongQuestionAPI } from "../services/api";
-import { useCourse } from "../context/CourseContext";
+import { quizAPI, wrongQuestionAPI } from "../services";
+import { useCourseStore } from "../stores/courseStore";
 import { useToast } from "../components/Toast";
 
 const { Title, Text, Paragraph } = Typography;
@@ -33,7 +33,8 @@ const { Countdown } = Statistic;
 const QuizDetail: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);

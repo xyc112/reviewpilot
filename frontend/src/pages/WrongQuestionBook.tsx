@@ -26,9 +26,9 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { WrongQuestion, Question } from "../types";
-import { wrongQuestionAPI, quizAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { wrongQuestionAPI, quizAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
+import { useCourseStore } from "../stores/courseStore";
 import { useTheme } from "../components/ThemeProvider";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -37,8 +37,9 @@ const { Title, Text, Paragraph } = Typography;
 
 const WrongQuestionBook: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { currentStudyingCourse, selectedCourse } = useCourse();
+  const user = useAuthStore((state) => state.user);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { success, error: showError } = useToast();

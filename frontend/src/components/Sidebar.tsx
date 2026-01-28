@@ -15,15 +15,16 @@ import {
   Info,
   Calendar,
 } from "lucide-react";
-import { useCourse } from "../context/CourseContext";
-import { useAuth } from "../context/AuthContext";
+import { useCourseStore } from "../stores/courseStore";
+import { useAuthStore } from "../stores/authStore";
 
 const { Title, Text } = Typography;
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-  const { currentStudyingCourse } = useCourse();
-  const { isAdmin } = useAuth();
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 路由变化时关闭移动端菜单
@@ -138,8 +139,22 @@ const Sidebar: React.FC = () => {
 
   const menuContent = (
     <>
-      <div style={{ padding: "1.5rem", borderBottom: "1px solid #f0f0f0" }}>
-        <Title level={4} style={{ margin: 0, marginBottom: "1rem" }}>
+      <div
+        style={{
+          padding: "1.5rem",
+          borderBottom: "1px solid",
+          borderBottomColor: "rgba(0, 0, 0, 0.06)",
+        }}
+      >
+        <Title
+          level={4}
+          style={{
+            margin: 0,
+            marginBottom: "1rem",
+            fontWeight: 600,
+            fontSize: 18,
+          }}
+        >
           导航
         </Title>
         {currentStudyingCourse && (
@@ -148,14 +163,18 @@ const Sidebar: React.FC = () => {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.25rem",
+              gap: "0.5rem",
               padding: "0.5rem 0.75rem",
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              border: "none",
             }}
           >
             <Star size={14} />
             <Text
               ellipsis
-              style={{ maxWidth: "200px" }}
+              style={{ maxWidth: "200px", fontSize: 13 }}
               title={currentStudyingCourse.title}
             >
               {currentStudyingCourse.title}
@@ -167,7 +186,12 @@ const Sidebar: React.FC = () => {
         mode="inline"
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
-        style={{ borderRight: 0, flex: 1 }}
+        style={{
+          borderRight: 0,
+          flex: 1,
+          background: "transparent",
+          padding: "0.5rem",
+        }}
       />
     </>
   );
@@ -211,12 +235,14 @@ const Sidebar: React.FC = () => {
           position: "fixed",
           left: 0,
           top: 0,
-          background: "#fff",
-          borderRight: "1px solid #f0f0f0",
+          background: "transparent",
+          borderRight: "1px solid",
+          borderRightColor: "rgba(0, 0, 0, 0.06)",
           display: "flex",
           flexDirection: "column",
           zIndex: 50,
           overflowY: "auto",
+          overflowX: "hidden",
         }}
         className="desktop-sidebar"
       >

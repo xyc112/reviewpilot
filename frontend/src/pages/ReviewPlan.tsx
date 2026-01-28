@@ -26,7 +26,7 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import { ReviewPlan as ReviewPlanType } from "../types";
-import { reviewPlanAPI } from "../services/api";
+import { reviewPlanAPI } from "../services";
 import { useToast } from "../components/Toast";
 import { useTheme } from "../components/ThemeProvider";
 import ConfirmDialog from "../components/ConfirmDialog";

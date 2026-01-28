@@ -18,9 +18,9 @@ import {
   FileTextOutlined,
 } from "@ant-design/icons";
 import { Note } from "../types";
-import { noteAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { noteAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
+import { useCourseStore } from "../stores/courseStore";
 import { useTheme } from "../components/ThemeProvider";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -30,7 +30,8 @@ const { Title, Text, Paragraph } = Typography;
 
 const NoteList: React.FC = () => {
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
 
   const [notes, setNotes] = useState<Note[]>([]);
@@ -45,7 +46,8 @@ const NoteList: React.FC = () => {
     noteId: null,
   });
 
-  const { user, isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
 
   useEffect(() => {
@@ -233,8 +235,17 @@ const NoteList: React.FC = () => {
                 background: "#fff",
                 marginBottom: "1rem",
                 padding: "1.5rem",
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                borderRadius: 12,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                transition: "all 0.3s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.12)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               <Link

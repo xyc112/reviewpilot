@@ -16,8 +16,8 @@ import {
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { noteAPI } from "../services/api";
-import { useCourse } from "../context/CourseContext";
+import { noteAPI } from "../services";
+import { useCourseStore } from "../stores/courseStore";
 import { useToast } from "../components/Toast";
 
 const { TextArea } = Input;
@@ -25,7 +25,8 @@ const { Title } = Typography;
 
 const NoteCreate: React.FC = () => {
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
   const { success, error: showError } = useToast();
 

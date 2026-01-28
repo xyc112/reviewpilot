@@ -24,8 +24,8 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { OverallStats, CourseProgress } from "../types";
-import { progressAPI, courseAPI } from "../services/api";
-import { useCourse } from "../context/CourseContext";
+import { progressAPI, courseAPI } from "../services";
+import { useCourseStore } from "../stores/courseStore";
 import { useTheme } from "../components/ThemeProvider";
 import { SkeletonGrid } from "../components/Skeleton";
 import {
@@ -36,7 +36,7 @@ import {
 const { Title, Text } = Typography;
 
 const ProgressPage: React.FC = () => {
-  const { currentStudyingCourse } = useCourse();
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);

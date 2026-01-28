@@ -20,8 +20,8 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import { Course } from "../types";
-import { courseAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { courseAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 
@@ -30,7 +30,8 @@ const { Title, Text, Paragraph } = Typography;
 const CourseDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,7 +146,12 @@ const CourseDetail: React.FC = () => {
           返回课程列表
         </Button>
 
-        <Card>
+        <Card
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          }}
+        >
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
             {canEdit && (
               <div

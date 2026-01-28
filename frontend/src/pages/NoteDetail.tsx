@@ -16,9 +16,9 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { Note } from "../types";
-import { noteAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import { useCourse } from "../context/CourseContext";
+import { noteAPI } from "../services";
+import { useAuthStore } from "../stores/authStore";
+import { useCourseStore } from "../stores/courseStore";
 import { useTheme } from "../components/ThemeProvider";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -29,9 +29,11 @@ const { Title, Text } = Typography;
 const NoteDetail: React.FC = () => {
   const { noteId } = useParams<{ noteId: string }>();
   const navigate = useNavigate();
-  const { selectedCourse, currentStudyingCourse } = useCourse();
+  const selectedCourse = useCourseStore((state) => state.selectedCourse);
+  const currentStudyingCourse = useCourseStore((state) => state.currentStudyingCourse);
   const course = selectedCourse || currentStudyingCourse;
-  const { user, isAdmin } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
 
   const [note, setNote] = useState<Note | null>(null);
