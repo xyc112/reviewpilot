@@ -14,6 +14,7 @@ import {
 import { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
+import { useToast } from "../components";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -21,15 +22,11 @@ const { Title } = Typography;
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
+  const { success, error: showError } = useToast();
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    tags: "",
-    level: "BEGINNER",
-  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -47,7 +44,8 @@ const EditCourse = () => {
       const courseData = response.data;
       setCourse(courseData);
 
-      setFormData({
+      // 设置表单初始值
+      form.setFieldsValue({
         title: courseData.title,
         description: courseData.description || "",
         tags: courseData.tags.join(", "),
@@ -55,25 +53,18 @@ const EditCourse = () => {
       });
     } catch (err: any) {
       setError("获取课程详情失败");
+      showError("获取课程详情失败");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: {
+    title: string;
+    description: string;
+    tags: string;
+    level: string;
+  }) => {
     if (!course) return;
 
     setSaving(true);
@@ -81,19 +72,25 @@ const EditCourse = () => {
 
     try {
       const courseData = {
-        title: formData.title,
-        description: formData.description,
-        tags: formData.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag),
-        level: formData.level,
+        title: values.title,
+        description: values.description || "",
+        tags: values.tags
+          ? values.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag)
+          : [],
+        level: values.level,
       };
 
       await courseAPI.updateCourse(course.id, courseData);
+      success("课程更新成功");
       navigate(`/courses/${course.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || "更新课程失败");
+      const errorMsg =
+        err.response?.data?.message || err.message || "更新课程失败";
+      setError(errorMsg);
+      showError(errorMsg);
     } finally {
       setSaving(false);
     }
@@ -139,49 +136,59 @@ const EditCourse = () => {
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 1rem" }}>
-      <Card>
-        <Title level={2}>编辑课程</Title>
-        <Form layout="vertical" onFinish={handleSubmit}>
+      <Card
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+        }}
+      >
+        <Title level={2} style={{ marginBottom: "1.5rem" }}>
+          编辑课程
+        </Title>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          size="large"
+        >
           <Form.Item
             label="课程标题"
             name="title"
-            rules={[{ required: true, message: "请输入课程标题" }]}
+            rules={[
+              { required: true, message: "请输入课程标题" },
+              { max: 100, message: "标题不能超过100个字符" },
+            ]}
           >
-            <Input
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-            />
+            <Input placeholder="请输入课程标题" />
           </Form.Item>
 
-          <Form.Item label="课程描述" name="description">
+          <Form.Item
+            label="课程描述"
+            name="description"
+            rules={[{ max: 500, message: "描述不能超过500个字符" }]}
+          >
             <TextArea
               rows={4}
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
+              placeholder="请输入课程描述"
+              showCount
+              maxLength={500}
             />
           </Form.Item>
 
           <Form.Item
-            label="标签 (用逗号分隔)"
+            label="标签"
             name="tags"
-            extra="例如: 数学, 基础, 入门"
+            extra="多个标签请用逗号分隔，例如: 数学, 基础, 入门"
           >
-            <Input
-              name="tags"
-              value={formData.tags}
-              onChange={handleChange}
-              placeholder="例如: 数学, 基础, 入门"
-            />
+            <Input placeholder="例如: 数学, 基础, 入门" />
           </Form.Item>
 
-          <Form.Item label="难度等级" name="level">
-            <Select
-              name="level"
-              value={formData.level}
-              onChange={(value) => setFormData({ ...formData, level: value })}
-            >
+          <Form.Item
+            label="难度等级"
+            name="level"
+            rules={[{ required: true, message: "请选择难度等级" }]}
+          >
+            <Select placeholder="请选择难度等级">
               <Select.Option value="BEGINNER">初级</Select.Option>
               <Select.Option value="INTERMEDIATE">中级</Select.Option>
               <Select.Option value="ADVANCED">高级</Select.Option>
@@ -194,13 +201,17 @@ const EditCourse = () => {
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
+              closable
+              onClose={() => setError("")}
             />
           )}
 
-          <Form.Item>
+          <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => navigate(-1)}>取消</Button>
-              <Button type="primary" htmlType="submit" loading={saving}>
+              <Button onClick={() => navigate(-1)} size="large">
+                取消
+              </Button>
+              <Button type="primary" htmlType="submit" loading={saving} size="large">
                 保存更改
               </Button>
             </Space>

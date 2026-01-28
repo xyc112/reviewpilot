@@ -1,9 +1,14 @@
+import { theme } from "antd";
+
 interface SearchHighlightProps {
   text: string;
   searchQuery: string;
 }
 
 const SearchHighlight = ({ text, searchQuery }: SearchHighlightProps) => {
+  const { token } = theme.useToken();
+  const isDark = token.colorBgLayout === "#000000";
+
   if (!searchQuery) {
     return <>{text}</>;
   }
@@ -11,11 +16,24 @@ const SearchHighlight = ({ text, searchQuery }: SearchHighlightProps) => {
   const regex = new RegExp(`(${searchQuery})`, "gi");
   const parts = text.split(regex);
 
+  const highlightStyle: React.CSSProperties = {
+    background: isDark
+      ? "linear-gradient(135deg, #78350f 0%, #92400e 100%)"
+      : "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+    color: isDark ? "#fef3c7" : "#92400e",
+    padding: "0.125rem 0.25rem",
+    borderRadius: token.borderRadiusXS,
+    fontWeight: 600,
+    boxShadow: isDark
+      ? "0 1px 3px rgba(254, 243, 199, 0.3)"
+      : "0 1px 3px rgba(146, 64, 14, 0.2)",
+  };
+
   return (
     <>
       {parts.map((part, index) =>
         regex.test(part) ? (
-          <mark key={index} className="highlighted-text">
+          <mark key={index} style={highlightStyle}>
             {part}
           </mark>
         ) : (

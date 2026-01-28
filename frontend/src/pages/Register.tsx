@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Form,
@@ -26,6 +26,15 @@ const Register = () => {
   const [form] = Form.useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
@@ -67,17 +76,17 @@ const Register = () => {
       }}
     >
       {/* 左侧欢迎区域 */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2.5rem",
-          color: "white",
-        }}
-        className="auth-welcome-section"
-      >
+      {!isMobile && (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2.5rem",
+            color: "white",
+          }}
+        >
         <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
           <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>🚀</div>
           <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
@@ -159,6 +168,7 @@ const Register = () => {
           </Space>
         </div>
       </div>
+      )}
 
       {/* 右侧表单区域 */}
       <div

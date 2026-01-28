@@ -1,26 +1,31 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, Drawer, Typography, Tag, Button } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Layout, Menu, Drawer, Typography, Tag, Button, theme } from "antd";
 import type { MenuProps } from "antd";
-import { MenuOutlined } from "@ant-design/icons";
 import {
-  BookOpen,
-  Network,
-  FileText,
-  ClipboardList,
-  TrendingUp,
-  Star,
-  MessageSquare,
-  BookX,
-  Info,
-  Calendar,
-} from "lucide-react";
+  MenuOutlined,
+  CalendarOutlined,
+  BookOutlined,
+  LineChartOutlined,
+  InfoCircleOutlined,
+  ApartmentOutlined,
+  FileTextOutlined,
+  FormOutlined,
+  CloseCircleOutlined,
+  MessageOutlined,
+  StarOutlined,
+} from "@ant-design/icons";
 import { useCourseStore, useAuthStore } from "../stores";
 
+const { Sider } = Layout;
 const { Title, Text } = Typography;
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const {
+    token: { colorBgContainer, colorBorder },
+  } = theme.useToken();
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
@@ -64,76 +69,92 @@ const Sidebar = () => {
     return "";
   };
 
+  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+    switch (key) {
+      case "review-plan":
+        navigate("/review-plan");
+        break;
+      case "courses":
+        navigate("/courses");
+        break;
+      case "progress":
+        navigate("/progress");
+        break;
+      case "course-overview":
+        if (currentStudyingCourse) {
+          navigate(`/courses/${currentStudyingCourse.id}/overview`);
+        }
+        break;
+      case "graph":
+        navigate("/graph");
+        break;
+      case "notes":
+        navigate("/notes");
+        break;
+      case "quizzes":
+        navigate("/quizzes");
+        break;
+      case "wrong-questions":
+        navigate("/wrong-questions");
+        break;
+      case "community":
+        if (currentStudyingCourse) {
+          navigate(`/courses/${currentStudyingCourse.id}/community`);
+        }
+        break;
+    }
+  };
+
   const menuItems: MenuProps["items"] = [
     {
       key: "review-plan",
-      label: <Link to="/review-plan">复习计划</Link>,
-      icon: <Calendar size={20} />,
+      label: "复习计划",
+      icon: <CalendarOutlined />,
     },
     {
       key: "courses",
-      label: <Link to="/courses">课程列表</Link>,
-      icon: <BookOpen size={20} />,
+      label: "课程列表",
+      icon: <BookOutlined />,
     },
     {
       key: "progress",
-      label: <Link to="/progress">学习进度</Link>,
-      icon: <TrendingUp size={20} />,
+      label: "学习进度",
+      icon: <LineChartOutlined />,
     },
     {
       key: "course-overview",
-      label: (
-        <Link
-          to={
-            currentStudyingCourse
-              ? `/courses/${currentStudyingCourse.id}/overview`
-              : "/courses"
-          }
-        >
-          课程概览
-        </Link>
-      ),
-      icon: <Info size={20} />,
+      label: "课程概览",
+      icon: <InfoCircleOutlined />,
       disabled: !currentStudyingCourse,
     },
     {
       key: "graph",
-      label: <Link to="/graph">知识图谱</Link>,
-      icon: <Network size={20} />,
+      label: "知识图谱",
+      icon: <ApartmentOutlined />,
       disabled: !currentStudyingCourse,
     },
     {
       key: "notes",
-      label: <Link to="/notes">笔记模块</Link>,
-      icon: <FileText size={20} />,
+      label: "笔记模块",
+      icon: <FileTextOutlined />,
       disabled: !currentStudyingCourse,
     },
     {
       key: "quizzes",
-      label: <Link to="/quizzes">测验模块</Link>,
-      icon: <ClipboardList size={20} />,
+      label: "测验模块",
+      icon: <FormOutlined />,
       disabled: !currentStudyingCourse,
     },
     {
       key: "wrong-questions",
-      label: <Link to="/wrong-questions">错题模块</Link>,
-      icon: <BookX size={20} />,
+      label: "错题模块",
+      icon: <CloseCircleOutlined />,
       disabled: !currentStudyingCourse,
     },
     {
       key: "community",
-      label: (
-        <Link
-          to={
-            currentStudyingCourse
-              ? `/courses/${currentStudyingCourse.id}/community`
-              : "/courses"
-          }
-        >
-          社区模块
-        </Link>
-      ),
-      icon: <MessageSquare size={20} />,
+      label: "社区模块",
+      icon: <MessageOutlined />,
       disabled: !currentStudyingCourse,
     },
   ];
@@ -143,8 +164,7 @@ const Sidebar = () => {
       <div
         style={{
           padding: "1.5rem",
-          borderBottom: "1px solid",
-          borderBottomColor: "rgba(0, 0, 0, 0.06)",
+          borderBottom: `1px solid ${colorBorder}`,
         }}
       >
         <Title
@@ -161,6 +181,7 @@ const Sidebar = () => {
         {currentStudyingCourse && (
           <Tag
             color="gold"
+            icon={<StarOutlined />}
             style={{
               display: "flex",
               alignItems: "center",
@@ -170,9 +191,9 @@ const Sidebar = () => {
               fontSize: 13,
               fontWeight: 500,
               border: "none",
+              maxWidth: "100%",
             }}
           >
-            <Star size={14} />
             <Text
               ellipsis
               style={{ maxWidth: "200px", fontSize: 13 }}
@@ -187,6 +208,7 @@ const Sidebar = () => {
         mode="inline"
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
+        onClick={handleMenuClick}
         style={{
           borderRight: 0,
           flex: 1,
@@ -197,25 +219,36 @@ const Sidebar = () => {
     </>
   );
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       {/* 移动端菜单按钮和抽屉 */}
-      <div
-        style={{
-          display: "none",
-          position: "fixed",
-          top: "1rem",
-          left: "1rem",
-          zIndex: 100,
-        }}
-        className="mobile-menu-button"
-      >
-        <Button
-          icon={<MenuOutlined />}
-          onClick={() => setIsMobileMenuOpen(true)}
-          type="default"
-        />
-      </div>
+      {isMobile && (
+        <div
+          style={{
+            position: "fixed",
+            top: "1rem",
+            left: "1rem",
+            zIndex: 100,
+          }}
+        >
+          <Button
+            icon={<MenuOutlined />}
+            onClick={() => setIsMobileMenuOpen(true)}
+            type="default"
+            size="large"
+          />
+        </div>
+      )}
 
       <Drawer
         title="导航"
@@ -228,38 +261,24 @@ const Sidebar = () => {
         {menuContent}
       </Drawer>
 
-      {/* 桌面端侧边栏 */}
-      <div
-        style={{
-          width: 260,
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          background: "transparent",
-          borderRight: "1px solid",
-          borderRightColor: "rgba(0, 0, 0, 0.06)",
-          display: "flex",
-          flexDirection: "column",
-          zIndex: 50,
-          overflowY: "auto",
-          overflowX: "hidden",
-        }}
-        className="desktop-sidebar"
-      >
-        {menuContent}
-      </div>
-
-      <style>{`
-        @media (max-width: 1024px) {
-          .desktop-sidebar {
-            display: none !important;
-          }
-          .mobile-menu-button {
-            display: block !important;
-          }
-        }
-      `}</style>
+      {/* 桌面端侧边栏 - 使用 Ant Design Sider */}
+      {!isMobile && (
+        <Sider
+          width={260}
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            background: colorBgContainer,
+            borderRight: `1px solid ${colorBorder}`,
+            overflow: "auto",
+            height: "100vh",
+          }}
+        >
+          {menuContent}
+        </Sider>
+      )}
     </>
   );
 };

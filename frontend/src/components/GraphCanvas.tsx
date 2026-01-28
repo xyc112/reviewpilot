@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { theme } from "antd";
 import { Node, Relation } from "../types";
 
 interface GraphCanvasProps {
@@ -62,6 +63,8 @@ const GraphCanvas = ({
   onRelationDirectedChange,
   onRelationWeightChange,
 }: GraphCanvasProps) => {
+  const { token } = theme.useToken();
+  const isDark = token.colorBgLayout === "#000000";
   const svgRef = useRef<SVGSVGElement>(null);
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
   const draggingFromRef = useRef<string | null>(null);
@@ -641,15 +644,122 @@ const GraphCanvas = ({
     onRelationCreate,
   ]);
 
+  const containerStyle: React.CSSProperties = {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    background: isDark ? "#141414" : "#fafafa",
+    borderRadius: token.borderRadiusLG,
+    overflow: "hidden",
+  };
+
+  const controlsStyle: React.CSSProperties = {
+    position: "absolute",
+    top: token.padding,
+    left: token.padding,
+    background: isDark
+      ? "rgba(20, 20, 20, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    padding: token.padding,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: isDark
+      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
+      : "0 4px 12px rgba(0, 0, 0, 0.12)",
+    display: "flex",
+    flexDirection: "column",
+    gap: token.paddingSM,
+    zIndex: 100,
+    minWidth: 200,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: token.fontSizeSM,
+    fontWeight: 500,
+    color: isDark ? token.colorTextSecondary : "#64748b",
+    marginBottom: token.marginXXS,
+  };
+
+  const zoomInfoStyle: React.CSSProperties = {
+    fontSize: token.fontSizeSM,
+    color: isDark ? token.colorTextSecondary : "#64748b",
+    padding: `${token.paddingXXS} ${token.paddingXS}`,
+    background: isDark
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(0, 0, 0, 0.04)",
+    borderRadius: token.borderRadiusSM,
+    textAlign: "center",
+  };
+
+  const canvasStyle: React.CSSProperties = {
+    width: "100%",
+    height: "100%",
+    background: isDark ? "#141414" : "#fafafa",
+    borderRadius: token.borderRadiusLG,
+  };
+
+  const legendStyle: React.CSSProperties = {
+    position: "absolute",
+    bottom: token.padding,
+    left: token.padding,
+    background: isDark
+      ? "rgba(20, 20, 20, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    padding: token.padding,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: isDark
+      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
+      : "0 4px 12px rgba(0, 0, 0, 0.12)",
+    zIndex: 100,
+  };
+
+  const legendItemStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: token.paddingXS,
+    marginBottom: token.paddingXS,
+    fontSize: token.fontSizeSM,
+    color: isDark ? token.colorTextSecondary : "#475569",
+  };
+
+  const legendColorStyle: React.CSSProperties = {
+    width: 16,
+    height: 16,
+    borderRadius: "50%",
+    border: `2px solid ${isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 0.8)"}`,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  };
+
+  const helpStyle: React.CSSProperties = {
+    position: "absolute",
+    bottom: token.padding,
+    right: token.padding,
+    background: isDark
+      ? "rgba(20, 20, 20, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    padding: token.padding,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: isDark
+      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
+      : "0 4px 12px rgba(0, 0, 0, 0.12)",
+    zIndex: 100,
+    maxWidth: 280,
+    fontSize: token.fontSizeSM,
+    lineHeight: 1.6,
+  };
+
   return (
-    <div className="graph-canvas-container">
-      <div className="graph-controls">
+    <div style={containerStyle}>
+      <div style={controlsStyle}>
         {editable && onRelationCreate && (
           <>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <label
-                style={{ fontSize: 11, color: "#64748b", fontWeight: 500 }}
-              >
+            <div style={{ display: "flex", flexDirection: "column", gap: token.marginXXS }}>
+              <label style={labelStyle}>
                 关系类型
               </label>
               <select
@@ -660,11 +770,12 @@ const GraphCanvas = ({
                   )
                 }
                 style={{
-                  padding: "4px 8px",
-                  borderRadius: 6,
-                  border: "1px solid #d6d9e1",
-                  fontSize: "12px",
-                  background: "white",
+                  padding: `${token.paddingXXS} ${token.paddingXS}`,
+                  borderRadius: token.borderRadiusSM,
+                  border: `1px solid ${token.colorBorder}`,
+                  fontSize: token.fontSizeSM,
+                  background: token.colorBgContainer,
+                  color: token.colorText,
                   cursor: "pointer",
                 }}
               >
@@ -677,8 +788,8 @@ const GraphCanvas = ({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 4,
-                fontSize: "12px",
+                gap: token.marginXXS,
+                fontSize: token.fontSizeSM,
                 cursor: "pointer",
               }}
             >
@@ -688,10 +799,10 @@ const GraphCanvas = ({
                 onChange={(e) => onRelationDirectedChange?.(e.target.checked)}
                 style={{ cursor: "pointer" }}
               />
-              <span style={{ color: "#64748b" }}>有向</span>
+              <span style={{ color: isDark ? token.colorTextSecondary : "#64748b" }}>有向</span>
             </label>
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <span style={{ fontSize: 11, color: "#64748b" }}>权重</span>
+            <div style={{ display: "flex", alignItems: "center", gap: token.marginXXS }}>
+              <span style={{ fontSize: token.fontSizeSM, color: isDark ? token.colorTextSecondary : "#64748b" }}>权重</span>
               <input
                 type="number"
                 min={0}
@@ -705,51 +816,52 @@ const GraphCanvas = ({
                 }
                 style={{
                   width: 50,
-                  padding: "4px 6px",
-                  borderRadius: 6,
-                  border: "1px solid #d6d9e1",
-                  fontSize: "12px",
+                  padding: `${token.paddingXXS} ${token.paddingXS}`,
+                  borderRadius: token.borderRadiusSM,
+                  border: `1px solid ${token.colorBorder}`,
+                  fontSize: token.fontSizeSM,
+                  background: token.colorBgContainer,
+                  color: token.colorText,
                 }}
               />
             </div>
           </>
         )}
-        <div className="zoom-info">缩放: {(transform.k * 100).toFixed(0)}%</div>
+        <div style={zoomInfoStyle}>缩放: {(transform.k * 100).toFixed(0)}%</div>
       </div>
 
       <svg
         ref={svgRef}
-        className="graph-canvas"
-        style={{ width: "100%", height: "100%" }}
+        style={canvasStyle}
       />
 
-      <div className="graph-legend">
-        <div className="legend-item">
-          <div className="legend-color" style={{ background: "#3498db" }}></div>
+      <div style={legendStyle}>
+        <div style={legendItemStyle}>
+          <div style={{ ...legendColorStyle, background: "#3498db" }}></div>
           <span>概念 (Concept)</span>
         </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ background: "#9b59b6" }}></div>
+        <div style={{ ...legendItemStyle, marginBottom: 0 }}>
+          <div style={{ ...legendColorStyle, background: "#9b59b6" }}></div>
           <span>主题 (Topic)</span>
         </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ background: "#e67e22" }}></div>
+        <div style={{ ...legendItemStyle, marginBottom: 0 }}>
+          <div style={{ ...legendColorStyle, background: "#e67e22" }}></div>
           <span>技能 (Skill)</span>
         </div>
       </div>
 
-      <div className="graph-help">
-        <p>
+      <div style={helpStyle}>
+        <p style={{ margin: `0 0 ${token.marginXS} 0`, fontWeight: 600, color: token.colorText, fontSize: token.fontSizeSM }}>
           💡 <strong>操作提示：</strong>
         </p>
-        <ul>
-          <li>🖱️ 拖拽节点来重新布局</li>
-          <li>🔍 滚轮缩放画布</li>
-          <li>👆 点击节点查看详情</li>
+        <ul style={{ margin: 0, paddingLeft: token.paddingLG, color: isDark ? token.colorTextSecondary : "#64748b" }}>
+          <li style={{ marginBottom: token.marginXXS }}>🖱️ 拖拽节点来重新布局</li>
+          <li style={{ marginBottom: token.marginXXS }}>🔍 滚轮缩放画布</li>
+          <li style={{ marginBottom: token.marginXXS }}>👆 点击节点查看详情</li>
           {editable && (
             <>
-              <li>🖱️ 双击画布创建新节点</li>
-              <li>🔗 Ctrl+点击节点，再点击另一个节点创建关系</li>
+              <li style={{ marginBottom: token.marginXXS }}>🖱️ 双击画布创建新节点</li>
+              <li style={{ marginBottom: 0 }}>🔗 Ctrl+点击节点，再点击另一个节点创建关系</li>
             </>
           )}
         </ul>
