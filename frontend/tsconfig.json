@@ -8,7 +8,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true
   },
-  "include": ["src", "eslint.config.ts"]
+  "include": ["src", "eslint.config.ts", "vite.config.ts"]
 }

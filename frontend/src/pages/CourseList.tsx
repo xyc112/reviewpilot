@@ -150,7 +150,7 @@ const CourseList = () => {
       INTERMEDIATE: "中级",
       ADVANCED: "高级",
     };
-    return levels[level] || level;
+    return levels[level] ?? level;
   };
 
   const getLevelColor = (level: string): string => {
@@ -159,7 +159,7 @@ const CourseList = () => {
       INTERMEDIATE: "orange",
       ADVANCED: "red",
     };
-    return colors[level] || "default";
+    return colors[level] ?? "default";
   };
 
   // 获取所有唯一的标签

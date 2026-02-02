@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { Linter } from "eslint";
 import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import react from "eslint-plugin-react";
@@ -36,7 +37,15 @@ export default defineConfig(
   },
   {
     files: ["**/*.tsx", "**/*.jsx"],
-    plugins: { react, "react-hooks": reactHooks as import("eslint").Linter.Config["plugins"] extends Record<string, infer P> ? P : never },
+    plugins: {
+      react,
+      "react-hooks": reactHooks as Linter.Config["plugins"] extends Record<
+        string,
+        infer P
+      >
+        ? P
+        : never,
+    },
     settings: { react: { version: "detect" } },
     rules: {
       ...react.configs.recommended.rules,
@@ -68,5 +77,7 @@ export default defineConfig(
     },
   },
   eslintConfigPrettier,
-  { ignores: ["dist", "node_modules", "**/*.config.ts", "**/*.config.js"] },
+  {
+    ignores: ["dist", "node_modules"],
+  },
 );

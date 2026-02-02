@@ -81,7 +81,7 @@ const Community = () => {
 
   // 获取特定回复框的内容
   const getReplyContent = (postId: number, parentId: number | null) => {
-    return replyComments[getReplyKey(postId, parentId)] || "";
+    return replyComments[getReplyKey(postId, parentId)] ?? "";
   };
 
   // 设置特定回复框的内容

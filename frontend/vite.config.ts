@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-// @ts-ignore
+// @ts-expect-error - @vitejs/plugin-react type definitions may be missing
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({

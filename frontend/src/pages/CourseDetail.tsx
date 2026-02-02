@@ -121,7 +121,7 @@ const CourseDetail = () => {
       INTERMEDIATE: "orange",
       ADVANCED: "red",
     };
-    return colors[level] || "default";
+    return colors[level] ?? "default";
   };
 
   return (

@@ -120,7 +120,7 @@ const CourseOverview = () => {
       INTERMEDIATE: "orange",
       ADVANCED: "red",
     };
-    return colors[level] || "default";
+    return colors[level] ?? "default";
   };
 
   const formatDate = (dateString: string) => {
