@@ -50,7 +50,13 @@ const Layout = () => {
   };
 
   const {
-    token: { colorBgContainer, colorBorder, borderRadius, motionDurationMid, motionEaseInOut },
+    token: {
+      colorBgContainer,
+      colorBorder,
+      borderRadius,
+      motionDurationMid,
+      motionEaseInOut,
+    },
   } = antdTheme.useToken();
 
   const userMenuItems: MenuProps["items"] = [
@@ -106,9 +112,7 @@ const Layout = () => {
           }}
         >
           <Space size="middle">
-            <DashboardOutlined
-              style={{ fontSize: 22, color: "#1677ff" }}
-            />
+            <DashboardOutlined style={{ fontSize: 22, color: "#1677ff" }} />
             <Text strong style={{ fontSize: 20, fontWeight: 600 }}>
               ReviewPilot
             </Text>

@@ -23,7 +23,9 @@ const Login = () => {
       setIsMobile(window.innerWidth <= 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => { window.removeEventListener("resize", handleResize); };
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const login = useAuthStore((state) => state.login);
@@ -44,7 +46,8 @@ const Login = () => {
     } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      const errorMessage = getErrorMessage(err) || "登录失败，请检查用户名和密码";
+      const errorMessage =
+        getErrorMessage(err) || "登录失败，请检查用户名和密码";
       setError(errorMessage);
       console.error("登录错误:", err);
     } finally {
@@ -72,85 +75,92 @@ const Login = () => {
             color: "white",
           }}
         >
-        <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
-          <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>✓</div>
-          <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
-            欢迎来到 ReviewPilot
-          </Title>
-          <Text
-            style={{
-              fontSize: "1.125rem",
-              opacity: 0.95,
-              display: "block",
-              marginBottom: "2rem",
-            }}
-          >
-            一体化复习平台，让学习更高效，让复习更系统
-          </Text>
-          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-            <div
+          <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
+            <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>✓</div>
+            <Title
+              level={1}
+              style={{ color: "white", marginBottom: "0.75rem" }}
+            >
+              欢迎来到 ReviewPilot
+            </Title>
+            <Text
               style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
+                fontSize: "1.125rem",
+                opacity: 0.95,
+                display: "block",
+                marginBottom: "2rem",
               }}
             >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📚</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  课程与知识图谱
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  管理课程，可视化知识关联
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
+              一体化复习平台，让学习更高效，让复习更系统
+            </Text>
+            <Space
+              orientation="vertical"
+              size="middle"
+              style={{ width: "100%" }}
             >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📝</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  笔记与测验
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  记录笔记，检验学习成果
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📅</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  复习计划与社区
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  制定计划，交流学习心得
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📚</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    课程与知识图谱
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    管理课程，可视化知识关联
+                  </div>
                 </div>
               </div>
-            </div>
-          </Space>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📝</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    笔记与测验
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    记录笔记，检验学习成果
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📅</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    复习计划与社区
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    制定计划，交流学习心得
+                  </div>
+                </div>
+              </div>
+            </Space>
+          </div>
         </div>
-      </div>
       )}
 
       {/* 右侧表单区域 */}
@@ -196,7 +206,9 @@ const Login = () => {
 
           <Form
             form={form}
-            onFinish={(values: { username: string; password: string }) => { void handleSubmit(values); }}
+            onFinish={(values: { username: string; password: string }) => {
+              void handleSubmit(values);
+            }}
             layout="vertical"
             size="large"
           >
@@ -279,7 +291,6 @@ const Login = () => {
           </div>
         </Card>
       </div>
-
     </div>
   );
 };

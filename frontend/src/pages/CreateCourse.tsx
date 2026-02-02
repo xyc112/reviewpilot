@@ -54,8 +54,7 @@ const CreateCourse = () => {
       success("课程创建成功");
       void navigate("/courses");
     } catch (err: unknown) {
-      const errorMsg =
-        getErrorMessage(err) || "创建课程失败";
+      const errorMsg = getErrorMessage(err) || "创建课程失败";
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -88,7 +87,14 @@ const CreateCourse = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={(values: { title: string; description: string; tags: string; level: string }) => { void handleSubmit(values); }}
+          onFinish={(values: {
+            title: string;
+            description: string;
+            tags: string;
+            level: string;
+          }) => {
+            void handleSubmit(values);
+          }}
           initialValues={{
             level: "BEGINNER",
           }}
@@ -141,20 +147,36 @@ const CreateCourse = () => {
             />
           </Form.Item>
 
-          {error ? <Alert
+          {error ? (
+            <Alert
               title={error}
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
-              closable={{ onClose: () => { setError(""); } }}
-            /> : null}
+              closable={{
+                onClose: () => {
+                  setError("");
+                },
+              }}
+            />
+          ) : null}
 
           <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => { void navigate(-1); }} size="large">
+              <Button
+                onClick={() => {
+                  void navigate(-1);
+                }}
+                size="large"
+              >
                 取消
               </Button>
-              <Button type="primary" htmlType="submit" loading={loading} size="large">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                size="large"
+              >
                 创建课程
               </Button>
             </Space>

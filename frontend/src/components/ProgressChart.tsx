@@ -140,8 +140,8 @@ export const SimpleBarChart = ({ data, height = 200 }: BarChartProps) => {
               paddingBottom: "0.25rem",
             }}
           >
-          {item.value > 0 ? (
-            <span
+            {item.value > 0 ? (
+              <span
                 style={{ color: "white", fontSize: "0.75rem", fontWeight: 600 }}
               >
                 {item.value}

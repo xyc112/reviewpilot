@@ -14,16 +14,21 @@ export const wrongQuestionAPI = {
     questionId: number,
     userAnswer: number[],
   ) =>
-    api.post<WrongQuestion>(`/api/courses/${String(courseId)}/wrong-questions`, {
-      questionId,
-      userAnswer,
-    }),
+    api.post<WrongQuestion>(
+      `/api/courses/${String(courseId)}/wrong-questions`,
+      {
+        questionId,
+        userAnswer,
+      },
+    ),
   markAsMastered: (courseId: number, wrongQuestionId: number) =>
     api.put<WrongQuestion>(
       `/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}/mastered`,
     ),
   removeWrongQuestion: (courseId: number, wrongQuestionId: number) =>
-    api.delete(`/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}`),
+    api.delete(
+      `/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}`,
+    ),
   practiceWrongQuestion: (courseId: number, wrongQuestionId: number) =>
     api.post<WrongQuestion>(
       `/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}/practice`,

@@ -9,14 +9,19 @@ export const postAPI = {
   createPost: (courseId: number, postData: Partial<Post>) =>
     api.post<Post>(`/api/courses/${String(courseId)}/posts`, postData),
   updatePost: (courseId: number, postId: number, postData: Partial<Post>) =>
-    api.put<Post>(`/api/courses/${String(courseId)}/posts/${String(postId)}`, postData),
+    api.put<Post>(
+      `/api/courses/${String(courseId)}/posts/${String(postId)}`,
+      postData,
+    ),
   deletePost: (courseId: number, postId: number) =>
     api.delete(`/api/courses/${String(courseId)}/posts/${String(postId)}`),
 };
 
 export const commentAPI = {
   getComments: (courseId: number, postId: number) =>
-    api.get<Comment[]>(`/api/courses/${String(courseId)}/posts/${String(postId)}/comments`),
+    api.get<Comment[]>(
+      `/api/courses/${String(courseId)}/posts/${String(postId)}/comments`,
+    ),
   getComment: (courseId: number, postId: number, commentId: number) =>
     api.get<Comment>(
       `/api/courses/${String(courseId)}/posts/${String(postId)}/comments/${String(commentId)}`,

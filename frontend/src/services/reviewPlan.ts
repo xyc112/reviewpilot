@@ -9,7 +9,8 @@ export const reviewPlanAPI = {
     }),
   getPlansByDate: (date: string) =>
     api.get<ReviewPlan[]>(`/api/review-plans/date/${date}`),
-  getPlan: (id: number) => api.get<ReviewPlan>(`/api/review-plans/${String(id)}`),
+  getPlan: (id: number) =>
+    api.get<ReviewPlan>(`/api/review-plans/${String(id)}`),
   createPlan: (planData: Partial<ReviewPlan>) =>
     api.post<ReviewPlan>("/api/review-plans", planData),
   updatePlan: (id: number, planData: Partial<ReviewPlan>) =>

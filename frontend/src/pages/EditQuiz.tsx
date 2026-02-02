@@ -217,7 +217,12 @@ const EditQuiz = () => {
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              void navigate("/courses");
+            }}
+          >
             前往课程列表
           </Button>
         }
@@ -268,7 +273,16 @@ const EditQuiz = () => {
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 1rem" }}>
       <Card>
         <Title level={2}>编辑测验</Title>
-        <Form layout="vertical" onFinish={() => { void handleSubmit({ preventDefault: () => { return; } } as React.SyntheticEvent); }}>
+        <Form
+          layout="vertical"
+          onFinish={() => {
+            void handleSubmit({
+              preventDefault: () => {
+                return;
+              },
+            } as React.SyntheticEvent);
+          }}
+        >
           <Form.Item
             label="测验标题"
             required
@@ -276,7 +290,9 @@ const EditQuiz = () => {
           >
             <Input
               value={title}
-              onChange={(e) => { setTitle(e.target.value); }}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
               placeholder="输入测验标题"
             />
           </Form.Item>
@@ -294,7 +310,9 @@ const EditQuiz = () => {
                       danger
                       size="small"
                       icon={<DeleteOutlined />}
-                      onClick={() => { handleRemoveQuestion(qIndex); }}
+                      onClick={() => {
+                        handleRemoveQuestion(qIndex);
+                      }}
                     >
                       删除题目
                     </Button>
@@ -309,9 +327,9 @@ const EditQuiz = () => {
                   <Form.Item label="题目类型">
                     <Select
                       value={question.type}
-                      onChange={(value) =>
-                        { handleQuestionChange(qIndex, "type", value); }
-                      }
+                      onChange={(value) => {
+                        handleQuestionChange(qIndex, "type", value);
+                      }}
                       style={{ width: "100%" }}
                       options={[
                         { value: "single", label: "单选题" },
@@ -324,9 +342,13 @@ const EditQuiz = () => {
                   <Form.Item label="问题内容" required>
                     <TextArea
                       value={question.question}
-                      onChange={(e) =>
-                        { handleQuestionChange(qIndex, "question", e.target.value); }
-                      }
+                      onChange={(e) => {
+                        handleQuestionChange(
+                          qIndex,
+                          "question",
+                          e.target.value,
+                        );
+                      }}
                       rows={3}
                       placeholder="输入问题内容"
                     />
@@ -342,9 +364,13 @@ const EditQuiz = () => {
                         <Space.Compact key={oIndex} style={{ width: "100%" }}>
                           <Input
                             value={option}
-                            onChange={(e) =>
-                              { handleOptionChange(qIndex, oIndex, e.target.value); }
-                            }
+                            onChange={(e) => {
+                              handleOptionChange(
+                                qIndex,
+                                oIndex,
+                                e.target.value,
+                              );
+                            }}
                             placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
                             disabled={question.type === "truefalse"}
                             style={{ flex: 1 }}
@@ -353,18 +379,18 @@ const EditQuiz = () => {
                           question.type === "truefalse" ? (
                             <Radio
                               checked={question.answer.includes(oIndex)}
-                              onChange={() =>
-                                { handleAnswerChange(qIndex, oIndex); }
-                              }
+                              onChange={() => {
+                                handleAnswerChange(qIndex, oIndex);
+                              }}
                             >
                               正确答案
                             </Radio>
                           ) : (
                             <Checkbox
                               checked={question.answer.includes(oIndex)}
-                              onChange={() =>
-                                { handleAnswerChange(qIndex, oIndex); }
-                              }
+                              onChange={() => {
+                                handleAnswerChange(qIndex, oIndex);
+                              }}
                             >
                               正确答案
                             </Checkbox>
@@ -374,9 +400,9 @@ const EditQuiz = () => {
                               <Button
                                 danger
                                 icon={<MinusOutlined />}
-                                onClick={() =>
-                                  { handleRemoveOption(qIndex, oIndex); }
-                                }
+                                onClick={() => {
+                                  handleRemoveOption(qIndex, oIndex);
+                                }}
                               />
                             )}
                         </Space.Compact>
@@ -384,7 +410,9 @@ const EditQuiz = () => {
                       {question.type !== "truefalse" && (
                         <Button
                           icon={<PlusOutlined />}
-                          onClick={() => { handleAddOption(qIndex); }}
+                          onClick={() => {
+                            handleAddOption(qIndex);
+                          }}
                         >
                           添加选项
                         </Button>
@@ -407,16 +435,24 @@ const EditQuiz = () => {
             </Button>
           </Space>
 
-          {error ? <Alert
+          {error ? (
+            <Alert
               title={error}
               type="error"
               showIcon
               style={{ marginTop: "1.5rem" }}
-            /> : null}
+            />
+          ) : null}
 
           <Form.Item style={{ marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => { void navigate(-1); }}>取消</Button>
+              <Button
+                onClick={() => {
+                  void navigate(-1);
+                }}
+              >
+                取消
+              </Button>
               <Button type="primary" htmlType="submit" loading={saving}>
                 保存更改
               </Button>

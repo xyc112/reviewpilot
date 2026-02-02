@@ -13,7 +13,8 @@ export const ROUTES = {
   COURSE_OVERVIEW: (id: number) => `/courses/${String(id)}/overview`,
   CREATE_COURSE: "/courses/new",
   EDIT_COURSE: (id: number) => `/courses/edit/${String(id)}`,
-  COURSE_COMMUNITY: (courseId: number) => `/courses/${String(courseId)}/community`,
+  COURSE_COMMUNITY: (courseId: number) =>
+    `/courses/${String(courseId)}/community`,
 
   // 笔记相关
   NOTES: "/notes",

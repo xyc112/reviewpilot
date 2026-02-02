@@ -1,13 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import {
-  Card,
-  Alert,
-  Typography,
-  Space,
-  Empty,
-  Button,
-} from "antd";
+import { Card, Alert, Typography, Space, Empty, Button } from "antd";
 import {
   BookOutlined,
   CheckCircleOutlined,
@@ -251,7 +244,10 @@ const ProgressPage = () => {
                   ).length > 0 ? (
                     <ScoreDistributionChart
                       scores={progressData.quizProgressList
-                        .filter((qp): qp is typeof qp & { score: number } => qp.score !== null)
+                        .filter(
+                          (qp): qp is typeof qp & { score: number } =>
+                            qp.score !== null,
+                        )
                         .map((qp) => ({ score: qp.score, count: 1 }))}
                     />
                   ) : (
@@ -417,7 +413,8 @@ const ProgressPage = () => {
             minHeight: 0,
           }}
         >
-          {overallStats ? <>
+          {overallStats ? (
+            <>
               <CompactStatCard
                 icon={<BookOutlined style={{ fontSize: 24 }} />}
                 title="学习课程"
@@ -456,7 +453,8 @@ const ProgressPage = () => {
                 color="#8b5cf6"
                 large
               />
-            </> : null}
+            </>
+          ) : null}
         </div>
 
         {/* 中间：整体完成度圆形图 */}

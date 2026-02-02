@@ -44,9 +44,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Ant Design 主题配置
   const antdThemeConfig: ThemeConfig = {
     algorithm:
-      theme === "dark"
-        ? antdTheme.darkAlgorithm
-        : antdTheme.defaultAlgorithm,
+      theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
     token: {
       // 主色调 - 使用更现代的蓝色
       colorPrimary: "#1677ff",
@@ -93,8 +91,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       // 边框
       lineWidth: 1,
       lineType: "solid",
-      colorBorder: theme === "dark" ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.06)",
-      colorBorderSecondary: theme === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
+      colorBorder:
+        theme === "dark" ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.06)",
+      colorBorderSecondary:
+        theme === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
 
       // 背景色
       colorBgContainer: theme === "dark" ? "#141414" : "#ffffff",
@@ -103,9 +103,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       colorBgSpotlight: theme === "dark" ? "#1f1f1f" : "#fafafa",
 
       // 文字颜色
-      colorText: theme === "dark" ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.88)",
-      colorTextSecondary: theme === "dark" ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.65)",
-      colorTextTertiary: theme === "dark" ? "rgba(255, 255, 255, 0.45)" : "rgba(0, 0, 0, 0.45)",
+      colorText:
+        theme === "dark" ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.88)",
+      colorTextSecondary:
+        theme === "dark" ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.65)",
+      colorTextTertiary:
+        theme === "dark" ? "rgba(255, 255, 255, 0.45)" : "rgba(0, 0, 0, 0.45)",
 
       // 动画 - 流畅的动画效果
       motionDurationFast: "0.1s",
@@ -122,7 +125,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         bodyBg: theme === "dark" ? "#000000" : "#f5f5f5",
         siderBg: theme === "dark" ? "#141414" : "#ffffff",
         triggerBg: theme === "dark" ? "#1f1f1f" : "#fafafa",
-        triggerColor: theme === "dark" ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.88)",
+        triggerColor:
+          theme === "dark"
+            ? "rgba(255, 255, 255, 0.85)"
+            : "rgba(0, 0, 0, 0.88)",
       },
       Menu: {
         itemBorderRadius: 8,
@@ -141,7 +147,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
             ? "rgba(255, 255, 255, 0.12)"
             : "rgba(0, 0, 0, 0.06)",
         subMenuItemBg: "transparent",
-        itemColor: theme === "dark" ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.88)",
+        itemColor:
+          theme === "dark"
+            ? "rgba(255, 255, 255, 0.85)"
+            : "rgba(0, 0, 0, 0.88)",
       },
       Card: {
         borderRadiusLG: 12,

@@ -1,15 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Button, Space, Typography, List, Alert, Tag, Spin } from "antd";
 import {
-  Button,
-  Space,
-  Typography,
-  List,
-  Alert,
-  Tag,
-  Spin,
-} from "antd";
-import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons";
+  PlusOutlined,
+  FileTextOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useCourseStore } from "../stores";
@@ -119,7 +115,12 @@ const NoteList = () => {
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              void navigate("/courses");
+            }}
+          >
             前往课程列表
           </Button>
         }
@@ -137,12 +138,14 @@ const NoteList = () => {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-      {error ? <Alert
+      {error ? (
+        <Alert
           title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        /> : null}
+        />
+      ) : null}
 
       {/* 搜索和操作栏 */}
       <Space
@@ -159,10 +162,10 @@ const NoteList = () => {
             style={{ flex: 1 }}
           />
           <Link to="/notes/new">
-              <Button type="primary" icon={<PlusOutlined />}>
-                创建笔记
-              </Button>
-            </Link>
+            <Button type="primary" icon={<PlusOutlined />}>
+              创建笔记
+            </Button>
+          </Link>
         </Space.Compact>
       </Space>
 
@@ -174,16 +177,18 @@ const NoteList = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void confirmDelete(); }}
-        onCancel={() => { setDeleteConfirm({ isOpen: false, noteId: null }); }}
+        onConfirm={() => {
+          void confirmDelete();
+        }}
+        onCancel={() => {
+          setDeleteConfirm({ isOpen: false, noteId: null });
+        }}
       />
 
       {notes.length === 0 ? (
         <ListEmptyState
           variant="empty"
-          icon={
-            <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
-          }
+          icon={<FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
           description={
             <Space orientation="vertical" size="small">
               <Text>暂无笔记</Text>
@@ -203,16 +208,16 @@ const NoteList = () => {
       ) : filteredNotes.length === 0 ? (
         <ListEmptyState
           variant="noResults"
-          icon={
-            <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
-          }
+          icon={<FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
           description={
             <Space orientation="vertical" size="small">
               <Text>未找到匹配的笔记</Text>
               <Text type="secondary">尝试调整搜索条件</Text>
             </Space>
           }
-          onClearFilter={() => { setSearchQuery(""); }}
+          onClearFilter={() => {
+            setSearchQuery("");
+          }}
           clearFilterLabel="清除搜索"
         />
       ) : (
@@ -242,25 +247,27 @@ const NoteList = () => {
                         {note.title}
                       </Title>
                       <Tag
-                        color={note.visibility === "public" ? "blue" : "default"}
+                        color={
+                          note.visibility === "public" ? "blue" : "default"
+                        }
                       >
                         {note.visibility === "public" ? "公开" : "私有"}
                       </Tag>
                     </Space>
-                  <Paragraph
-                    ellipsis={{ rows: 2, expandable: false }}
-                    style={{
-                      margin: 0,
-                      fontSize: "0.875rem",
-                      color: "#78716c",
-                    }}
-                  >
-                    {note.summary ??
-                      (note.content.length > 150
-                        ? note.content.substring(0, 150) + "..."
-                        : note.content
-                      ).replace(/\\n/g, " ")}
-                  </Paragraph>
+                    <Paragraph
+                      ellipsis={{ rows: 2, expandable: false }}
+                      style={{
+                        margin: 0,
+                        fontSize: "0.875rem",
+                        color: "#78716c",
+                      }}
+                    >
+                      {note.summary ??
+                        (note.content.length > 150
+                          ? note.content.substring(0, 150) + "..."
+                          : note.content
+                        ).replace(/\\n/g, " ")}
+                    </Paragraph>
                     <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
                       {formatDate(note.createdAt)}
                     </Text>

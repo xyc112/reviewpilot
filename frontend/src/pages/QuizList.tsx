@@ -1,14 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Button,
-  Space,
-  Typography,
-  List,
-  Alert,
-  Tag,
-  Spin,
-} from "antd";
+import { Button, Space, Typography, List, Alert, Tag, Spin } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -85,8 +77,7 @@ const QuizList = () => {
       success("测验删除成功");
       void fetchQuizzes();
     } catch (err: unknown) {
-      const errorMsg =
-        "删除测验失败: " + (getErrorMessage(err) || "未知错误");
+      const errorMsg = "删除测验失败: " + (getErrorMessage(err) || "未知错误");
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -112,7 +103,12 @@ const QuizList = () => {
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              void navigate("/courses");
+            }}
+          >
             前往课程列表
           </Button>
         }
@@ -138,13 +134,15 @@ const QuizList = () => {
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        {isAdmin ? <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        {isAdmin ? (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link to="/quizzes/new">
               <Button type="primary" icon={<PlusOutlined />}>
                 创建测验
               </Button>
             </Link>
-          </div> : null}
+          </div>
+        ) : null}
 
         <SearchBox
           placeholder="搜索测验标题..."
@@ -159,8 +157,12 @@ const QuizList = () => {
           confirmText="删除"
           cancelText="取消"
           type="danger"
-          onConfirm={() => { void confirmDelete(); }}
-          onCancel={() => { setDeleteConfirm({ isOpen: false, quizId: null }); }}
+          onConfirm={() => {
+            void confirmDelete();
+          }}
+          onCancel={() => {
+            setDeleteConfirm({ isOpen: false, quizId: null });
+          }}
         />
 
         {quizzes.length === 0 ? (
@@ -205,7 +207,9 @@ const QuizList = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => { setSearchQuery(""); }}
+            onClearFilter={() => {
+              setSearchQuery("");
+            }}
             clearFilterLabel="清除搜索"
           />
         ) : (
@@ -216,7 +220,11 @@ const QuizList = () => {
                 <Space
                   style={{ width: "100%", justifyContent: "space-between" }}
                 >
-                  <Space orientation="vertical" size="small" style={{ flex: 1 }}>
+                  <Space
+                    orientation="vertical"
+                    size="small"
+                    style={{ flex: 1 }}
+                  >
                     <Space wrap>
                       <Title
                         level={4}
@@ -235,20 +243,26 @@ const QuizList = () => {
                     <Link to={`/quizzes/${quiz.id}`}>
                       <Button type="primary">开始测验</Button>
                     </Link>
-                    {isAdmin ? <>
+                    {isAdmin ? (
+                      <>
                         <Button
                           icon={<EditOutlined />}
-                          onClick={() => { void navigate(`/quizzes/edit/${quiz.id}`); }}
+                          onClick={() => {
+                            void navigate(`/quizzes/edit/${quiz.id}`);
+                          }}
                           title="编辑测验"
                         />
                         <Button
                           danger
                           icon={<DeleteOutlined />}
-                          onClick={() => { handleDelete(quiz.id); }}
+                          onClick={() => {
+                            handleDelete(quiz.id);
+                          }}
                           title="删除测验"
                           type="button"
                         />
-                      </> : null}
+                      </>
+                    ) : null}
                   </Space>
                 </Space>
               </ListItemCard>

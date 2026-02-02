@@ -220,7 +220,9 @@ const GraphCanvas = ({
       .attr(
         "stroke",
         (d) =>
-          (arrowColors[d.type as keyof typeof arrowColors] as string | undefined) ?? "#999",
+          (arrowColors[d.type as keyof typeof arrowColors] as
+            | string
+            | undefined) ?? "#999",
       )
       .attr("stroke-width", (d) => {
         const base = (d.weight ?? 0.5) * 4;
@@ -286,7 +288,8 @@ const GraphCanvas = ({
       .join("g")
       .attr("class", "node-group")
       .call(
-        d3.drag<SVGGElement, D3Node>()
+        d3
+          .drag<SVGGElement, D3Node>()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended),
@@ -475,7 +478,10 @@ const GraphCanvas = ({
           (d) => (getY(d.source as D3Node) + getY(d.target as D3Node)) / 2,
         );
 
-      nodeGroups.attr("transform", (d) => `translate(${String(d.x ?? 0)},${String(d.y ?? 0)})`);
+      nodeGroups.attr(
+        "transform",
+        (d) => `translate(${String(d.x ?? 0)},${String(d.y ?? 0)})`,
+      );
     }
 
     // 拖拽函数
@@ -547,13 +553,8 @@ const GraphCanvas = ({
         const zoomTransform = d3.zoomTransform(svgEl);
         const worldX = (x - zoomTransform.x) / zoomTransform.k;
         const worldY = (y - zoomTransform.y) / zoomTransform.k;
-        const fromNode = d3Nodes.find(
-          (n) => n.id === draggingFromRef.current,
-        );
-        if (
-          fromNode?.x !== undefined &&
-          fromNode.y !== undefined
-        ) {
+        const fromNode = d3Nodes.find((n) => n.id === draggingFromRef.current);
+        if (fromNode?.x !== undefined && fromNode.y !== undefined) {
           tempLineRef.current = {
             x1: fromNode.x,
             y1: fromNode.y,
@@ -588,7 +589,10 @@ const GraphCanvas = ({
         !svgEl ||
         (target !== svgEl &&
           target.tagName !== "svg" &&
-          !(target.tagName === "g" && target.classList.contains("graph-container")))
+          !(
+            target.tagName === "g" &&
+            target.classList.contains("graph-container")
+          ))
       ) {
         return;
       }
@@ -663,9 +667,7 @@ const GraphCanvas = ({
     position: "absolute",
     top: token.padding,
     left: token.padding,
-    background: isDark
-      ? "rgba(20, 20, 20, 0.95)"
-      : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
@@ -691,9 +693,7 @@ const GraphCanvas = ({
     fontSize: token.fontSizeSM,
     color: isDark ? token.colorTextSecondary : "#64748b",
     padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
-    background: isDark
-      ? "rgba(255, 255, 255, 0.08)"
-      : "rgba(0, 0, 0, 0.04)",
+    background: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
     borderRadius: token.borderRadiusSM,
     textAlign: "center",
   };
@@ -709,9 +709,7 @@ const GraphCanvas = ({
     position: "absolute",
     bottom: token.padding,
     left: token.padding,
-    background: isDark
-      ? "rgba(20, 20, 20, 0.95)"
-      : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
@@ -743,9 +741,7 @@ const GraphCanvas = ({
     position: "absolute",
     bottom: token.padding,
     right: token.padding,
-    background: isDark
-      ? "rgba(20, 20, 20, 0.95)"
-      : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
@@ -762,11 +758,16 @@ const GraphCanvas = ({
   return (
     <div style={containerStyle}>
       <div style={controlsStyle}>
-        {editable && onRelationCreate ? <>
-            <div style={{ display: "flex", flexDirection: "column", gap: token.marginXXS }}>
-              <label style={labelStyle}>
-                关系类型
-              </label>
+        {editable && onRelationCreate ? (
+          <>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: token.marginXXS,
+              }}
+            >
+              <label style={labelStyle}>关系类型</label>
               <select
                 value={relationType}
                 onChange={(e) =>
@@ -804,10 +805,27 @@ const GraphCanvas = ({
                 onChange={(e) => onRelationDirectedChange?.(e.target.checked)}
                 style={{ cursor: "pointer" }}
               />
-              <span style={{ color: isDark ? token.colorTextSecondary : "#64748b" }}>有向</span>
+              <span
+                style={{ color: isDark ? token.colorTextSecondary : "#64748b" }}
+              >
+                有向
+              </span>
             </label>
-            <div style={{ display: "flex", alignItems: "center", gap: token.marginXXS }}>
-              <span style={{ fontSize: token.fontSizeSM, color: isDark ? token.colorTextSecondary : "#64748b" }}>权重</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: token.marginXXS,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: token.fontSizeSM,
+                  color: isDark ? token.colorTextSecondary : "#64748b",
+                }}
+              >
+                权重
+              </span>
               <input
                 type="number"
                 min={0}
@@ -831,14 +849,14 @@ const GraphCanvas = ({
                 }}
               />
             </div>
-          </> : null}
-        <div style={zoomInfoStyle}>缩放: {String(Math.round(transform.k * 100))}%</div>
+          </>
+        ) : null}
+        <div style={zoomInfoStyle}>
+          缩放: {String(Math.round(transform.k * 100))}%
+        </div>
       </div>
 
-      <svg
-        ref={svgRef}
-        style={canvasStyle}
-      />
+      <svg ref={svgRef} style={canvasStyle} />
 
       <div style={legendStyle}>
         <div style={legendItemStyle}>
@@ -856,17 +874,38 @@ const GraphCanvas = ({
       </div>
 
       <div style={helpStyle}>
-        <p style={{ margin: `0 0 ${String(token.marginXS)} 0`, fontWeight: 600, color: token.colorText, fontSize: token.fontSizeSM }}>
+        <p
+          style={{
+            margin: `0 0 ${String(token.marginXS)} 0`,
+            fontWeight: 600,
+            color: token.colorText,
+            fontSize: token.fontSizeSM,
+          }}
+        >
           💡 <strong>操作提示：</strong>
         </p>
-        <ul style={{ margin: 0, paddingLeft: token.paddingLG, color: isDark ? token.colorTextSecondary : "#64748b" }}>
-          <li style={{ marginBottom: token.marginXXS }}>🖱️ 拖拽节点来重新布局</li>
+        <ul
+          style={{
+            margin: 0,
+            paddingLeft: token.paddingLG,
+            color: isDark ? token.colorTextSecondary : "#64748b",
+          }}
+        >
+          <li style={{ marginBottom: token.marginXXS }}>
+            🖱️ 拖拽节点来重新布局
+          </li>
           <li style={{ marginBottom: token.marginXXS }}>🔍 滚轮缩放画布</li>
           <li style={{ marginBottom: token.marginXXS }}>👆 点击节点查看详情</li>
-          {editable ? <>
-              <li style={{ marginBottom: token.marginXXS }}>🖱️ 双击画布创建新节点</li>
-              <li style={{ marginBottom: 0 }}>🔗 Ctrl+点击节点，再点击另一个节点创建关系</li>
-            </> : null}
+          {editable ? (
+            <>
+              <li style={{ marginBottom: token.marginXXS }}>
+                🖱️ 双击画布创建新节点
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                🔗 Ctrl+点击节点，再点击另一个节点创建关系
+              </li>
+            </>
+          ) : null}
         </ul>
       </div>
     </div>

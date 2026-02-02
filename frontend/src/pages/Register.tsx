@@ -33,7 +33,9 @@ const Register = () => {
       setIsMobile(window.innerWidth <= 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => { window.removeEventListener("resize", handleResize); };
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const login = useAuthStore((state) => state.login);
@@ -82,87 +84,94 @@ const Register = () => {
             color: "white",
           }}
         >
-        <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
-          <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>🚀</div>
-          <Title level={1} style={{ color: "white", marginBottom: "0.75rem" }}>
-            加入我们
-          </Title>
-          <Text
-            style={{
-              fontSize: "1.125rem",
-              opacity: 0.95,
-              display: "block",
-              marginBottom: "2rem",
-            }}
-          >
-            开启您的学习之旅
-            <br />
-            与知识同行，与成长相伴
-          </Text>
-          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-            <div
+          <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
+            <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>🚀</div>
+            <Title
+              level={1}
+              style={{ color: "white", marginBottom: "0.75rem" }}
+            >
+              加入我们
+            </Title>
+            <Text
               style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
+                fontSize: "1.125rem",
+                opacity: 0.95,
+                display: "block",
+                marginBottom: "2rem",
               }}
             >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🎓</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  个性化学习路径
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  根据您的需求定制学习计划
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
+              开启您的学习之旅
+              <br />
+              与知识同行，与成长相伴
+            </Text>
+            <Space
+              orientation="vertical"
+              size="middle"
+              style={{ width: "100%" }}
             >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📊</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  学习进度追踪
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  实时了解学习成果
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "0.875rem",
-                padding: "0.875rem",
-                background: "rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            >
-              <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🤝</div>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                  社区互动交流
-                </div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  与学习者共同进步
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🎓</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    个性化学习路径
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    根据您的需求定制学习计划
+                  </div>
                 </div>
               </div>
-            </div>
-          </Space>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📊</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    学习进度追踪
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    实时了解学习成果
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.875rem",
+                  padding: "0.875rem",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "0.75rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>🤝</div>
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
+                    社区互动交流
+                  </div>
+                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                    与学习者共同进步
+                  </div>
+                </div>
+              </div>
+            </Space>
+          </div>
         </div>
-      </div>
       )}
 
       {/* 右侧表单区域 */}
@@ -208,7 +217,13 @@ const Register = () => {
 
           <Form
             form={form}
-            onFinish={(values: { username: string; password: string; role: string }) => { void handleSubmit(values); }}
+            onFinish={(values: {
+              username: string;
+              password: string;
+              role: string;
+            }) => {
+              void handleSubmit(values);
+            }}
             layout="vertical"
             size="large"
             initialValues={{ role: "USER" }}

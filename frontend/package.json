@@ -5,8 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --config eslint.config.ts",
-    "format": "prettier --w .",
+    "lint": "eslint . --config eslint.config.ts --fix",
     "update": "ncu -u"
   },
   "dependencies": {
@@ -31,6 +30,8 @@
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^17.3.0",

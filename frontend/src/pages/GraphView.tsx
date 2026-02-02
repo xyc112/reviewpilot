@@ -295,8 +295,10 @@ const GraphView = () => {
   const handleStartEditRelation = (relation: Relation) => {
     setEditingRelation(relation);
     setEditRelationForm({
-      type: (relation.type ||
-        "related") as "prerequisite" | "related" | "part_of",
+      type: (relation.type || "related") as
+        | "prerequisite"
+        | "related"
+        | "part_of",
       directed: relation.directed ?? true,
       weight: relation.weight ?? 0.5,
     });
@@ -346,7 +348,12 @@ const GraphView = () => {
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              void navigate("/courses");
+            }}
+          >
             前往课程列表
           </Button>
         }
@@ -381,10 +388,12 @@ const GraphView = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void confirmDelete(); }}
-        onCancel={() =>
-          { setDeleteConfirm({ isOpen: false, type: null, id: null }); }
-        }
+        onConfirm={() => {
+          void confirmDelete();
+        }}
+        onCancel={() => {
+          setDeleteConfirm({ isOpen: false, type: null, id: null });
+        }}
       />
 
       <div style={{ width: "100%", height: "100%" }}>
@@ -405,12 +414,16 @@ const GraphView = () => {
             }}
             onNodeCreate={
               isAdmin
-                ? (pos) => { void handleCreateNodeByPosition(pos); }
+                ? (pos) => {
+                    void handleCreateNodeByPosition(pos);
+                  }
                 : undefined
             }
             onRelationCreate={
               isAdmin
-                ? (from, to) => { void handleCreateRelationByNodes(from, to); }
+                ? (from, to) => {
+                    void handleCreateRelationByNodes(from, to);
+                  }
                 : undefined
             }
             selectedNodeId={selectedNode?.id}
@@ -445,7 +458,8 @@ const GraphView = () => {
         </div>
 
         {/* 节点 / 关系详情浮动面板 */}
-        {(selectedNode || selectedRelation) ? <Card
+        {selectedNode || selectedRelation ? (
+          <Card
             style={{
               position: "absolute",
               top: "1rem",
@@ -482,12 +496,12 @@ const GraphView = () => {
                   <Form.Item label="节点标签" required>
                     <Input
                       value={editNodeForm.label}
-                      onChange={(e) =>
-                        { setEditNodeForm({
+                      onChange={(e) => {
+                        setEditNodeForm({
                           ...editNodeForm,
                           label: e.target.value,
-                        }); }
-                      }
+                        });
+                      }}
                       placeholder="输入节点名称"
                       autoFocus
                     />
@@ -495,24 +509,24 @@ const GraphView = () => {
                   <Form.Item label="节点类型">
                     <Input
                       value={editNodeForm.type}
-                      onChange={(e) =>
-                        { setEditNodeForm({
+                      onChange={(e) => {
+                        setEditNodeForm({
                           ...editNodeForm,
                           type: e.target.value,
-                        }); }
-                      }
+                        });
+                      }}
                       placeholder="例如: concept, topic"
                     />
                   </Form.Item>
                   <Form.Item label="描述">
                     <TextArea
                       value={editNodeForm.description}
-                      onChange={(e) =>
-                        { setEditNodeForm({
+                      onChange={(e) => {
+                        setEditNodeForm({
                           ...editNodeForm,
                           description: e.target.value,
-                        }); }
-                      }
+                        });
+                      }}
                       rows={3}
                       placeholder="输入节点描述（可选）"
                     />
@@ -522,7 +536,9 @@ const GraphView = () => {
                       <Button
                         type="primary"
                         size="small"
-                        onClick={() => { void handleSaveEditNode(); }}
+                        onClick={() => {
+                          void handleSaveEditNode();
+                        }}
                       >
                         保存
                       </Button>
@@ -546,28 +562,36 @@ const GraphView = () => {
                       <Text strong>{selectedNode.label || "未命名节点"}</Text>
                     </div>
                   </div>
-                  {selectedNode.type !== undefined && selectedNode.type !== "" ? <div>
+                  {selectedNode.type !== undefined &&
+                  selectedNode.type !== "" ? (
+                    <div>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
                         类型:
                       </Text>
                       <div>
                         <Text strong>{selectedNode.type}</Text>
                       </div>
-                    </div> : null}
-                  {selectedNode.description ? <div>
+                    </div>
+                  ) : null}
+                  {selectedNode.description ? (
+                    <div>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
                         描述:
                       </Text>
                       <Paragraph style={{ margin: "0.25rem 0 0 0" }}>
                         {selectedNode.description}
                       </Paragraph>
-                    </div> : null}
-                  {isAdmin ? <Space>
+                    </div>
+                  ) : null}
+                  {isAdmin ? (
+                    <Space>
                       <Button
                         size="small"
                         type="primary"
                         icon={<EditOutlined />}
-                        onClick={() => { handleStartEditNode(selectedNode); }}
+                        onClick={() => {
+                          handleStartEditNode(selectedNode);
+                        }}
                       >
                         编辑
                       </Button>
@@ -575,11 +599,14 @@ const GraphView = () => {
                         size="small"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => { handleDeleteNode(selectedNode.id ?? ""); }}
+                        onClick={() => {
+                          handleDeleteNode(selectedNode.id ?? "");
+                        }}
                       >
                         删除
                       </Button>
-                    </Space> : null}
+                    </Space>
+                  ) : null}
                 </Space>
               )
             ) : selectedRelation ? (
@@ -588,12 +615,12 @@ const GraphView = () => {
                   <Form.Item label="关系类型">
                     <Select
                       value={editRelationForm.type}
-                      onChange={(value) =>
-                        { setEditRelationForm({
+                      onChange={(value) => {
+                        setEditRelationForm({
                           ...editRelationForm,
                           type: value,
-                        }); }
-                      }
+                        });
+                      }}
                       options={[
                         { value: "prerequisite", label: "前置 (prerequisite)" },
                         { value: "related", label: "相关 (related)" },
@@ -607,12 +634,12 @@ const GraphView = () => {
                         type="checkbox"
                         id="relation-directed"
                         checked={editRelationForm.directed}
-                        onChange={(e) =>
-                          { setEditRelationForm({
+                        onChange={(e) => {
+                          setEditRelationForm({
                             ...editRelationForm,
                             directed: e.target.checked,
-                          }); }
-                        }
+                          });
+                        }}
                         style={{ margin: 0, cursor: "pointer", width: "auto" }}
                       />
                       <label
@@ -636,15 +663,15 @@ const GraphView = () => {
                       max={1}
                       step={0.1}
                       value={editRelationForm.weight}
-                      onChange={(e) =>
-                        { setEditRelationForm({
+                      onChange={(e) => {
+                        setEditRelationForm({
                           ...editRelationForm,
                           weight: Math.max(
                             0,
                             Math.min(1, Number(e.target.value) || 0),
                           ),
-                        }); }
-                      }
+                        });
+                      }}
                     />
                   </Form.Item>
                   <Form.Item label="从">
@@ -664,7 +691,9 @@ const GraphView = () => {
                       <Button
                         type="primary"
                         size="small"
-                        onClick={() => { void handleSaveEditRelation(); }}
+                        onClick={() => {
+                          void handleSaveEditRelation();
+                        }}
                       >
                         保存
                       </Button>
@@ -734,14 +763,15 @@ const GraphView = () => {
                       </Text>
                     </div>
                   </div>
-                  {isAdmin ? <Space>
+                  {isAdmin ? (
+                    <Space>
                       <Button
                         size="small"
                         type="primary"
                         icon={<EditOutlined />}
-                        onClick={() =>
-                          { handleStartEditRelation(selectedRelation); }
-                        }
+                        onClick={() => {
+                          handleStartEditRelation(selectedRelation);
+                        }}
                       >
                         编辑
                       </Button>
@@ -749,17 +779,19 @@ const GraphView = () => {
                         size="small"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() =>
-                          { handleDeleteRelation(selectedRelation.id ?? ""); }
-                        }
+                        onClick={() => {
+                          handleDeleteRelation(selectedRelation.id ?? "");
+                        }}
                       >
                         删除
                       </Button>
-                    </Space> : null}
+                    </Space>
+                  ) : null}
                 </Space>
               )
             ) : null}
-          </Card> : null}
+          </Card>
+        ) : null}
       </div>
     </div>
   );

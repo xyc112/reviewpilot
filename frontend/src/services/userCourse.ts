@@ -3,7 +3,8 @@ import type { UserCourse } from "../types";
 
 export const userCourseAPI = {
   getUserCourses: () => api.get<UserCourse[]>("/api/user-courses"),
-  addCourse: (courseId: number) => api.post(`/api/user-courses/${String(courseId)}`),
+  addCourse: (courseId: number) =>
+    api.post(`/api/user-courses/${String(courseId)}`),
   removeCourse: (courseId: number) =>
     api.delete(`/api/user-courses/${String(courseId)}`),
   setCurrentStudying: (courseId: number) =>

@@ -7,6 +7,8 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 import globals from "globals";
+import prettier from "eslint-plugin-prettier";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -59,5 +61,12 @@ export default defineConfig(
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
+  {
+    plugins: { prettier },
+    rules: {
+      "prettier/prettier": "error",
+    },
+  },
+  eslintConfigPrettier,
   { ignores: ["dist", "node_modules", "**/*.config.ts", "**/*.config.js"] },
 );

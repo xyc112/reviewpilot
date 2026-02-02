@@ -52,9 +52,7 @@ export const useGlobalShortcuts = () => {
       ctrl: true,
       action: () => {
         // 可以打开搜索或命令面板
-        document
-          .querySelector<HTMLInputElement>('input[type="text"]')
-          ?.focus();
+        document.querySelector<HTMLInputElement>('input[type="text"]')?.focus();
       },
       description: "聚焦搜索框",
     },

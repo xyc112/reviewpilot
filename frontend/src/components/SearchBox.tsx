@@ -2,11 +2,10 @@ import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputProps } from "antd";
 
-export interface SearchBoxProps
-  extends Omit<
-    InputProps,
-    "prefix" | "addonAfter" | "value" | "onChange" | "enterButton"
-  > {
+export interface SearchBoxProps extends Omit<
+  InputProps,
+  "prefix" | "addonAfter" | "value" | "onChange" | "enterButton"
+> {
   /** 当前搜索值，受控 */
   value: string;
   /** 输入变化回调 */
@@ -48,7 +47,7 @@ const SearchBox = ({
         enterButton === true ? (
           <SearchOutlined />
         ) : (
-          (enterButton ?? false) as React.ReactNode
+          ((enterButton ?? false) as React.ReactNode)
         )
       }
       size={size}

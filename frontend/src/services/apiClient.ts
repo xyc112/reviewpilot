@@ -18,7 +18,10 @@ api.interceptors.response.use(
   (error: unknown) => {
     // 处理认证错误
     const axiosError = error as { response?: { status?: number } };
-    if (axiosError.response?.status === 401 || axiosError.response?.status === 403) {
+    if (
+      axiosError.response?.status === 401 ||
+      axiosError.response?.status === 403
+    ) {
       // 清除本地存储
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -32,7 +35,9 @@ api.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    return Promise.reject(
+      error instanceof Error ? error : new Error(String(error)),
+    );
   },
 );
 

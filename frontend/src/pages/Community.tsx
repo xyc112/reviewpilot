@@ -1,13 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Card,
-  Input,
-  Button,
-  Space,
-  Typography,
-  Alert,
-} from "antd";
+import { Card, Input, Button, Space, Typography, Alert } from "antd";
 import {
   PlusOutlined,
   MessageOutlined,
@@ -47,7 +40,9 @@ const Community = () => {
   // 优先使用URL参数，其次使用当前学习的课程，最后使用选中的课程
   const courseId =
     courseIdParam ??
-    (currentStudyingCourse != null ? String(currentStudyingCourse.id) : undefined) ??
+    (currentStudyingCourse != null
+      ? String(currentStudyingCourse.id)
+      : undefined) ??
     (selectedCourse != null ? String(selectedCourse.id) : undefined);
   const [, setCourse] = useState<{ id: number; title: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -302,7 +297,7 @@ const Community = () => {
         !searchQuery ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (post.authorUsername?.toLowerCase().includes(searchQuery.toLowerCase()));
+        post.authorUsername?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
   }, [posts, searchQuery]);
@@ -342,7 +337,11 @@ const Community = () => {
               border: "1px solid #f0f0f0",
             }}
           >
-            <Space orientation="vertical" size="small" style={{ width: "100%" }}>
+            <Space
+              orientation="vertical"
+              size="small"
+              style={{ width: "100%" }}
+            >
               <div
                 style={{
                   display: "flex",
@@ -352,26 +351,29 @@ const Community = () => {
               >
                 <Space>
                   <Text strong style={{ fontSize: "0.875rem" }}>
-                    {comment.authorUsername ?? `用户 ${String(comment.authorId)}`}
+                    {comment.authorUsername ??
+                      `用户 ${String(comment.authorId)}`}
                   </Text>
                   <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
                     {formatDate(comment.createdAt)}
                   </Text>
                 </Space>
-                {(isAdmin || user?.id === comment.authorId) ? <Button
+                {isAdmin || user?.id === comment.authorId ? (
+                  <Button
                     type="text"
                     danger
                     size="small"
                     icon={<DeleteOutlined />}
-                    onClick={() =>
-                      { setDeleteConfirm({
+                    onClick={() => {
+                      setDeleteConfirm({
                         type: "comment",
                         id: comment.id,
                         postId,
-                      }); }
-                    }
+                      });
+                    }}
                     title="删除评论"
-                  /> : null}
+                  />
+                ) : null}
               </div>
               <div>
                 <MarkdownRenderer content={comment.content} />
@@ -405,9 +407,9 @@ const Community = () => {
                       <TextArea
                         ref={commentInputRef}
                         value={getReplyContent(postId, comment.id)}
-                        onChange={(e) =>
-                          { setReplyContent(postId, comment.id, e.target.value); }
-                        }
+                        onChange={(e) => {
+                          setReplyContent(postId, comment.id, e.target.value);
+                        }}
                         placeholder="输入回复..."
                         rows={3}
                       />
@@ -478,15 +480,19 @@ const Community = () => {
             void handleDeleteComment();
           }
         }}
-        onCancel={() => { setDeleteConfirm(null); }}
+        onCancel={() => {
+          setDeleteConfirm(null);
+        }}
       />
 
-      {error ? <Alert
+      {error ? (
+        <Alert
           title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        /> : null}
+        />
+      ) : null}
 
       {/* 搜索栏 */}
       <Space
@@ -505,28 +511,35 @@ const Community = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => { setShowCreatePost(!showCreatePost); }}
+            onClick={() => {
+              setShowCreatePost(!showCreatePost);
+            }}
           >
             {showCreatePost ? "取消发布" : "发布新帖"}
           </Button>
         </Space.Compact>
       </Space>
 
-      {showCreatePost ? <Card style={{ marginBottom: "2rem" }}>
+      {showCreatePost ? (
+        <Card style={{ marginBottom: "2rem" }}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               void handleCreatePost();
             }}
           >
-            <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+            <Space
+              orientation="vertical"
+              size="middle"
+              style={{ width: "100%" }}
+            >
               <div>
                 <Text strong>标题:</Text>
                 <Input
                   value={newPost.title}
-                  onChange={(e) =>
-                    { setNewPost({ ...newPost, title: e.target.value }); }
-                  }
+                  onChange={(e) => {
+                    setNewPost({ ...newPost, title: e.target.value });
+                  }}
                   required
                   placeholder="输入帖子标题"
                   style={{ marginTop: "0.5rem" }}
@@ -537,9 +550,9 @@ const Community = () => {
                 <Text strong>内容:</Text>
                 <TextArea
                   value={newPost.content}
-                  onChange={(e) =>
-                    { setNewPost({ ...newPost, content: e.target.value }); }
-                  }
+                  onChange={(e) => {
+                    setNewPost({ ...newPost, content: e.target.value });
+                  }}
                   rows={15}
                   required
                   placeholder="输入帖子内容，支持 Markdown 格式"
@@ -567,7 +580,8 @@ const Community = () => {
               </Space>
             </Space>
           </form>
-        </Card> : null}
+        </Card>
+      ) : null}
 
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {posts.length === 0 && !showCreatePost ? (
@@ -595,7 +609,9 @@ const Community = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => { setSearchQuery(""); }}
+            onClearFilter={() => {
+              setSearchQuery("");
+            }}
             clearFilterLabel="清除搜索"
           />
         ) : filteredPosts.length > 0 ? (
@@ -606,23 +622,27 @@ const Community = () => {
               style={{ border: "1px solid #d9d9d9" }}
               actions={[
                 <Space key="actions">
-                  {(isAdmin || user?.id === post.authorId) ? <>
+                  {isAdmin || user?.id === post.authorId ? (
+                    <>
                       <Button
                         type="text"
                         icon={<EditOutlined />}
-                        onClick={() => { startEditPost(post); }}
+                        onClick={() => {
+                          startEditPost(post);
+                        }}
                         title="编辑"
                       />
                       <Button
                         type="text"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() =>
-                          { setDeleteConfirm({ type: "post", id: post.id }); }
-                        }
+                        onClick={() => {
+                          setDeleteConfirm({ type: "post", id: post.id });
+                        }}
                         title="删除"
                       />
-                    </> : null}
+                    </>
+                  ) : null}
                   <Button
                     type="text"
                     icon={
@@ -632,7 +652,9 @@ const Community = () => {
                         <DownOutlined />
                       )
                     }
-                    onClick={() => { handleTogglePost(post.id); }}
+                    onClick={() => {
+                      handleTogglePost(post.id);
+                    }}
                     title={expandedPost === post.id ? "收起" : "展开"}
                   />
                 </Space>,
@@ -666,28 +688,30 @@ const Community = () => {
                   >
                     <Input
                       value={editPostData.title}
-                      onChange={(e) =>
-                        { setEditPostData({
+                      onChange={(e) => {
+                        setEditPostData({
                           ...editPostData,
                           title: e.target.value,
-                        }); }
-                      }
+                        });
+                      }}
                     />
                     <TextArea
                       value={editPostData.content}
-                      onChange={(e) =>
-                        { setEditPostData({
+                      onChange={(e) => {
+                        setEditPostData({
                           ...editPostData,
                           content: e.target.value,
-                        }); }
-                      }
+                        });
+                      }}
                       rows={6}
                     />
                     <Space>
                       <Button
                         type="primary"
                         size="small"
-                        onClick={() => { void handleUpdatePost(post.id); }}
+                        onClick={() => {
+                          void handleUpdatePost(post.id);
+                        }}
                       >
                         保存
                       </Button>
@@ -725,7 +749,9 @@ const Community = () => {
                         <Title level={5} style={{ margin: 0 }}>
                           评论
                         </Title>
-                        {loadingComments[post.id] ? <Text type="secondary">加载中...</Text> : null}
+                        {loadingComments[post.id] ? (
+                          <Text type="secondary">加载中...</Text>
+                        ) : null}
                       </div>
 
                       {showReplyForm?.postId !== post.id ||
@@ -741,9 +767,9 @@ const Community = () => {
                           >
                             <TextArea
                               value={getReplyContent(post.id, null)}
-                              onChange={(e) =>
-                                { setReplyContent(post.id, null, e.target.value); }
-                              }
+                              onChange={(e) => {
+                                setReplyContent(post.id, null, e.target.value);
+                              }}
                               placeholder="输入评论..."
                               rows={3}
                             />

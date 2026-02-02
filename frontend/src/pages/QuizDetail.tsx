@@ -149,7 +149,10 @@ const QuizDetail = () => {
               wq.userAnswer,
             );
           } catch (err: unknown) {
-            console.error("Failed to add wrong question:", getErrorMessage(err));
+            console.error(
+              "Failed to add wrong question:",
+              getErrorMessage(err),
+            );
           }
         }
 
@@ -203,7 +206,9 @@ const QuizDetail = () => {
         action={
           <Button
             type="primary"
-            onClick={() => { void navigate("/courses"); }}
+            onClick={() => {
+              void navigate("/courses");
+            }}
           >
             前往课程列表
           </Button>
@@ -256,7 +261,11 @@ const QuizDetail = () => {
             }}
             styles={{ body: { padding: "3rem 2rem" } }}
           >
-            <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+            <Space
+              orientation="vertical"
+              size="large"
+              style={{ width: "100%" }}
+            >
               <div style={{ fontSize: "4rem" }}>{isPassed ? "🎉" : "📝"}</div>
               <Title level={2} style={{ color: "#fff", margin: 0 }}>
                 测验完成
@@ -291,13 +300,17 @@ const QuizDetail = () => {
           {/* 题目解析 */}
           <Card>
             <Title level={3}>题目解析</Title>
-            <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+            <Space
+              orientation="vertical"
+              size="large"
+              style={{ width: "100%" }}
+            >
               {quiz.questions.map((question, index) => {
                 const result = attempt.results.find(
                   (r) => r.questionId === question.id,
                 );
                 const userAnswer = answers[question.id] ?? [];
-                const isCorrect = (result?.correct) ?? false;
+                const isCorrect = result?.correct ?? false;
                 const correctAnswerIndices = question.answer ?? [];
 
                 return (
@@ -424,7 +437,8 @@ const QuizDetail = () => {
                                 </Text>
                                 <Text>{option}</Text>
                                 <Space style={{ marginLeft: "auto" }}>
-                                  {isSelected ? <Tag
+                                  {isSelected ? (
+                                    <Tag
                                       color={
                                         isCorrectlySelected
                                           ? "success"
@@ -434,8 +448,11 @@ const QuizDetail = () => {
                                       {isCorrectlySelected
                                         ? "你的答案（正确）"
                                         : "你的答案"}
-                                    </Tag> : null}
-                                  {!isSelected && isCorrectAnswer ? <Tag color="success">正确答案</Tag> : null}
+                                    </Tag>
+                                  ) : null}
+                                  {!isSelected && isCorrectAnswer ? (
+                                    <Tag color="success">正确答案</Tag>
+                                  ) : null}
                                 </Space>
                               </Space>
                             </Card>
@@ -443,7 +460,8 @@ const QuizDetail = () => {
                         })}
                       </Space>
 
-                      {question.explanation ? <Card
+                      {question.explanation ? (
+                        <Card
                           size="small"
                           style={{
                             backgroundColor: "#e6f7ff",
@@ -458,7 +476,8 @@ const QuizDetail = () => {
                               {question.explanation}
                             </Paragraph>
                           </Space>
-                        </Card> : null}
+                        </Card>
+                      ) : null}
 
                       <Divider style={{ margin: "0.5rem 0" }} />
 
@@ -471,7 +490,7 @@ const QuizDetail = () => {
                             fontSize: "1rem",
                           }}
                         >
-                          {(result?.score) ?? 0} /{" "}
+                          {result?.score ?? 0} /{" "}
                           {Math.round(100 / quiz.questions.length) +
                             (index < 100 % quiz.questions.length ? 1 : 0)}
                         </Text>
@@ -512,7 +531,9 @@ const QuizDetail = () => {
             <Button
               type="primary"
               icon={<ArrowLeftOutlined />}
-              onClick={() => { void navigate("/quizzes"); }}
+              onClick={() => {
+                void navigate("/quizzes");
+              }}
             >
               返回测验列表
             </Button>
@@ -527,7 +548,11 @@ const QuizDetail = () => {
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {quiz.questions.map((question, index) => (
           <Card key={question.id} title={`题目 ${String(index + 1)}`}>
-            <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+            <Space
+              orientation="vertical"
+              size="middle"
+              style={{ width: "100%" }}
+            >
               <Title level={4} style={{ margin: 0 }}>
                 {question.question}
                 {question.type === "multiple" && (
@@ -545,13 +570,14 @@ const QuizDetail = () => {
               {question.type === "single" || question.type === "truefalse" ? (
                 <Radio.Group
                   value={
-                    ((answers[question.id] ?? []).length > 0)
+                    (answers[question.id] ?? []).length > 0
                       ? (answers[question.id] ?? [])[0]
                       : undefined
                   }
                   onChange={(e) => {
                     const rawVal = e.target.value as unknown;
-                    const val = typeof rawVal === "number" ? rawVal : Number(rawVal);
+                    const val =
+                      typeof rawVal === "number" ? rawVal : Number(rawVal);
                     handleOptionSelect(question.id, val, question.type);
                   }}
                 >
@@ -598,7 +624,9 @@ const QuizDetail = () => {
           <Button
             type="primary"
             size="large"
-            onClick={() => { void handleSubmit(); }}
+            onClick={() => {
+              void handleSubmit();
+            }}
             disabled={submitting || Object.keys(answers).length === 0}
             loading={submitting}
           >
@@ -607,7 +635,9 @@ const QuizDetail = () => {
           <Button
             size="large"
             icon={<ArrowLeftOutlined />}
-            onClick={() => { void navigate("/quizzes"); }}
+            onClick={() => {
+              void navigate("/quizzes");
+            }}
           >
             返回测验列表
           </Button>

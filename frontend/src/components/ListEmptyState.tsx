@@ -36,15 +36,13 @@ const ListEmptyState = ({
     icon ?? (variant === "noResults" ? defaultNoResultsIcon : undefined);
   const showClear = variant === "noResults" && onClearFilter;
   const mainAction =
-    variant === "empty"
-      ? action
-      : showClear
-        ? (
-            <Button type="primary" onClick={onClearFilter}>
-              {clearFilterLabel}
-            </Button>
-          )
-        : null;
+    variant === "empty" ? (
+      action
+    ) : showClear ? (
+      <Button type="primary" onClick={onClearFilter}>
+        {clearFilterLabel}
+      </Button>
+    ) : null;
 
   return (
     <Empty image={resolvedIcon} description={description}>

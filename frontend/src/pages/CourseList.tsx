@@ -1,14 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Button,
-  Tag,
-  Space,
-  Typography,
-  List,
-  Alert,
-  Badge,
-} from "antd";
+import { Button, Tag, Space, Typography, List, Alert, Badge } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -93,8 +85,7 @@ const CourseList = () => {
       success(`已将 "${course.title}" 从学习列表移除`);
       await refreshUserCourses();
     } catch (err: unknown) {
-      const errorMsg =
-        "移除课程失败: " + (getErrorMessage(err) || "未知错误");
+      const errorMsg = "移除课程失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -117,8 +108,7 @@ const CourseList = () => {
       success(`已结束学习 "${course.title}"`);
       await refreshUserCourses();
     } catch (err: unknown) {
-      const errorMsg =
-        "结束学习失败: " + (getErrorMessage(err) || "未知错误");
+      const errorMsg = "结束学习失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -146,8 +136,7 @@ const CourseList = () => {
       await refreshUserCourses();
       void fetchCourses();
     } catch (err: unknown) {
-      const errorMsg =
-        "删除课程失败: " + (getErrorMessage(err) || "未知错误");
+      const errorMsg = "删除课程失败: " + (getErrorMessage(err) || "未知错误");
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -234,7 +223,8 @@ const CourseList = () => {
 
   return (
     <div style={{ padding: "0", maxWidth: 1400, margin: "0 auto" }}>
-      {isAdmin ? <div
+      {isAdmin ? (
+        <div
           style={{
             display: "flex",
             justifyContent: "flex-end",
@@ -251,7 +241,8 @@ const CourseList = () => {
               创建新课程
             </Button>
           </Link>
-        </div> : null}
+        </div>
+      ) : null}
 
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
@@ -260,8 +251,12 @@ const CourseList = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void confirmDelete(); }}
-        onCancel={() => { setDeleteConfirm({ isOpen: false, courseId: null }); }}
+        onConfirm={() => {
+          void confirmDelete();
+        }}
+        onCancel={() => {
+          setDeleteConfirm({ isOpen: false, courseId: null });
+        }}
       />
 
       {/* 搜索和过滤栏 */}
@@ -291,7 +286,9 @@ const CourseList = () => {
                     <Tag
                       key={tag}
                       color={selectedTags.has(tag) ? "blue" : "default"}
-                      onClick={() => { toggleTag(tag); }}
+                      onClick={() => {
+                        toggleTag(tag);
+                      }}
                       style={{ cursor: "pointer" }}
                     >
                       {tag}
@@ -378,7 +375,8 @@ const CourseList = () => {
                         />
                       )}
                     </div>
-                    {course.description ? <Paragraph
+                    {course.description ? (
+                      <Paragraph
                         ellipsis={{ rows: 2, expandable: false }}
                         style={{
                           margin: 0,
@@ -390,7 +388,8 @@ const CourseList = () => {
                           text={course.description}
                           searchQuery={searchQuery}
                         />
-                      </Paragraph> : null}
+                      </Paragraph>
+                    ) : null}
                     {course.tags.length > 0 && (
                       <Space wrap>
                         {course.tags.map((tag) => (
@@ -441,15 +440,16 @@ const CourseList = () => {
                   {state === 2 && (
                     <Button
                       icon={<StarOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleEndStudying(course);
-                        }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleEndStudying(course);
+                      }}
                     >
                       结束学习
                     </Button>
                   )}
-                  {isAdmin ? <>
+                  {isAdmin ? (
+                    <>
                       <Button
                         icon={<EditOutlined />}
                         onClick={(e) => {
@@ -465,7 +465,8 @@ const CourseList = () => {
                           handleDeleteCourse(course.id);
                         }}
                       />
-                    </> : null}
+                    </>
+                  ) : null}
                 </Space>
               </ListItemCard>
             );

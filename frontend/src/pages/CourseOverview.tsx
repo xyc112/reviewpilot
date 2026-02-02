@@ -97,8 +97,7 @@ const CourseOverview = () => {
       success("课程删除成功");
       window.location.href = "/courses";
     } catch (err: unknown) {
-      const errorMsg =
-        "删除课程失败: " + (getErrorMessage(err) || "无权限");
+      const errorMsg = "删除课程失败: " + (getErrorMessage(err) || "无权限");
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -169,8 +168,12 @@ const CourseOverview = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void confirmDelete(); }}
-        onCancel={() => { setDeleteConfirm(false); }}
+        onConfirm={() => {
+          void confirmDelete();
+        }}
+        onCancel={() => {
+          setDeleteConfirm(false);
+        }}
       />
 
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
@@ -185,10 +188,13 @@ const CourseOverview = () => {
                 gap: "1rem",
               }}
             >
-              {isCurrentCourse ? <Tag color="gold" icon={<BookOutlined />}>
+              {isCurrentCourse ? (
+                <Tag color="gold" icon={<BookOutlined />}>
                   当前学习课程
-                </Tag> : null}
-              {canEdit ? <Space>
+                </Tag>
+              ) : null}
+              {canEdit ? (
+                <Space>
                   <Link to={`/courses/edit/${String(course.id)}`}>
                     <Button icon={<EditOutlined />}>编辑课程</Button>
                   </Link>
@@ -199,7 +205,8 @@ const CourseOverview = () => {
                   >
                     删除课程
                   </Button>
-                </Space> : null}
+                </Space>
+              ) : null}
             </div>
 
             <Space wrap>
@@ -213,10 +220,12 @@ const CourseOverview = () => {
                 <CalendarOutlined />
                 <Text type="secondary">{formatDate(course.createdAt)}</Text>
               </Space>
-              {course.authorId ? <Space>
+              {course.authorId ? (
+                <Space>
                   <UserOutlined />
                   <Text type="secondary">作者 ID: {course.authorId}</Text>
-                </Space> : null}
+                </Space>
+              ) : null}
             </Space>
 
             <div>

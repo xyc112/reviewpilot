@@ -82,7 +82,12 @@ const NoteCreate = () => {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => { void navigate("/notes"); }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => {
+            void navigate("/notes");
+          }}
+        >
           返回笔记列表
         </Button>
 
@@ -92,7 +97,13 @@ const NoteCreate = () => {
           <Title level={2}>创建新笔记</Title>
           <Form
             layout="vertical"
-            onFinish={() => { void handleSubmit({ preventDefault: () => { return; } } as React.SyntheticEvent); }}
+            onFinish={() => {
+              void handleSubmit({
+                preventDefault: () => {
+                  return;
+                },
+              } as React.SyntheticEvent);
+            }}
             initialValues={noteForm}
           >
             <Form.Item
@@ -102,9 +113,9 @@ const NoteCreate = () => {
             >
               <Input
                 value={noteForm.title}
-                onChange={(e) =>
-                  { setNoteForm({ ...noteForm, title: e.target.value }); }
-                }
+                onChange={(e) => {
+                  setNoteForm({ ...noteForm, title: e.target.value });
+                }}
                 placeholder="输入笔记标题"
               />
             </Form.Item>
@@ -117,9 +128,9 @@ const NoteCreate = () => {
               <TextArea
                 rows={3}
                 value={noteForm.summary}
-                onChange={(e) =>
-                  { setNoteForm({ ...noteForm, summary: e.target.value }); }
-                }
+                onChange={(e) => {
+                  setNoteForm({ ...noteForm, summary: e.target.value });
+                }}
                 placeholder="输入笔记摘要（可选，用于列表预览，建议50-150字）"
               />
             </Form.Item>
@@ -132,9 +143,9 @@ const NoteCreate = () => {
               <TextArea
                 rows={20}
                 value={noteForm.content}
-                onChange={(e) =>
-                  { setNoteForm({ ...noteForm, content: e.target.value }); }
-                }
+                onChange={(e) => {
+                  setNoteForm({ ...noteForm, content: e.target.value });
+                }}
                 placeholder="输入笔记内容，支持 Markdown 格式"
               />
             </Form.Item>
@@ -142,12 +153,12 @@ const NoteCreate = () => {
             <Form.Item label="可见性" name="visibility">
               <Select
                 value={noteForm.visibility}
-                onChange={(value) =>
-                  { setNoteForm({
+                onChange={(value) => {
+                  setNoteForm({
                     ...noteForm,
                     visibility: value,
-                  }); }
-                }
+                  });
+                }}
                 options={[
                   { value: "private", label: "私有（仅自己可见）" },
                   { value: "public", label: "公开（所有人可见）" },
@@ -159,7 +170,9 @@ const NoteCreate = () => {
               <Space>
                 <Button
                   icon={<CloseOutlined />}
-                  onClick={() => { void navigate("/notes"); }}
+                  onClick={() => {
+                    void navigate("/notes");
+                  }}
                   disabled={saving}
                 >
                   取消

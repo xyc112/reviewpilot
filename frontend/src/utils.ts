@@ -180,13 +180,10 @@ export const useFieldValidation = <T extends Record<string, unknown>>(
 
     setErrors(newErrors);
     setTouched(
-      Object.keys(validators).reduce<Record<string, boolean>>(
-        (acc, key) => {
-          acc[key] = true;
-          return acc;
-        },
-        {},
-      ),
+      Object.keys(validators).reduce<Record<string, boolean>>((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {}),
     );
 
     return isValid;

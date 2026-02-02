@@ -18,11 +18,7 @@ import {
 import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
-import {
-  MarkdownRenderer,
-  ConfirmDialog,
-  useToast,
-} from "../components";
+import { MarkdownRenderer, ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
@@ -107,7 +103,12 @@ const NoteDetail = () => {
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              void navigate("/courses");
+            }}
+          >
             前往课程列表
           </Button>
         }
@@ -150,8 +151,12 @@ const NoteDetail = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void handleDelete(); }}
-        onCancel={() => { setDeleteConfirm(false); }}
+        onConfirm={() => {
+          void handleDelete();
+        }}
+        onCancel={() => {
+          setDeleteConfirm(false);
+        }}
       />
 
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
@@ -166,7 +171,9 @@ const NoteDetail = () => {
         >
           <Button
             icon={<ArrowLeftOutlined />}
-            onClick={() => { void navigate("/notes"); }}
+            onClick={() => {
+              void navigate("/notes");
+            }}
           >
             返回笔记列表
           </Button>
@@ -175,14 +182,18 @@ const NoteDetail = () => {
               <Button
                 type="primary"
                 icon={<EditOutlined />}
-                onClick={() => { void navigate(`/notes/${noteId ?? ""}/edit`); }}
+                onClick={() => {
+                  void navigate(`/notes/${noteId ?? ""}/edit`);
+                }}
               >
                 编辑笔记
               </Button>
               <Button
                 danger
                 icon={<DeleteOutlined />}
-                onClick={() => { setDeleteConfirm(true); }}
+                onClick={() => {
+                  setDeleteConfirm(true);
+                }}
               >
                 删除笔记
               </Button>
@@ -200,9 +211,11 @@ const NoteDetail = () => {
                 {note.visibility === "public" ? "公开" : "私有"}
               </Tag>
               <Text type="secondary">创建于: {formatDate(note.createdAt)}</Text>
-              {note.updatedAt ? <Text type="secondary">
+              {note.updatedAt ? (
+                <Text type="secondary">
                   更新于: {formatDate(note.updatedAt)}
-                </Text> : null}
+                </Text>
+              ) : null}
             </Space>
             <Divider />
             <div style={{ minHeight: "400px" }}>

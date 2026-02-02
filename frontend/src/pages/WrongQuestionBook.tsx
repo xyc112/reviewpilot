@@ -83,7 +83,9 @@ const WrongQuestionBook = () => {
       const timer = setTimeout(() => {
         void fetchStats();
       }, 100);
-      return () => { clearTimeout(timer); };
+      return () => {
+        clearTimeout(timer);
+      };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchStats 依赖 course
   }, [wrongQuestions.length, course, loading]);
@@ -182,8 +184,7 @@ const WrongQuestionBook = () => {
       );
 
       // 检查答案是否正确
-      const userAnswer =
-        practiceAnswers[practicingQuestion.questionId] ?? [];
+      const userAnswer = practiceAnswers[practicingQuestion.questionId] ?? [];
       const correctAnswer = practicingQuestion.question?.answer ?? [];
       const isCorrect =
         JSON.stringify([...userAnswer].sort()) ===
@@ -215,7 +216,9 @@ const WrongQuestionBook = () => {
       // 搜索过滤
       const matchesSearch =
         !searchQuery ||
-        (wq.question?.question ?? "").toLowerCase().includes(searchQuery.toLowerCase());
+        (wq.question?.question ?? "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
   }, [wrongQuestions, searchQuery]);
@@ -248,11 +251,16 @@ const WrongQuestionBook = () => {
         confirmText="移除"
         cancelText="取消"
         type="danger"
-        onConfirm={() => { void handleRemove(); }}
-        onCancel={() => { setDeleteConfirm(null); }}
+        onConfirm={() => {
+          void handleRemove();
+        }}
+        onCancel={() => {
+          setDeleteConfirm(null);
+        }}
       />
 
-      {stats ? <Row gutter={16} style={{ marginBottom: "2rem" }}>
+      {stats ? (
+        <Row gutter={16} style={{ marginBottom: "2rem" }}>
           <Col xs={24} sm={8}>
             <Card>
               <Statistic
@@ -280,24 +288,31 @@ const WrongQuestionBook = () => {
               />
             </Card>
           </Col>
-        </Row> : null}
+        </Row>
+      ) : null}
 
       <Space wrap style={{ marginBottom: "1.5rem" }}>
         <Button
           type={filter === "all" ? "primary" : "default"}
-          onClick={() => { setFilter("all"); }}
+          onClick={() => {
+            setFilter("all");
+          }}
         >
           全部
         </Button>
         <Button
           type={filter === "notMastered" ? "primary" : "default"}
-          onClick={() => { setFilter("notMastered"); }}
+          onClick={() => {
+            setFilter("notMastered");
+          }}
         >
           未掌握
         </Button>
         <Button
           type={filter === "mastered" ? "primary" : "default"}
-          onClick={() => { setFilter("mastered"); }}
+          onClick={() => {
+            setFilter("mastered");
+          }}
         >
           已掌握
         </Button>
@@ -311,14 +326,17 @@ const WrongQuestionBook = () => {
         style={{ marginBottom: "2rem" }}
       />
 
-      {error ? <Alert
+      {error ? (
+        <Alert
           title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        /> : null}
+        />
+      ) : null}
 
-      {practicingQuestion?.question ? <Card
+      {practicingQuestion?.question ? (
+        <Card
           style={{ marginBottom: "2rem" }}
           title={
             <div
@@ -359,11 +377,14 @@ const WrongQuestionBook = () => {
             {practicingQuestion.question.type === "single" ||
             practicingQuestion.question.type === "truefalse" ? (
               <Radio.Group
-                value={(practiceAnswers[practicingQuestion.questionId] ?? [])[0]}
+                value={
+                  (practiceAnswers[practicingQuestion.questionId] ?? [])[0]
+                }
                 onChange={(e) => {
                   if (!showPracticeResult[practicingQuestion.questionId]) {
                     const rawVal = e.target.value as unknown;
-                    const val = typeof rawVal === "number" ? rawVal : Number(rawVal);
+                    const val =
+                      typeof rawVal === "number" ? rawVal : Number(rawVal);
                     handlePracticeOptionSelect(
                       practicingQuestion.questionId,
                       val,
@@ -372,17 +393,19 @@ const WrongQuestionBook = () => {
                   }
                 }}
                 disabled={
-                  (showPracticeResult[practicingQuestion.questionId] ?? false)
+                  showPracticeResult[practicingQuestion.questionId] ?? false
                 }
               >
                 <Space orientation="vertical" size="middle">
                   {practicingQuestion.question.options.map(
                     (option, optIndex) => {
-                      const answers = practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const answers =
+                        practiceAnswers[practicingQuestion.questionId] ?? [];
                       const isSelected = answers.includes(optIndex);
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect = practicingQuestion.question.answer.includes(optIndex);
+                      const isCorrect =
+                        practicingQuestion.question.answer.includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -415,11 +438,19 @@ const WrongQuestionBook = () => {
                             {String.fromCharCode(65 + optIndex)}.
                           </Text>
                           {option}
-                          {showResult ? <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected ? <Tag color="success">你的答案（正确）</Tag> : null}
-                              {isIncorrectlySelected ? <Tag color="error">你的答案</Tag> : null}
-                              {!isSelected && isCorrect ? <Tag color="success">正确答案</Tag> : null}
-                            </Space> : null}
+                          {showResult ? (
+                            <Space style={{ marginLeft: "0.5rem" }}>
+                              {isCorrectlySelected ? (
+                                <Tag color="success">你的答案（正确）</Tag>
+                              ) : null}
+                              {isIncorrectlySelected ? (
+                                <Tag color="error">你的答案</Tag>
+                              ) : null}
+                              {!isSelected && isCorrect ? (
+                                <Tag color="success">正确答案</Tag>
+                              ) : null}
+                            </Space>
+                          ) : null}
                         </Radio>
                       );
                     },
@@ -428,30 +459,32 @@ const WrongQuestionBook = () => {
               </Radio.Group>
             ) : (
               <Checkbox.Group
-                  value={practiceAnswers[practicingQuestion.questionId] ?? []}
-                  onChange={(values: unknown) => {
-                    if (!showPracticeResult[practicingQuestion.questionId]) {
-                      const newAnswers: number[] = Array.isArray(values)
-                        ? values.filter((v): v is number => typeof v === "number")
-                        : [];
-                      setPracticeAnswers((prev) => ({
-                        ...prev,
-                        [practicingQuestion.questionId]: newAnswers,
-                      }));
+                value={practiceAnswers[practicingQuestion.questionId] ?? []}
+                onChange={(values: unknown) => {
+                  if (!showPracticeResult[practicingQuestion.questionId]) {
+                    const newAnswers: number[] = Array.isArray(values)
+                      ? values.filter((v): v is number => typeof v === "number")
+                      : [];
+                    setPracticeAnswers((prev) => ({
+                      ...prev,
+                      [practicingQuestion.questionId]: newAnswers,
+                    }));
                   }
                 }}
                 disabled={
-                  (showPracticeResult[practicingQuestion.questionId] ?? false)
+                  showPracticeResult[practicingQuestion.questionId] ?? false
                 }
               >
                 <Space orientation="vertical" size="middle">
                   {practicingQuestion.question.options.map(
                     (option, optIndex) => {
-                      const answers = practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const answers =
+                        practiceAnswers[practicingQuestion.questionId] ?? [];
                       const isSelected = answers.includes(optIndex);
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect = practicingQuestion.question.answer.includes(optIndex);
+                      const isCorrect =
+                        practicingQuestion.question.answer.includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -484,11 +517,19 @@ const WrongQuestionBook = () => {
                             {String.fromCharCode(65 + optIndex)}.
                           </Text>
                           {option}
-                          {showResult ? <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected ? <Tag color="success">你的答案（正确）</Tag> : null}
-                              {isIncorrectlySelected ? <Tag color="error">你的答案</Tag> : null}
-                              {!isSelected && isCorrect ? <Tag color="success">正确答案</Tag> : null}
-                            </Space> : null}
+                          {showResult ? (
+                            <Space style={{ marginLeft: "0.5rem" }}>
+                              {isCorrectlySelected ? (
+                                <Tag color="success">你的答案（正确）</Tag>
+                              ) : null}
+                              {isIncorrectlySelected ? (
+                                <Tag color="error">你的答案</Tag>
+                              ) : null}
+                              {!isSelected && isCorrect ? (
+                                <Tag color="success">正确答案</Tag>
+                              ) : null}
+                            </Space>
+                          ) : null}
                         </Checkbox>
                       );
                     },
@@ -497,7 +538,8 @@ const WrongQuestionBook = () => {
               </Checkbox.Group>
             )}
 
-            {showPracticeResult[practicingQuestion.questionId] ? <Card
+            {showPracticeResult[practicingQuestion.questionId] ? (
+              <Card
                 size="small"
                 style={{
                   backgroundColor: "#e6f7ff",
@@ -523,7 +565,8 @@ const WrongQuestionBook = () => {
                         .join(", ")}
                     </Text>
                   </div>
-                  {practicingQuestion.question.explanation ? <>
+                  {practicingQuestion.question.explanation ? (
+                    <>
                       <Divider style={{ margin: "0.5rem 0" }} />
                       <div>
                         <Text
@@ -536,13 +579,20 @@ const WrongQuestionBook = () => {
                           {practicingQuestion.question.explanation}
                         </Paragraph>
                       </div>
-                    </> : null}
+                    </>
+                  ) : null}
                 </Space>
-              </Card> : null}
+              </Card>
+            ) : null}
 
             <Space>
               {!showPracticeResult[practicingQuestion.questionId] ? (
-                <Button type="primary" onClick={() => { void handleSubmitPractice(); }}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    void handleSubmitPractice();
+                  }}
+                >
                   提交答案
                 </Button>
               ) : (
@@ -550,7 +600,8 @@ const WrongQuestionBook = () => {
               )}
             </Space>
           </Space>
-        </Card> : null}
+        </Card>
+      ) : null}
 
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {wrongQuestions.length === 0 ? (
@@ -584,7 +635,9 @@ const WrongQuestionBook = () => {
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => { setSearchQuery(""); }}
+            onClearFilter={() => {
+              setSearchQuery("");
+            }}
             clearFilterLabel="清除搜索"
           />
         ) : filteredWrongQuestions.length > 0 ? (
@@ -598,7 +651,9 @@ const WrongQuestionBook = () => {
                     size="small"
                     type="primary"
                     icon={<ReloadOutlined />}
-                    onClick={() => { handleStartPractice(wq); }}
+                    onClick={() => {
+                      handleStartPractice(wq);
+                    }}
                   >
                     重新练习
                   </Button>
@@ -606,7 +661,9 @@ const WrongQuestionBook = () => {
                     <Button
                       size="small"
                       icon={<CheckCircleOutlined />}
-                      onClick={() => { void handleMarkAsMastered(wq.id); }}
+                      onClick={() => {
+                        void handleMarkAsMastered(wq.id);
+                      }}
                     >
                       标记为已掌握
                     </Button>
@@ -615,7 +672,9 @@ const WrongQuestionBook = () => {
                     size="small"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => { setDeleteConfirm(wq.id); }}
+                    onClick={() => {
+                      setDeleteConfirm(wq.id);
+                    }}
                   >
                     移除
                   </Button>
