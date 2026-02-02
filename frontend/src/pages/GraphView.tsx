@@ -10,16 +10,16 @@ import {
   Input,
   Select,
   Form,
-  Divider,
 } from "antd";
 import { EditOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Node, Relation } from "../types";
 import { graphAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { GraphCanvas, ConfirmDialog, useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const GraphView = () => {
   const navigate = useNavigate();
@@ -75,6 +75,7 @@ const GraphView = () => {
       return;
     }
     fetchGraphData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchGraphData 依赖 course
   }, [course, navigate]);
 
   const fetchGraphData = async () => {
@@ -93,36 +94,33 @@ const GraphView = () => {
       // 更新正在编辑的节点和选中的节点
       setEditingNode((prev) => {
         if (prev) {
-          // @ts-ignore
-          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
-          return updatedNode || prev;
+          const updatedNode = fetchedNodes.find((n) => n.id === prev?.id);
+          return updatedNode ?? prev;
         }
         return prev;
       });
 
       setSelectedNode((prev) => {
         if (prev) {
-          // @ts-ignore
-          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
-          return updatedNode || prev;
+          const updatedNode = fetchedNodes.find((n) => n.id === prev?.id);
+          return updatedNode ?? prev;
         }
         return prev;
       });
 
       setSelectedRelation((prev) => {
         if (prev) {
-          // @ts-ignore
-          // @ts-ignore
           const updatedRelation = fetchedRelations.find(
             (r) => r.id === prev.id,
           );
-          return updatedRelation || null;
+          return updatedRelation ?? null;
         }
         return prev;
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
-        "获取知识图谱数据失败: " + (err.response?.data?.message || err.message),
+        "获取知识图谱数据失败: " +
+          (err instanceof Error ? err.message : String(err)),
       );
       console.error("Error fetching graph data:", err);
     } finally {
@@ -183,9 +181,8 @@ const GraphView = () => {
           });
         }, 100);
       }
-    } catch (err: any) {
-      const errorMsg =
-        "创建节点失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "创建节点失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     }
@@ -203,9 +200,8 @@ const GraphView = () => {
       });
       success("关系创建成功");
       fetchGraphData();
-    } catch (err: any) {
-      const errorMsg =
-        "创建关系失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "创建关系失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     }
@@ -235,10 +231,10 @@ const GraphView = () => {
         success("关系删除成功");
       }
       fetchGraphData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
         `删除${deleteConfirm.type === "node" ? "节点" : "关系"}失败: ` +
-        (err.response?.data?.message || err.message);
+        getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -280,9 +276,8 @@ const GraphView = () => {
         const updatedNode = { ...selectedNode, ...nodeData };
         setSelectedNode(updatedNode);
       }
-    } catch (err: any) {
-      const errorMsg =
-        "更新节点失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "更新节点失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     }
@@ -337,9 +332,8 @@ const GraphView = () => {
         const updatedRelation = { ...selectedRelation, ...editRelationForm };
         setSelectedRelation(updatedRelation);
       }
-    } catch (err: any) {
-      const errorMsg =
-        "更新关系失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "更新关系失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     }

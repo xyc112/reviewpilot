@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 import { useAuthStore } from "../stores";
 import { authAPI } from "../services";
-import { validateUsername, validatePassword } from "../utils";
+import { validateUsername, validatePassword, getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -51,15 +51,10 @@ const Register = () => {
       const response = await authAPI.register(values);
       login(response.data);
       navigate("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.message ||
-        "注册失败，请稍后重试";
+      const errorMessage = getErrorMessage(err) || "注册失败，请稍后重试";
       setError(errorMessage);
       console.error("注册错误:", err);
     } finally {

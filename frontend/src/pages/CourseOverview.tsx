@@ -26,7 +26,8 @@ import {
 import { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
-import { useTheme, ConfirmDialog, useToast } from "../components";
+import { ConfirmDialog, useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -37,8 +38,6 @@ const CourseOverview = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { success, error: showError } = useToast();
   const [course, setCourse] = useState<Course | null>(null);
   const [stats, setStats] = useState<{
@@ -54,6 +53,7 @@ const CourseOverview = () => {
     if (id) {
       fetchCourseData(Number(id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourseData 依赖 id
   }, [id]);
 
   const fetchCourseData = async (courseId: number) => {
@@ -78,11 +78,9 @@ const CourseOverview = () => {
       } catch (err) {
         console.error("Failed to fetch stats:", err);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("获取课程信息失败");
-      showError(
-        "获取课程信息失败: " + (err.response?.data?.message || err.message),
-      );
+      showError("获取课程信息失败: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -98,9 +96,9 @@ const CourseOverview = () => {
       await courseAPI.deleteCourse(course.id);
       success("课程删除成功");
       window.location.href = "/courses";
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "删除课程失败: " + (err.response?.data?.message || "无权限");
+        "删除课程失败: " + (getErrorMessage(err) || "无权限");
       setError(errorMsg);
       showError(errorMsg);
     } finally {

@@ -25,6 +25,7 @@ import {
   ListEmptyState,
   ListItemCard,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -57,6 +58,7 @@ const QuizList = () => {
       return;
     }
     fetchQuizzes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchQuizzes 依赖 course
   }, [course, navigate]);
 
   const fetchQuizzes = async () => {
@@ -64,7 +66,7 @@ const QuizList = () => {
     try {
       const response = await quizAPI.getQuizzes(course.id);
       setQuizzes(response.data);
-    } catch (err: any) {
+    } catch {
       setError("获取测验列表失败");
     } finally {
       setLoading(false);
@@ -82,9 +84,9 @@ const QuizList = () => {
       await quizAPI.deleteQuiz(course.id, deleteConfirm.quizId);
       success("测验删除成功");
       fetchQuizzes();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "删除测验失败: " + (err.response?.data?.message || "未知错误");
+        "删除测验失败: " + (getErrorMessage(err) || "未知错误");
       setError(errorMsg);
       showError(errorMsg);
     } finally {

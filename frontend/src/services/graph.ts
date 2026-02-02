@@ -12,7 +12,7 @@ export const graphAPI = {
     api.put<Node>(`/api/graphs/${courseId}/nodes/${nodeId}`, nodeData),
   deleteNode: (courseId: number, nodeId: string) =>
     api.delete(`/api/graphs/${courseId}/nodes/${nodeId}`),
-  getRelations: (courseId: number, params?: any) =>
+  getRelations: (courseId: number, params?: Record<string, string | number | boolean>) =>
     api.get<Relation[]>(`/api/graphs/${courseId}/relations`, { params }),
   createRelation: (courseId: number, relationData: Partial<Relation>) =>
     api.post<Relation>(`/api/graphs/${courseId}/relations`, relationData),

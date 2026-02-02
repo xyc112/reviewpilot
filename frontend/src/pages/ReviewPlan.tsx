@@ -6,16 +6,13 @@ import {
   Typography,
   Spin,
   Tag,
-  Alert,
   Input,
   Select,
   DatePicker,
-  Divider,
   Form,
 } from "antd";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import {
-  CalendarOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
@@ -28,6 +25,7 @@ import {
 import { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services";
 import { useToast, useTheme, ConfirmDialog } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -58,6 +56,7 @@ const ReviewPlanPage = () => {
 
   useEffect(() => {
     fetchPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅挂载时拉取
   }, []);
 
   // 当计划加载完成后，如果还没有选中日期，则自动选中今天
@@ -73,8 +72,8 @@ const ReviewPlanPage = () => {
     try {
       const response = await reviewPlanAPI.getPlans();
       setPlans(response.data);
-    } catch (err: any) {
-      showError("获取复习计划失败");
+    } catch (err: unknown) {
+      showError("获取复习计划失败: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -163,9 +162,9 @@ const ReviewPlanPage = () => {
         setSelectedDate(planDate);
       }
       await fetchPlans();
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(
-        "创建复习计划失败: " + (err.response?.data?.message || "未知错误"),
+        "创建复习计划失败: " + (getErrorMessage(err) || "未知错误"),
       );
     }
   };
@@ -206,9 +205,9 @@ const ReviewPlanPage = () => {
         }
       }
       await fetchPlans();
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(
-        "更新复习计划失败: " + (err.response?.data?.message || "未知错误"),
+        "更新复习计划失败: " + (getErrorMessage(err) || "未知错误"),
       );
     }
   };
@@ -223,9 +222,9 @@ const ReviewPlanPage = () => {
       await reviewPlanAPI.deletePlan(deleteConfirm.planId);
       success("复习计划删除成功");
       await fetchPlans();
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(
-        "删除复习计划失败: " + (err.response?.data?.message || "未知错误"),
+        "删除复习计划失败: " + (getErrorMessage(err) || "未知错误"),
       );
     } finally {
       setDeleteConfirm({ isOpen: false, planId: null });
@@ -237,8 +236,8 @@ const ReviewPlanPage = () => {
       await reviewPlanAPI.updatePlan(plan.id, { completed: !plan.completed });
       success(plan.completed ? "已标记为未完成" : "已标记为完成");
       await fetchPlans();
-    } catch (err: any) {
-      showError("更新状态失败: " + (err.response?.data?.message || "未知错误"));
+    } catch (err: unknown) {
+      showError("更新状态失败: " + (getErrorMessage(err) || "未知错误"));
     }
   };
 
@@ -257,6 +256,7 @@ const ReviewPlanPage = () => {
   const selectedDatePlans = useMemo(() => {
     if (!selectedDate) return [];
     return getPlansForDate(selectedDate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- getPlansForDate 依赖 plans
   }, [selectedDate, plans]);
 
   const today = new Date();
@@ -271,6 +271,7 @@ const ReviewPlanPage = () => {
       })
       .sort((a, b) => a.planDate.localeCompare(b.planDate))
       .slice(0, 5);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- today 为常量
   }, [plans]);
 
   const days = getDaysInMonth(currentDate);

@@ -22,13 +22,13 @@ import {
   ReloadOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { Quiz, QuizAttempt } from "../types";
+import { Quiz, QuizAttempt, AttemptResult } from "../types";
 import { quizAPI, wrongQuestionAPI } from "../services";
 import { useCourseStore } from "../stores";
 import { useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text, Paragraph } = Typography;
-const { Countdown } = Statistic;
 
 const QuizDetail = () => {
   const { quizId } = useParams<{ quizId: string }>();
@@ -58,6 +58,7 @@ const QuizDetail = () => {
     if (quizId) {
       fetchQuiz();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchQuiz 依赖 course, quizId
   }, [course, quizId, navigate]);
 
   const fetchQuiz = async () => {
@@ -65,7 +66,7 @@ const QuizDetail = () => {
     try {
       const response = await quizAPI.getQuiz(course.id, quizId);
       setQuiz(response.data);
-    } catch (err: any) {
+    } catch {
       setError("获取测验失败");
     } finally {
       setLoading(false);
@@ -128,7 +129,7 @@ const QuizDetail = () => {
           userAnswer: number[];
           questionId: string;
         }> = [];
-        response.data.results.forEach((result: any) => {
+        response.data.results.forEach((result: AttemptResult) => {
           if (!result.correct && result.questionEntityId) {
             const questionId = result.questionId;
             const userAnswer = answers[questionId] || [];
@@ -147,8 +148,8 @@ const QuizDetail = () => {
               wq.questionEntityId,
               wq.userAnswer,
             );
-          } catch (err: any) {
-            console.error("Failed to add wrong question:", err);
+          } catch (err: unknown) {
+            console.error("Failed to add wrong question:", getErrorMessage(err));
           }
         }
 
@@ -156,8 +157,8 @@ const QuizDetail = () => {
           success(`已自动添加 ${wrongQuestions.length} 道错题到错题本`);
         }
       }
-    } catch (err: any) {
-      setError("提交测验失败: " + (err.response?.data?.message || "未知错误"));
+    } catch (err: unknown) {
+      setError("提交测验失败: " + getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -183,8 +184,8 @@ const QuizDetail = () => {
         userAnswer,
       );
       success("已添加到错题本");
-    } catch (err: any) {
-      showError("添加失败: " + (err.response?.data?.message || err.message));
+    } catch (err: unknown) {
+      showError("添加失败: " + getErrorMessage(err));
       setAddingToWrongBook((prev) => {
         const newSet = new Set(prev);
         newSet.delete(questionId);

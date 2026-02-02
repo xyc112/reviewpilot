@@ -12,7 +12,7 @@ export const quizAPI = {
     api.put<Quiz>(`/api/courses/${courseId}/quizzes/${quizId}`, quizData),
   deleteQuiz: (courseId: number, quizId: string) =>
     api.delete(`/api/courses/${courseId}/quizzes/${quizId}`),
-  submitAttempt: (courseId: number, quizId: string, answers: any) =>
+  submitAttempt: (courseId: number, quizId: string, answers: Record<string, unknown>) =>
     api.post<QuizAttempt>(
       `/api/courses/${courseId}/quizzes/${quizId}/attempts`,
       {

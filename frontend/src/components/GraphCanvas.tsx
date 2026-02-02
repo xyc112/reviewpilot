@@ -282,11 +282,10 @@ const GraphCanvas = ({
       .join("g")
       .attr("class", "node-group")
       .call(
-        d3
-          .drag<SVGGElement, D3Node>()
+        d3.drag<SVGGElement, D3Node>()
           .on("start", dragstarted)
           .on("drag", dragged)
-          .on("end", dragended) as any,
+          .on("end", dragended),
       );
 
     // 节点圆圈

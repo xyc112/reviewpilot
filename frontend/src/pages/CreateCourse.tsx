@@ -9,11 +9,11 @@ import {
   Typography,
   Select,
   Alert,
-  message,
 } from "antd";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -53,9 +53,9 @@ const CreateCourse = () => {
       await courseAPI.createCourse(courseData);
       success("课程创建成功");
       navigate("/courses");
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        err.response?.data?.message || err.message || "创建课程失败";
+        getErrorMessage(err) || "创建课程失败";
       setError(errorMsg);
       showError(errorMsg);
     } finally {

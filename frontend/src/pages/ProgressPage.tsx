@@ -3,15 +3,8 @@ import { Link } from "react-router-dom";
 import {
   Card,
   Alert,
-  Spin,
-  Statistic,
-  Row,
-  Col,
   Typography,
   Space,
-  Progress,
-  Table,
-  Tag,
   Empty,
   Button,
 } from "antd";
@@ -20,8 +13,6 @@ import {
   CheckCircleOutlined,
   FileTextOutlined,
   TrophyOutlined,
-  TargetOutlined,
-  StarOutlined,
 } from "@ant-design/icons";
 import { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services";
@@ -39,8 +30,7 @@ const ProgressPage = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  useTheme();
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
   const [courseProgressList, setCourseProgressList] = useState<
     CourseProgress[]
@@ -67,16 +57,19 @@ const ProgressPage = () => {
         setCourseProgressList(progressRes.data);
 
         const coursesMap = new Map<number, { title: string; level: string }>();
-        coursesRes.data.forEach((course: any) => {
-          coursesMap.set(course.id, {
-            title: course.title,
-            level: course.level,
-          });
-        });
+        coursesRes.data.forEach(
+          (course: { id: number; title: string; level: string }) => {
+            coursesMap.set(course.id, {
+              title: course.title,
+              level: course.level,
+            });
+          },
+        );
         setCourses(coursesMap);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError(
-          "获取学习进度失败: " + (err.response?.data?.message || "未知错误"),
+          "获取学习进度失败: " +
+            (err instanceof Error ? err.message : "未知错误"),
         );
       } finally {
         setLoading(false);
@@ -122,7 +115,6 @@ const ProgressPage = () => {
     const currentProgress = courseProgressList.find(
       (p) => p.courseId === currentStudyingCourse.id,
     );
-    const courseInfo = courses.get(currentStudyingCourse.id);
 
     // 如果找不到进度数据，使用默认值
     const progressData = currentProgress || {
@@ -590,8 +582,6 @@ const CompactStatCard = ({
   color: string;
   large?: boolean;
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   return (
     <Card
       size="small"

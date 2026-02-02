@@ -9,10 +9,10 @@ import {
   Tag,
   Spin,
 } from "antd";
-import { PlusOutlined, FileTextOutlined } from "@ant-design/icons";
+import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Note } from "../types";
 import { noteAPI } from "../services";
-import { useAuthStore, useCourseStore } from "../stores";
+import { useCourseStore } from "../stores";
 import {
   ConfirmDialog,
   useToast,
@@ -20,6 +20,7 @@ import {
   ListEmptyState,
   ListItemCard,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -43,8 +44,6 @@ const NoteList = () => {
     noteId: null,
   });
 
-  const user = useAuthStore((state) => state.user);
-  const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
 
   useEffect(() => {
@@ -53,6 +52,7 @@ const NoteList = () => {
       return;
     }
     fetchNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNotes 依赖 course
   }, [course, navigate]);
 
   const fetchNotes = async () => {
@@ -61,10 +61,8 @@ const NoteList = () => {
       setLoading(true);
       const response = await noteAPI.getNotes(course.id);
       setNotes(response.data);
-    } catch (err: any) {
-      setError(
-        "获取笔记列表失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      setError("获取笔记列表失败: " + getErrorMessage(err));
       console.error("Error fetching notes:", err);
     } finally {
       setLoading(false);
@@ -82,9 +80,8 @@ const NoteList = () => {
       await noteAPI.deleteNote(course.id, deleteConfirm.noteId);
       success("笔记删除成功");
       fetchNotes();
-    } catch (err: any) {
-      const errorMsg =
-        "删除笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "删除笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -229,32 +226,33 @@ const NoteList = () => {
           dataSource={filteredNotes}
           renderItem={(note) => (
             <ListItemCard>
-              <Link
-                to={`/notes/${note.id}`}
-                style={{
-                  width: "100%",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <Space
-                  direction="vertical"
-                  size="small"
-                  style={{ width: "100%" }}
+              <Space style={{ width: "100%" }} align="start">
+                <Link
+                  to={`/notes/${note.id}`}
+                  style={{
+                    flex: 1,
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
                 >
-                  <Space wrap>
-                    <Title
-                      level={4}
-                      style={{ margin: 0, fontSize: "1.125rem" }}
-                    >
-                      {note.title}
-                    </Title>
-                    <Tag
-                      color={note.visibility === "public" ? "blue" : "default"}
-                    >
-                      {note.visibility === "public" ? "公开" : "私有"}
-                    </Tag>
-                  </Space>
+                  <Space
+                    direction="vertical"
+                    size="small"
+                    style={{ width: "100%" }}
+                  >
+                    <Space wrap>
+                      <Title
+                        level={4}
+                        style={{ margin: 0, fontSize: "1.125rem" }}
+                      >
+                        {note.title}
+                      </Title>
+                      <Tag
+                        color={note.visibility === "public" ? "blue" : "default"}
+                      >
+                        {note.visibility === "public" ? "公开" : "私有"}
+                      </Tag>
+                    </Space>
                   <Paragraph
                     ellipsis={{ rows: 2, expandable: false }}
                     style={{
@@ -269,11 +267,23 @@ const NoteList = () => {
                         : note.content
                       ).replace(/\\n/g, " ")}
                   </Paragraph>
-                  <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
-                    {formatDate(note.createdAt)}
-                  </Text>
-                </Space>
-              </Link>
+                    <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
+                      {formatDate(note.createdAt)}
+                    </Text>
+                  </Space>
+                </Link>
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDeleteNote(note.id);
+                  }}
+                  aria-label="删除笔记"
+                />
+              </Space>
             </ListItemCard>
           )}
         />

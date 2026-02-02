@@ -6,7 +6,7 @@ export interface Node {
   label: string; // 必填字段
   type?: string; // 可选字段
   description?: string; // 可选字段
-  meta?: Record<string, any>; // 可选字段
+  meta?: Record<string, unknown>; // 可选字段
 }
 
 export interface Relation {
@@ -16,5 +16,5 @@ export interface Relation {
   type: string; // 必填字段
   directed?: boolean; // 可选字段
   weight?: number; // 可选字段
-  meta?: Record<string, any>; // 可选字段
+  meta?: Record<string, unknown>; // 可选字段
 }

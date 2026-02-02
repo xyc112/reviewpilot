@@ -31,6 +31,7 @@ import {
   FilterBar,
   ListItemCard,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -67,7 +68,7 @@ const CourseList = () => {
     try {
       const response = await courseAPI.getCourses();
       setCourses(response.data);
-    } catch (err: any) {
+    } catch {
       setError("获取课程列表失败");
     } finally {
       setLoading(false);
@@ -79,9 +80,9 @@ const CourseList = () => {
       await userCourseAPI.addCourse(course.id);
       success(`已将 "${course.title}" 添加到学习列表`);
       await refreshUserCourses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "添加到学习列表失败: " + (err.response?.data?.message || "未知错误");
+        "添加到学习列表失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -91,9 +92,9 @@ const CourseList = () => {
       await userCourseAPI.removeCourse(course.id);
       success(`已将 "${course.title}" 从学习列表移除`);
       await refreshUserCourses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "移除课程失败: " + (err.response?.data?.message || "未知错误");
+        "移除课程失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -103,9 +104,9 @@ const CourseList = () => {
       await userCourseAPI.setCurrentStudying(course.id);
       success(`已将 "${course.title}" 设置为当前学习课程`);
       await refreshUserCourses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "设置当前学习课程失败: " + (err.response?.data?.message || "未知错误");
+        "设置当前学习课程失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -115,9 +116,9 @@ const CourseList = () => {
       await userCourseAPI.unsetCurrentStudying();
       success(`已结束学习 "${course.title}"`);
       await refreshUserCourses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "结束学习失败: " + (err.response?.data?.message || "未知错误");
+        "结束学习失败: " + (getErrorMessage(err) || "未知错误");
       showError(errorMsg);
     }
   };
@@ -144,9 +145,9 @@ const CourseList = () => {
       // 删除课程后刷新用户课程列表
       await refreshUserCourses();
       fetchCourses();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "删除课程失败: " + (err.response?.data?.message || "未知错误");
+        "删除课程失败: " + (getErrorMessage(err) || "未知错误");
       setError(errorMsg);
       showError(errorMsg);
     } finally {

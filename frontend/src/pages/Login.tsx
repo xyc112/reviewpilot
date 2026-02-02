@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { useAuthStore } from "../stores";
 import { authAPI } from "../services";
-import { validateUsername, validatePassword } from "../utils";
+import { validateUsername, validatePassword, getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -41,15 +41,10 @@ const Login = () => {
       const user = response.data;
       login(user);
       navigate("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.message ||
-        "登录失败，请检查用户名和密码";
+      const errorMessage = getErrorMessage(err) || "登录失败，请检查用户名和密码";
       setError(errorMessage);
       console.error("登录错误:", err);
     } finally {

@@ -16,7 +16,6 @@ import {
   DashboardOutlined,
   MoonOutlined,
   SunOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import { useAuthStore } from "../stores";
 import { useTheme, Sidebar } from "./index";
@@ -49,7 +48,7 @@ const Layout = () => {
   };
 
   const {
-    token: { colorBgContainer, colorBorder, colorText, borderRadius, motionDurationMid, motionEaseInOut },
+    token: { colorBgContainer, colorBorder, borderRadius, motionDurationMid, motionEaseInOut },
   } = antdTheme.useToken();
 
   const userMenuItems: MenuProps["items"] = [

@@ -1,3 +1,23 @@
+import type { User } from "./types";
+
+/**
+ * 从 unknown 错误中提取可读消息（兼容 axios 等）
+ */
+export function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "response" in err &&
+    typeof (err as { response?: { data?: { message?: string } } }).response
+      ?.data?.message === "string"
+  ) {
+    return (err as { response: { data: { message: string } } }).response.data
+      .message;
+  }
+  return String(err);
+}
+
 // 认证工具函数
 
 /**
@@ -20,14 +40,14 @@ export const getStoredToken = (): string | null => {
 /**
  * 获取存储的用户信息
  */
-export const getStoredUser = (): any | null => {
+export const getStoredUser = (): User | null => {
   const userData = localStorage.getItem("user");
   if (!userData) return null;
 
   try {
-    return JSON.parse(userData);
-  } catch (e) {
-    console.error("解析用户数据失败:", e);
+    return JSON.parse(userData) as User;
+  } catch {
+    console.error("解析用户数据失败");
     clearAuthData();
     return null;
   }
@@ -43,7 +63,7 @@ export const isAuthenticated = (): boolean => {
 };
 
 // 表单验证工具函数
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -110,14 +130,14 @@ export const validateDescription = (
 };
 
 // 实时验证函数
-export const useFieldValidation = <T extends Record<string, any>>(
+export const useFieldValidation = <T extends Record<string, unknown>>(
   initialValues: T,
-  validators: Partial<Record<keyof T, (value: any) => string | null>>,
+  validators: Partial<Record<keyof T, (value: unknown) => string | null>>,
 ) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const validateField = (name: keyof T, value: any) => {
+  const validateField = (name: keyof T, value: unknown) => {
     const validator = validators[name];
     if (validator) {
       const error = validator(value);
@@ -137,7 +157,7 @@ export const useFieldValidation = <T extends Record<string, any>>(
     }));
   };
 
-  const handleChange = (name: keyof T, value: any) => {
+  const handleChange = (name: keyof T, value: unknown) => {
     if (touched[name]) {
       validateField(name, value);
     }

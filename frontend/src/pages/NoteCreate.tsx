@@ -9,7 +9,6 @@ import {
   Typography,
   Select,
   Alert,
-  Spin,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -19,6 +18,7 @@ import {
 import { noteAPI } from "../services";
 import { useCourseStore } from "../stores";
 import { useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -59,9 +59,8 @@ const NoteCreate = () => {
       const response = await noteAPI.createNote(course.id, noteForm);
       success("笔记创建成功");
       navigate(`/notes/${response.data.id}`);
-    } catch (err: any) {
-      const errorMsg =
-        "创建笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "创建笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {

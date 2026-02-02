@@ -20,31 +20,27 @@ import {
   CheckCircleOutlined,
   ReloadOutlined,
   DeleteOutlined,
-  ArrowLeftOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { WrongQuestion, Question } from "../types";
-import { wrongQuestionAPI, quizAPI } from "../services";
-import { useAuthStore, useCourseStore } from "../stores";
+import { WrongQuestion } from "../types";
+import { wrongQuestionAPI } from "../services";
+import { useCourseStore } from "../stores";
 import {
-  useTheme,
   ConfirmDialog,
   useToast,
   SearchBox,
   ListEmptyState,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text, Paragraph } = Typography;
 
 const WrongQuestionBook = () => {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { success, error: showError } = useToast();
 
   const course = currentStudyingCourse || selectedCourse;
@@ -77,6 +73,7 @@ const WrongQuestionBook = () => {
     }
     fetchWrongQuestions();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchWrongQuestions/fetchStats 依赖 course, filter
   }, [course, navigate, filter]);
 
   // 当错题列表更新时，重新获取统计信息
@@ -88,6 +85,7 @@ const WrongQuestionBook = () => {
       }, 100);
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchStats 依赖 course
   }, [wrongQuestions.length, course, loading]);
 
   const fetchWrongQuestions = async () => {
@@ -100,10 +98,8 @@ const WrongQuestionBook = () => {
         mastered,
       );
       setWrongQuestions(response.data);
-    } catch (err: any) {
-      setError(
-        "获取错题列表失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      setError("获取错题列表失败: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -118,8 +114,8 @@ const WrongQuestionBook = () => {
         mastered: response.data.mastered || 0,
         notMastered: response.data.notMastered || 0,
       });
-    } catch (err: any) {
-      console.error("Failed to fetch stats:", err);
+    } catch (err: unknown) {
+      console.error("Failed to fetch stats:", getErrorMessage(err));
       setStats({ total: 0, mastered: 0, notMastered: 0 });
     }
   };
@@ -131,8 +127,8 @@ const WrongQuestionBook = () => {
       success("已标记为已掌握");
       fetchWrongQuestions();
       fetchStats();
-    } catch (err: any) {
-      showError("标记失败: " + (err.response?.data?.message || err.message));
+    } catch (err: unknown) {
+      showError("标记失败: " + getErrorMessage(err));
     }
   };
 
@@ -144,8 +140,8 @@ const WrongQuestionBook = () => {
       setDeleteConfirm(null);
       fetchWrongQuestions();
       fetchStats();
-    } catch (err: any) {
-      showError("移除失败: " + (err.response?.data?.message || err.message));
+    } catch (err: unknown) {
+      showError("移除失败: " + getErrorMessage(err));
     }
   };
 
@@ -201,8 +197,8 @@ const WrongQuestionBook = () => {
       }
 
       fetchWrongQuestions();
-    } catch (err: any) {
-      showError("提交失败: " + (err.response?.data?.message || err.message));
+    } catch (err: unknown) {
+      showError("提交失败: " + getErrorMessage(err));
     }
   };
 

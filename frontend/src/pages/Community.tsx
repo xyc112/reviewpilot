@@ -1,15 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
   Input,
   Button,
   Space,
   Typography,
-  Empty,
   Alert,
-  Divider,
-  Tag,
 } from "antd";
 import {
   PlusOutlined,
@@ -21,7 +18,7 @@ import {
   DownOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Post, Comment, Course } from "../types";
+import { Post, Comment } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -31,9 +28,10 @@ import {
   SearchBox,
   ListEmptyState,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
-const { Text, Title, Paragraph } = Typography;
+const { Text, Title } = Typography;
 
 const Community = () => {
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
@@ -51,9 +49,7 @@ const Community = () => {
     courseIdParam ||
     currentStudyingCourse?.id?.toString() ||
     selectedCourse?.id?.toString();
-  const [course, setCourse] = useState<{ id: number; title: string } | null>(
-    null,
-  );
+  const [, setCourse] = useState<{ id: number; title: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -121,6 +117,7 @@ const Community = () => {
     }
     fetchCourse();
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourse/fetchPosts 依赖 courseId，已在依赖中
   }, [courseId, navigate, currentStudyingCourse, selectedCourse]);
 
   const fetchCourse = async () => {
@@ -128,8 +125,8 @@ const Community = () => {
     try {
       const response = await courseAPI.getCourse(Number(courseId));
       setCourse({ id: response.data.id, title: response.data.title });
-    } catch (err: any) {
-      console.error("Failed to fetch course:", err);
+    } catch (err: unknown) {
+      console.error("Failed to fetch course:", getErrorMessage(err));
       // 如果获取失败，使用selectedCourse作为后备
       if (selectedCourse && selectedCourse.id === Number(courseId)) {
         setCourse({ id: selectedCourse.id, title: selectedCourse.title });
@@ -143,10 +140,8 @@ const Community = () => {
       setLoading(true);
       const response = await postAPI.getPosts(Number(courseId));
       setPosts(response.data);
-    } catch (err: any) {
-      setError(
-        "获取帖子列表失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      setError("获取帖子列表失败: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -158,10 +153,8 @@ const Community = () => {
       setLoadingComments((prev) => ({ ...prev, [postId]: true }));
       const response = await commentAPI.getComments(Number(courseId), postId);
       setComments((prev) => ({ ...prev, [postId]: response.data }));
-    } catch (err: any) {
-      showError(
-        "获取评论失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("获取评论失败: " + getErrorMessage(err));
     } finally {
       setLoadingComments((prev) => ({ ...prev, [postId]: false }));
     }
@@ -192,10 +185,8 @@ const Community = () => {
       setNewPost({ title: "", content: "" });
       setShowCreatePost(false);
       fetchPosts();
-    } catch (err: any) {
-      showError(
-        "创建帖子失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("创建帖子失败: " + getErrorMessage(err));
     }
   };
 
@@ -217,10 +208,8 @@ const Community = () => {
       setEditingPost(null);
       setEditPostData({ title: "", content: "" });
       fetchPosts();
-    } catch (err: any) {
-      showError(
-        "更新帖子失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("更新帖子失败: " + getErrorMessage(err));
     }
   };
 
@@ -234,10 +223,8 @@ const Community = () => {
       if (expandedPost === deleteConfirm.id) {
         setExpandedPost(null);
       }
-    } catch (err: any) {
-      showError(
-        "删除帖子失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("删除帖子失败: " + getErrorMessage(err));
     }
   };
 
@@ -259,10 +246,8 @@ const Community = () => {
       clearReplyContent(postId, parentId);
       setShowReplyForm(null);
       fetchComments(postId);
-    } catch (err: any) {
-      showError(
-        "发布评论失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("发布评论失败: " + getErrorMessage(err));
     }
   };
 
@@ -283,10 +268,8 @@ const Community = () => {
       success("评论删除成功");
       setDeleteConfirm(null);
       fetchComments(deleteConfirm.postId);
-    } catch (err: any) {
-      showError(
-        "删除评论失败: " + (err.response?.data?.message || err.message),
-      );
+    } catch (err: unknown) {
+      showError("删除评论失败: " + getErrorMessage(err));
     }
   };
 

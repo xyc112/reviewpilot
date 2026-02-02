@@ -23,6 +23,7 @@ import { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -47,7 +48,7 @@ const CourseDetail = () => {
     try {
       const response = await courseAPI.getCourse(courseId);
       setCourse(response.data);
-    } catch (err: any) {
+    } catch {
       setError("获取课程详情失败");
     } finally {
       setLoading(false);
@@ -64,9 +65,9 @@ const CourseDetail = () => {
       await courseAPI.deleteCourse(course.id);
       success("课程删除成功");
       navigate("/courses");
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        "删除课程失败: " + (err.response?.data?.message || "无权限");
+        "删除课程失败: " + (getErrorMessage(err) || "无权限");
       setError(errorMsg);
       showError(errorMsg);
     } finally {

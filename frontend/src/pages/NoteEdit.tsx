@@ -20,6 +20,7 @@ import { Note } from "../types";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -56,6 +57,7 @@ const NoteEdit = () => {
     if (noteId) {
       fetchNote();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNote 依赖 course, noteId
   }, [course, noteId, navigate]);
 
   const fetchNote = async () => {
@@ -71,9 +73,8 @@ const NoteEdit = () => {
         summary: noteData.summary || "",
         visibility: noteData.visibility,
       });
-    } catch (err: any) {
-      const errorMsg =
-        "获取笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "获取笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -93,9 +94,8 @@ const NoteEdit = () => {
       await noteAPI.updateNote(course.id, note.id, noteForm);
       success("笔记更新成功");
       navigate(`/notes/${noteId}`);
-    } catch (err: any) {
-      const errorMsg =
-        "更新笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "更新笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {

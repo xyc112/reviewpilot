@@ -15,6 +15,7 @@ import { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -36,6 +37,7 @@ const EditCourse = () => {
     if (id) {
       fetchCourse(Number(id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourse 依赖 id
   }, [id]);
 
   const fetchCourse = async (courseId: number) => {
@@ -51,7 +53,7 @@ const EditCourse = () => {
         tags: courseData.tags.join(", "),
         level: courseData.level,
       });
-    } catch (err: any) {
+    } catch {
       setError("获取课程详情失败");
       showError("获取课程详情失败");
     } finally {
@@ -86,9 +88,9 @@ const EditCourse = () => {
       await courseAPI.updateCourse(course.id, courseData);
       success("课程更新成功");
       navigate(`/courses/${course.id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMsg =
-        err.response?.data?.message || err.message || "更新课程失败";
+        getErrorMessage(err) || "更新课程失败";
       setError(errorMsg);
       showError(errorMsg);
     } finally {

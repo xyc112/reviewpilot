@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface Shortcut {
   key: string;
@@ -45,8 +44,6 @@ export const useKeyboardShortcuts = (shortcuts: Shortcut[]) => {
 
 // 预定义的快捷键组合
 export const useGlobalShortcuts = () => {
-  const navigate = useNavigate();
-
   useKeyboardShortcuts([
     {
       key: "k",

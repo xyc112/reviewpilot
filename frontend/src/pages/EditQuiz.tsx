@@ -15,9 +15,10 @@ import {
   Divider,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
-import { Quiz } from "../types";
+import { Quiz, QuizQuestion } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -35,7 +36,9 @@ const EditQuiz = () => {
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [title, setTitle] = useState("");
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<
+    (QuizQuestion & { options: string[]; answer: number[] })[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -48,6 +51,7 @@ const EditQuiz = () => {
     if (quizId) {
       fetchQuiz();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchQuiz 依赖 course, quizId
   }, [course, quizId, navigate]);
 
   const fetchQuiz = async () => {
@@ -63,9 +67,9 @@ const EditQuiz = () => {
           answer: q.answer || [],
         })),
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("获取测验失败:", err);
-      setError("获取测验失败: " + (err.response?.data?.message || "未知错误"));
+      setError("获取测验失败: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -90,9 +94,13 @@ const EditQuiz = () => {
     setQuestions(newQuestions);
   };
 
-  const handleQuestionChange = (index: number, field: string, value: any) => {
+  const handleQuestionChange = (
+    index: number,
+    field: string,
+    value: string | string[] | number[],
+  ) => {
     const newQuestions = [...questions];
-    (newQuestions[index] as any)[field] = value;
+    (newQuestions[index] as Record<string, unknown>)[field] = value;
 
     if (field === "type" && value === "truefalse") {
       newQuestions[index].options = ["正确", "错误"];
@@ -195,8 +203,8 @@ const EditQuiz = () => {
 
       await quizAPI.updateQuiz(course.id, quizId, quizData);
       navigate("/quizzes");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "更新测验失败");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || "更新测验失败");
     } finally {
       setSaving(false);
     }

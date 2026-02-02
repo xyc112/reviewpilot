@@ -19,11 +19,11 @@ import { Note } from "../types";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
-  useTheme,
   MarkdownRenderer,
   ConfirmDialog,
   useToast,
 } from "../components";
+import { getErrorMessage } from "../utils";
 
 const { Title, Text } = Typography;
 
@@ -52,6 +52,7 @@ const NoteDetail = () => {
     if (noteId) {
       fetchNote();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNote 依赖 course, noteId
   }, [course, noteId, navigate]);
 
   const fetchNote = async () => {
@@ -60,9 +61,8 @@ const NoteDetail = () => {
       setLoading(true);
       const response = await noteAPI.getNote(course.id, noteId);
       setNote(response.data);
-    } catch (err: any) {
-      const errorMsg =
-        "获取笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "获取笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {
@@ -77,9 +77,8 @@ const NoteDetail = () => {
       await noteAPI.deleteNote(course.id, note.id);
       success("笔记删除成功");
       navigate("/notes");
-    } catch (err: any) {
-      const errorMsg =
-        "删除笔记失败: " + (err.response?.data?.message || err.message);
+    } catch (err: unknown) {
+      const errorMsg = "删除笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
       showError(errorMsg);
     } finally {

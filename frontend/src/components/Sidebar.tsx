@@ -29,14 +29,8 @@ const Sidebar = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const user = useAuthStore((state) => state.user);
-  const isAdmin = user?.role === "ADMIN";
+  useAuthStore((state) => state.user);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // 路由变化时关闭移动端菜单
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
 
   const getSelectedKey = () => {
     if (location.pathname === "/courses" || location.pathname === "/") {
@@ -70,6 +64,7 @@ const Sidebar = () => {
   };
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+    setIsMobileMenuOpen(false);
     switch (key) {
       case "review-plan":
         navigate("/review-plan");

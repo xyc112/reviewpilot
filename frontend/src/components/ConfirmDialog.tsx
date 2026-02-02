@@ -21,7 +21,7 @@ const ConfirmDialog = ({
   type = "info",
   onConfirm,
   onCancel,
-}) => {
+}: ConfirmDialogProps) => {
   return (
     <Modal
       open={isOpen}

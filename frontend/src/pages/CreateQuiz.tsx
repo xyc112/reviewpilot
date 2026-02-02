@@ -16,6 +16,7 @@ import {
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
+import { getErrorMessage } from "../utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -70,9 +71,13 @@ const CreateQuiz = () => {
     setQuestions(newQuestions);
   };
 
-  const handleQuestionChange = (index: number, field: string, value: any) => {
+  const handleQuestionChange = (
+    index: number,
+    field: string,
+    value: string | string[] | number[],
+  ) => {
     const newQuestions = [...questions];
-    (newQuestions[index] as any)[field] = value;
+    (newQuestions[index] as Record<string, unknown>)[field] = value;
     setQuestions(newQuestions);
   };
 
@@ -170,8 +175,8 @@ const CreateQuiz = () => {
 
       await quizAPI.createQuiz(course.id, quizData);
       navigate("/quizzes");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "创建测验失败");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || "创建测验失败");
     } finally {
       setLoading(false);
     }
