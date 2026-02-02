@@ -43,7 +43,7 @@ const WrongQuestionBook = () => {
   const selectedCourse = useCourseStore((state) => state.selectedCourse);
   const { success, error: showError } = useToast();
 
-  const course = currentStudyingCourse || selectedCourse;
+  const course = currentStudyingCourse ?? selectedCourse;
   const [wrongQuestions, setWrongQuestions] = useState<WrongQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -68,11 +68,11 @@ const WrongQuestionBook = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
-    fetchWrongQuestions();
-    fetchStats();
+    void fetchWrongQuestions();
+    void fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchWrongQuestions/fetchStats 依赖 course, filter
   }, [course, navigate, filter]);
 
@@ -81,7 +81,7 @@ const WrongQuestionBook = () => {
     if (course && !loading) {
       // 延迟一下，确保数据已更新
       const timer = setTimeout(() => {
-        fetchStats();
+        void fetchStats();
       }, 100);
       return () => { clearTimeout(timer); };
     }
@@ -125,8 +125,8 @@ const WrongQuestionBook = () => {
     try {
       await wrongQuestionAPI.markAsMastered(course.id, wrongQuestionId);
       success("已标记为已掌握");
-      fetchWrongQuestions();
-      fetchStats();
+      void fetchWrongQuestions();
+      void fetchStats();
     } catch (err: unknown) {
       showError("标记失败: " + getErrorMessage(err));
     }
@@ -138,8 +138,8 @@ const WrongQuestionBook = () => {
       await wrongQuestionAPI.removeWrongQuestion(course.id, deleteConfirm);
       success("已从错题本移除");
       setDeleteConfirm(null);
-      fetchWrongQuestions();
-      fetchStats();
+      void fetchWrongQuestions();
+      void fetchStats();
     } catch (err: unknown) {
       showError("移除失败: " + getErrorMessage(err));
     }
@@ -157,7 +157,7 @@ const WrongQuestionBook = () => {
     questionType: string,
   ) => {
     setPracticeAnswers((prev) => {
-      const currentAnswers = prev[questionId] || [];
+      const currentAnswers = prev[questionId] ?? [];
       if (questionType === "single" || questionType === "truefalse") {
         return { ...prev, [questionId]: [optionIndex] };
       } else {
@@ -182,8 +182,9 @@ const WrongQuestionBook = () => {
       );
 
       // 检查答案是否正确
-      const userAnswer = practiceAnswers[practicingQuestion.questionId] || [];
-      const correctAnswer = practicingQuestion.question?.answer || [];
+      const userAnswer =
+        practiceAnswers[practicingQuestion.questionId] ?? [];
+      const correctAnswer = practicingQuestion.question?.answer ?? [];
       const isCorrect =
         JSON.stringify([...userAnswer].sort()) ===
         JSON.stringify([...correctAnswer].sort());
@@ -196,7 +197,7 @@ const WrongQuestionBook = () => {
         showError("回答错误，请继续练习");
       }
 
-      fetchWrongQuestions();
+      void fetchWrongQuestions();
     } catch (err: unknown) {
       showError("提交失败: " + getErrorMessage(err));
     }
@@ -222,7 +223,7 @@ const WrongQuestionBook = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         style={{ margin: "2rem" }}
@@ -247,7 +248,7 @@ const WrongQuestionBook = () => {
         confirmText="移除"
         cancelText="取消"
         type="danger"
-        onConfirm={handleRemove}
+        onConfirm={() => { void handleRemove(); }}
         onCancel={() => { setDeleteConfirm(null); }}
       />
 
@@ -257,7 +258,7 @@ const WrongQuestionBook = () => {
               <Statistic
                 title="总错题数"
                 value={stats.total}
-                valueStyle={{ fontSize: "1.5rem" }}
+                styles={{ content: { fontSize: "1.5rem" } }}
               />
             </Card>
           </Col>
@@ -266,7 +267,7 @@ const WrongQuestionBook = () => {
               <Statistic
                 title="未掌握"
                 value={stats.notMastered}
-                valueStyle={{ color: "#ff4d4f", fontSize: "1.5rem" }}
+                styles={{ content: { color: "#ff4d4f", fontSize: "1.5rem" } }}
               />
             </Card>
           </Col>
@@ -275,7 +276,7 @@ const WrongQuestionBook = () => {
               <Statistic
                 title="已掌握"
                 value={stats.mastered}
-                valueStyle={{ color: "#52c41a", fontSize: "1.5rem" }}
+                styles={{ content: { color: "#52c41a", fontSize: "1.5rem" } }}
               />
             </Card>
           </Col>
@@ -311,7 +312,7 @@ const WrongQuestionBook = () => {
       />
 
       {error ? <Alert
-          message={error}
+          title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
@@ -358,18 +359,19 @@ const WrongQuestionBook = () => {
             {practicingQuestion.question.type === "single" ||
             practicingQuestion.question.type === "truefalse" ? (
               <Radio.Group
-                value={practiceAnswers[practicingQuestion.questionId]?.[0]}
+                value={(practiceAnswers[practicingQuestion.questionId] ?? [])[0]}
                 onChange={(e) => {
                   if (!showPracticeResult[practicingQuestion.questionId]) {
+                    const val = e.target.value;
                     handlePracticeOptionSelect(
                       practicingQuestion.questionId,
-                      e.target.value,
+                      typeof val === "number" ? val : Number(val),
                       practicingQuestion.question.type,
                     );
                   }
                 }}
                 disabled={
-                  showPracticeResult[practicingQuestion.questionId] || false
+                  (showPracticeResult[practicingQuestion.questionId] ?? false)
                 }
               >
                 <Space orientation="vertical" size="middle">
@@ -381,7 +383,7 @@ const WrongQuestionBook = () => {
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
                       const isCorrect =
-                        practicingQuestion.question?.answer?.includes(optIndex);
+                        (practicingQuestion.question?.answer ?? []).includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -427,18 +429,20 @@ const WrongQuestionBook = () => {
               </Radio.Group>
             ) : (
               <Checkbox.Group
-                value={practiceAnswers[practicingQuestion.questionId] || []}
-                onChange={(values) => {
-                  if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const newAnswers = values;
-                    setPracticeAnswers((prev) => ({
-                      ...prev,
-                      [practicingQuestion.questionId]: newAnswers,
-                    }));
+                  value={practiceAnswers[practicingQuestion.questionId] ?? []}
+                  onChange={(values: unknown) => {
+                    if (!showPracticeResult[practicingQuestion.questionId]) {
+                      const newAnswers: number[] = Array.isArray(values)
+                        ? values.filter((v): v is number => typeof v === "number")
+                        : [];
+                      setPracticeAnswers((prev) => ({
+                        ...prev,
+                        [practicingQuestion.questionId]: newAnswers,
+                      }));
                   }
                 }}
                 disabled={
-                  showPracticeResult[practicingQuestion.questionId] || false
+                  (showPracticeResult[practicingQuestion.questionId] ?? false)
                 }
               >
                 <Space orientation="vertical" size="middle">
@@ -450,7 +454,7 @@ const WrongQuestionBook = () => {
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
                       const isCorrect =
-                        practicingQuestion.question?.answer?.includes(optIndex);
+                        (practicingQuestion.question?.answer ?? []).includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -541,7 +545,7 @@ const WrongQuestionBook = () => {
 
             <Space>
               {!showPracticeResult[practicingQuestion.questionId] ? (
-                <Button type="primary" onClick={handleSubmitPractice}>
+                <Button type="primary" onClick={() => { void handleSubmitPractice(); }}>
                   提交答案
                 </Button>
               ) : (
@@ -605,7 +609,7 @@ const WrongQuestionBook = () => {
                     <Button
                       size="small"
                       icon={<CheckCircleOutlined />}
-                      onClick={() => handleMarkAsMastered(wq.id)}
+                      onClick={() => { void handleMarkAsMastered(wq.id); }}
                     >
                       标记为已掌握
                     </Button>
@@ -635,14 +639,14 @@ const WrongQuestionBook = () => {
                 >
                   <div style={{ flex: 1 }}>
                     <Title level={5} style={{ margin: "0 0 0.5rem 0" }}>
-                      {wq.question?.question || "题目加载中..."}
+                      {wq.question?.question ?? "题目加载中..."}
                     </Title>
                     <Space wrap>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
                         来自测验: {wq.quizId}
                       </Text>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        练习次数: {wq.practiceCount}
+                        练习次数: {String(wq.practiceCount)}
                       </Text>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
                         添加时间:{" "}

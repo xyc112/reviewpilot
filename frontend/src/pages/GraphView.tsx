@@ -137,7 +137,7 @@ const GraphView = () => {
       const getUniqueNodeLabel = (): string => {
         const baseLabel = "新节点";
         const existingLabels = nodes
-          .map((n) => n.label ?? "")
+          .map((n) => n.label)
           .filter((label) => label.startsWith(baseLabel));
 
         if (existingLabels.length === 0) {
@@ -169,7 +169,7 @@ const GraphView = () => {
 
       await fetchGraphData();
 
-      if (response.data?.id) {
+      if (response.data.id) {
         setTimeout(() => {
           setNodes((currentNodes) => {
             const newNode = currentNodes.find((n) => n.id === response.data.id);
@@ -245,7 +245,7 @@ const GraphView = () => {
   const handleStartEditNode = (node: Node) => {
     setEditingNode(node);
     setEditNodeForm({
-      label: node.label ?? "",
+      label: node.label,
       type: node.type ?? "",
       description: node.description ?? "",
     });
@@ -261,7 +261,7 @@ const GraphView = () => {
 
     try {
       const nodeData: Partial<Node> = {
-        label: editNodeForm.label.trim() ?? "新节点",
+        label: editNodeForm.label.trim() || "新节点",
       };
       if (editNodeForm.type) nodeData.type = editNodeForm.type;
       if (editNodeForm.description)
@@ -295,8 +295,8 @@ const GraphView = () => {
   const handleStartEditRelation = (relation: Relation) => {
     setEditingRelation(relation);
     setEditRelationForm({
-      type:
-        (relation.type as "prerequisite" | "related" | "part_of") ?? "related",
+      type: (relation.type ||
+        "related") as "prerequisite" | "related" | "part_of",
       directed: relation.directed ?? true,
       weight: relation.weight ?? 0.5,
     });
@@ -403,8 +403,16 @@ const GraphView = () => {
               setEditingNode(null);
               setEditingRelation(null);
             }}
-            onNodeCreate={isAdmin ? handleCreateNodeByPosition : undefined}
-            onRelationCreate={isAdmin ? handleCreateRelationByNodes : undefined}
+            onNodeCreate={
+              isAdmin
+                ? (pos) => { void handleCreateNodeByPosition(pos); }
+                : undefined
+            }
+            onRelationCreate={
+              isAdmin
+                ? (from, to) => { void handleCreateRelationByNodes(from, to); }
+                : undefined
+            }
             selectedNodeId={selectedNode?.id}
             selectedRelationId={selectedRelation?.id}
             editable={isAdmin}
@@ -415,7 +423,6 @@ const GraphView = () => {
             onRelationDirectedChange={setRelationDirected}
             onRelationWeightChange={setRelationWeight}
             onNodeUpdate={(nodeId, position) => {
-              if (!course) return;
               void (async () => {
                 try {
                   const node = nodes.find((n) => n.id === nodeId);
@@ -536,7 +543,7 @@ const GraphView = () => {
                       标签:
                     </Text>
                     <div>
-                      <Text strong>{selectedNode.label ?? "未命名节点"}</Text>
+                      <Text strong>{selectedNode.label || "未命名节点"}</Text>
                     </div>
                   </div>
                   {selectedNode.type !== undefined && selectedNode.type !== "" ? <div>
@@ -634,7 +641,7 @@ const GraphView = () => {
                           ...editRelationForm,
                           weight: Math.max(
                             0,
-                            Math.min(1, Number(e.target.value) ?? 0),
+                            Math.min(1, Number(e.target.value) || 0),
                           ),
                         }); }
                       }
@@ -712,7 +719,7 @@ const GraphView = () => {
                     <div>
                       <Text strong>
                         {nodes.find((n) => n.id === selectedRelation.from)
-                          ?.label || selectedRelation.from}
+                          ?.label ?? selectedRelation.from}
                       </Text>
                     </div>
                   </div>
@@ -723,7 +730,7 @@ const GraphView = () => {
                     <div>
                       <Text strong>
                         {nodes.find((n) => n.id === selectedRelation.to)
-                          ?.label || selectedRelation.to}
+                          ?.label ?? selectedRelation.to}
                       </Text>
                     </div>
                   </div>

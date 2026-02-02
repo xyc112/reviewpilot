@@ -55,7 +55,7 @@ const ReviewPlanPage = () => {
   const { success, error: showError } = useToast();
 
   useEffect(() => {
-    fetchPlans();
+    void fetchPlans();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅挂载时拉取
   }, []);
 
@@ -126,7 +126,7 @@ const ReviewPlanPage = () => {
 
   const handleStartNewPlan = () => {
     // 如果有选中的日期，使用选中日期，否则使用今天
-    const dateToUse = selectedDate || new Date();
+    const dateToUse = selectedDate ?? new Date();
     const dateStr = formatDateLocal(dateToUse);
     setSelectedDate(dateToUse);
     setFormData({
@@ -164,7 +164,7 @@ const ReviewPlanPage = () => {
       await fetchPlans();
     } catch (err: unknown) {
       showError(
-        "创建复习计划失败: " + (getErrorMessage(err) || "未知错误"),
+        "创建复习计划失败: " + getErrorMessage(err),
       );
     }
   };
@@ -173,7 +173,7 @@ const ReviewPlanPage = () => {
     setEditingPlan(plan);
     setFormData({
       title: plan.title,
-      description: plan.description || "",
+      description: plan.description ?? "",
       type: plan.type,
       planDate: plan.planDate,
     });
@@ -308,7 +308,7 @@ const ReviewPlanPage = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
+        onConfirm={() => { void confirmDelete(); }}
         onCancel={() => { setDeleteConfirm({ isOpen: false, planId: null }); }}
       />
 
@@ -560,16 +560,17 @@ const ReviewPlanPage = () => {
                 <Form.Item label="类型" required>
                   <Select
                     value={formData.type}
-                    onChange={(value) =>
-                      { setFormData((prev) => ({
+                    onChange={(value) => {
+                      setFormData((prev) => ({
                         ...prev,
                         type: value,
-                      })); }
-                    }
-                  >
-                    <Select.Option value="plan">计划</Select.Option>
-                    <Select.Option value="exam">考试</Select.Option>
-                  </Select>
+                      }));
+                    }}
+                    options={[
+                      { value: "plan", label: "计划" },
+                      { value: "exam", label: "考试" },
+                    ]}
+                  />
                 </Form.Item>
                 <Form.Item label="描述">
                   <TextArea
@@ -602,9 +603,9 @@ const ReviewPlanPage = () => {
                     </Button>
                     <Button
                       type="primary"
-                      onClick={
-                        editingPlan ? handleUpdatePlan : handleCreatePlan
-                      }
+                      onClick={() => {
+                        void (editingPlan ? handleUpdatePlan() : handleCreatePlan());
+                      }}
                     >
                       {editingPlan ? "更新" : "创建"}
                     </Button>
@@ -749,7 +750,7 @@ const ReviewPlanPage = () => {
                                 <CheckOutlined />
                               )
                             }
-                            onClick={() => handleToggleComplete(plan)}
+                            onClick={() => { void handleToggleComplete(plan); }}
                             style={{ flex: 1 }}
                           >
                             {plan.completed ? "未完成" : "完成"}
@@ -849,7 +850,7 @@ const ReviewPlanPage = () => {
                             ? "今天"
                             : daysUntil === 1
                               ? "明天"
-                              : `${daysUntil}天后`}
+                              : `${String(daysUntil)}天后`}
                         </span>
                       </div>
                       <p

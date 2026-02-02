@@ -37,7 +37,7 @@ const QuizDetail = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,11 +52,11 @@ const QuizDetail = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
     if (quizId) {
-      fetchQuiz();
+      void fetchQuiz();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchQuiz 依赖 course, quizId
   }, [course, quizId, navigate]);
@@ -79,7 +79,7 @@ const QuizDetail = () => {
     questionType: string,
   ) => {
     setAnswers((prev) => {
-      const currentAnswers = prev[questionId] || [];
+      const currentAnswers = prev[questionId] ?? [];
 
       if (questionType === "single" || questionType === "truefalse") {
         return {
@@ -123,16 +123,16 @@ const QuizDetail = () => {
       );
       setAttempt(response.data);
 
-      if (response.data?.results) {
+      {
         const wrongQuestions: {
           questionEntityId: number;
           userAnswer: number[];
           questionId: string;
         }[] = [];
         response.data.results.forEach((result: AttemptResult) => {
-          if (!result.correct && result.questionEntityId) {
+          if (!result.correct && result.questionEntityId !== undefined) {
             const questionId = result.questionId;
-            const userAnswer = answers[questionId] || [];
+            const userAnswer = answers[questionId] ?? [];
             wrongQuestions.push({
               questionEntityId: result.questionEntityId,
               userAnswer: userAnswer,
@@ -154,7 +154,7 @@ const QuizDetail = () => {
         }
 
         if (wrongQuestions.length > 0) {
-          success(`已自动添加 ${wrongQuestions.length} 道错题到错题本`);
+          success(`已自动添加 ${String(wrongQuestions.length)} 道错题到错题本`);
         }
       }
     } catch (err: unknown) {
@@ -197,11 +197,14 @@ const QuizDetail = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button
+            type="primary"
+            onClick={() => { void navigate("/courses"); }}
+          >
             前往课程列表
           </Button>
         }
@@ -227,7 +230,7 @@ const QuizDetail = () => {
   if (!quiz) {
     return (
       <Alert
-        message="测验不存在"
+        title="测验不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -251,7 +254,7 @@ const QuizDetail = () => {
               border: "none",
               textAlign: "center",
             }}
-            bodyStyle={{ padding: "3rem 2rem" }}
+            styles={{ body: { padding: "3rem 2rem" } }}
           >
             <Space orientation="vertical" size="large" style={{ width: "100%" }}>
               <div style={{ fontSize: "4rem" }}>{isPassed ? "🎉" : "📝"}</div>
@@ -262,8 +265,8 @@ const QuizDetail = () => {
                 <Col>
                   <Statistic
                     value={attempt.score}
-                    suffix={`/ ${attempt.total}`}
-                    valueStyle={{ color: "#fff", fontSize: "3rem" }}
+                    suffix={`/ ${String(attempt.total)}`}
+                    styles={{ content: { color: "#fff", fontSize: "3rem" } }}
                   />
                 </Col>
               </Row>
@@ -275,7 +278,7 @@ const QuizDetail = () => {
                   borderRadius: "2rem",
                 }}
               >
-                {scorePercentage}%
+                {String(scorePercentage)}%
               </Tag>
               <Text style={{ color: "#fff", fontSize: "1.125rem" }}>
                 {isPassed
@@ -293,9 +296,9 @@ const QuizDetail = () => {
                 const result = attempt.results.find(
                   (r) => r.questionId === question.id,
                 );
-                const userAnswer = answers[question.id] || [];
-                const isCorrect = result?.correct || false;
-                const correctAnswerIndices = question.answer || [];
+                const userAnswer = answers[question.id] ?? [];
+                const isCorrect = (result?.correct) ?? false;
+                const correctAnswerIndices = question.answer ?? [];
 
                 return (
                   <Card
@@ -351,7 +354,7 @@ const QuizDetail = () => {
                         size="small"
                         style={{ width: "100%" }}
                       >
-                        {question.options?.map((option, optIndex) => {
+                        {(question.options ?? []).map((option, optIndex) => {
                           const isSelected = userAnswer.includes(optIndex);
                           const isCorrectAnswer =
                             correctAnswerIndices.includes(optIndex);
@@ -468,28 +471,36 @@ const QuizDetail = () => {
                             fontSize: "1rem",
                           }}
                         >
-                          {result?.score || 0} /{" "}
+                          {(result?.score) ?? 0} /{" "}
                           {Math.round(100 / quiz.questions.length) +
                             (index < 100 % quiz.questions.length ? 1 : 0)}
                         </Text>
                       </Space>
 
-                      {!isCorrect && result?.questionEntityId ? <Button
+                      {!isCorrect && result?.questionEntityId !== undefined ? (
+                        <Button
                           icon={<BookOutlined />}
-                          onClick={() =>
-                            handleAddToWrongBook(
-                              result.questionEntityId!,
-                              userAnswer,
-                              question.id,
-                            )
-                          }
+                          onClick={() => {
+                            const qeid =
+                              result !== undefined
+                                ? result.questionEntityId
+                                : undefined;
+                            if (qeid !== undefined) {
+                              void handleAddToWrongBook(
+                                qeid,
+                                userAnswer,
+                                question.id,
+                              );
+                            }
+                          }}
                           disabled={addingToWrongBook.has(question.id)}
                           size="small"
                         >
                           {addingToWrongBook.has(question.id)
                             ? "已添加"
                             : "添加到错题本"}
-                        </Button> : null}
+                        </Button>
+                      ) : null}
                     </Space>
                   </Card>
                 );
@@ -504,7 +515,7 @@ const QuizDetail = () => {
             <Button
               type="primary"
               icon={<ArrowLeftOutlined />}
-              onClick={() => navigate("/quizzes")}
+              onClick={() => { void navigate("/quizzes"); }}
             >
               返回测验列表
             </Button>
@@ -518,7 +529,7 @@ const QuizDetail = () => {
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {quiz.questions.map((question, index) => (
-          <Card key={question.id} title={`题目 ${index + 1}`}>
+          <Card key={question.id} title={`题目 ${String(index + 1)}`}>
             <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
               <Title level={4} style={{ margin: 0 }}>
                 {question.question}
@@ -537,20 +548,21 @@ const QuizDetail = () => {
               {question.type === "single" || question.type === "truefalse" ? (
                 <Radio.Group
                   value={
-                    answers[question.id] && answers[question.id].length > 0
-                      ? answers[question.id][0]
+                    ((answers[question.id] ?? []).length > 0)
+                      ? (answers[question.id] ?? [])[0]
                       : undefined
                   }
-                  onChange={(e) =>
-                    { handleOptionSelect(
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    handleOptionSelect(
                       question.id,
-                      e.target.value,
+                      typeof val === "number" ? val : Number(val),
                       question.type,
-                    ); }
-                  }
+                    );
+                  }}
                 >
                   <Space orientation="vertical" size="middle">
-                    {question.options?.map((option, optIndex) => (
+                    {(question.options ?? []).map((option, optIndex) => (
                       <Radio key={optIndex} value={optIndex}>
                         <Text>
                           {String.fromCharCode(65 + optIndex)}. {option}
@@ -561,17 +573,20 @@ const QuizDetail = () => {
                 </Radio.Group>
               ) : (
                 <Checkbox.Group
-                  value={answers[question.id] || []}
-                  onChange={(values) => {
-                    const newAnswers = values;
+                  value={answers[question.id] ?? []}
+                  onChange={(values: unknown) => {
+                    const raw = Array.isArray(values) ? values : [];
+                    const arr: number[] = raw.filter(
+                      (v): v is number => typeof v === "number",
+                    );
                     setAnswers((prev) => ({
                       ...prev,
-                      [question.id]: newAnswers,
+                      [question.id]: arr,
                     }));
                   }}
                 >
                   <Space orientation="vertical" size="middle">
-                    {question.options?.map((option, optIndex) => (
+                    {(question.options ?? []).map((option, optIndex) => (
                       <Checkbox key={optIndex} value={optIndex}>
                         <Text>
                           {String.fromCharCode(65 + optIndex)}. {option}
@@ -589,7 +604,7 @@ const QuizDetail = () => {
           <Button
             type="primary"
             size="large"
-            onClick={handleSubmit}
+            onClick={() => { void handleSubmit(); }}
             disabled={submitting || Object.keys(answers).length === 0}
             loading={submitting}
           >
@@ -598,7 +613,7 @@ const QuizDetail = () => {
           <Button
             size="large"
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/quizzes")}
+            onClick={() => { void navigate("/quizzes"); }}
           >
             返回测验列表
           </Button>
