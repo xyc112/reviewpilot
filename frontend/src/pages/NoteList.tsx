@@ -10,7 +10,7 @@ import {
   Spin,
 } from "antd";
 import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Note } from "../types";
+import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useCourseStore } from "../stores";
 import {
@@ -137,18 +137,16 @@ const NoteList = () => {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-      {error && (
-        <Alert
+      {error ? <Alert
           message={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        />
-      )}
+        /> : null}
 
       {/* 搜索和操作栏 */}
       <Space
-        direction="vertical"
+        orientation="vertical"
         size="middle"
         style={{ width: "100%", marginBottom: "1.5rem" }}
       >
@@ -160,13 +158,11 @@ const NoteList = () => {
             maxWidth={undefined}
             style={{ flex: 1 }}
           />
-          {course && (
-            <Link to="/notes/new">
+          {course ? <Link to="/notes/new">
               <Button type="primary" icon={<PlusOutlined />}>
                 创建笔记
               </Button>
-            </Link>
-          )}
+            </Link> : null}
         </Space.Compact>
       </Space>
 
@@ -179,7 +175,7 @@ const NoteList = () => {
         cancelText="取消"
         type="danger"
         onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({ isOpen: false, noteId: null })}
+        onCancel={() => { setDeleteConfirm({ isOpen: false, noteId: null }); }}
       />
 
       {notes.length === 0 ? (
@@ -189,7 +185,7 @@ const NoteList = () => {
             <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
           }
           description={
-            <Space direction="vertical" size="small">
+            <Space orientation="vertical" size="small">
               <Text>暂无笔记</Text>
               <Text type="secondary">
                 点击「创建笔记」按钮开始记录你的学习心得
@@ -213,12 +209,12 @@ const NoteList = () => {
             <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
           }
           description={
-            <Space direction="vertical" size="small">
+            <Space orientation="vertical" size="small">
               <Text>未找到匹配的笔记</Text>
               <Text type="secondary">尝试调整搜索条件</Text>
             </Space>
           }
-          onClearFilter={() => setSearchQuery("")}
+          onClearFilter={() => { setSearchQuery(""); }}
           clearFilterLabel="清除搜索"
         />
       ) : (
@@ -236,7 +232,7 @@ const NoteList = () => {
                   }}
                 >
                   <Space
-                    direction="vertical"
+                    orientation="vertical"
                     size="small"
                     style={{ width: "100%" }}
                   >

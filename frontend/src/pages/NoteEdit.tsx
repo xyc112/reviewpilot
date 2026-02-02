@@ -16,7 +16,7 @@ import {
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { Note } from "../types";
+import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { useToast } from "../components";
@@ -133,7 +133,7 @@ const NoteEdit = () => {
 
   if (error && !note) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -164,7 +164,7 @@ const NoteEdit = () => {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <Button
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(`/notes/${noteId}`)}
@@ -172,7 +172,7 @@ const NoteEdit = () => {
           取消编辑
         </Button>
 
-        {error && <Alert message={error} type="error" showIcon />}
+        {error ? <Alert title={error} type="error" showIcon /> : null}
 
         <Card>
           <Title level={2}>编辑笔记</Title>
@@ -189,7 +189,7 @@ const NoteEdit = () => {
               <Input
                 value={noteForm.title}
                 onChange={(e) =>
-                  setNoteForm({ ...noteForm, title: e.target.value })
+                  { setNoteForm({ ...noteForm, title: e.target.value }); }
                 }
                 placeholder="输入笔记标题"
               />
@@ -204,7 +204,7 @@ const NoteEdit = () => {
                 rows={3}
                 value={noteForm.summary}
                 onChange={(e) =>
-                  setNoteForm({ ...noteForm, summary: e.target.value })
+                  { setNoteForm({ ...noteForm, summary: e.target.value }); }
                 }
                 placeholder="输入笔记摘要（可选，用于列表预览，建议50-150字）"
               />
@@ -219,7 +219,7 @@ const NoteEdit = () => {
                 rows={20}
                 value={noteForm.content}
                 onChange={(e) =>
-                  setNoteForm({ ...noteForm, content: e.target.value })
+                  { setNoteForm({ ...noteForm, content: e.target.value }); }
                 }
                 placeholder="输入笔记内容，支持 Markdown 格式"
               />
@@ -229,10 +229,10 @@ const NoteEdit = () => {
               <Select
                 value={noteForm.visibility}
                 onChange={(value) =>
-                  setNoteForm({
+                  { setNoteForm({
                     ...noteForm,
-                    visibility: value as "public" | "private",
-                  })
+                    visibility: value,
+                  }); }
                 }
               >
                 <Select.Option value="private">

@@ -249,7 +249,7 @@ const GraphCanvas = ({
       )
       .attr("text-anchor", "middle")
       .text((d) => {
-        const typeMap: { [key: string]: string } = {
+        const typeMap: Record<string, string> = {
           prerequisite: "前置",
           related: "相关",
           part_of: "包含",
@@ -341,7 +341,7 @@ const GraphCanvas = ({
       if (event.ctrlKey && editable && onRelationCreate) {
         const node = d3Nodes.find((n) => n.id === d.id);
         draggingFromRef.current = d.id;
-        if (node && node.x !== undefined && node.y !== undefined) {
+        if (node?.x !== undefined && node.y !== undefined) {
           tempLineRef.current = {
             x1: node.x,
             y1: node.y,
@@ -515,7 +515,7 @@ const GraphCanvas = ({
       const tempLine = tempLineRef.current;
       if (tempLine && draggingFrom) {
         const fromNode = d3Nodes.find((n) => n.id === draggingFrom);
-        if (fromNode && fromNode.x !== undefined && fromNode.y !== undefined) {
+        if (fromNode?.x !== undefined && fromNode.y !== undefined) {
           tempLinkGroup
             .append("line")
             .attr("class", "temp-link")
@@ -544,8 +544,7 @@ const GraphCanvas = ({
             (n) => n.id === draggingFromRef.current,
           );
           if (
-            fromNode &&
-            fromNode.x !== undefined &&
+            fromNode?.x !== undefined &&
             fromNode.y !== undefined
           ) {
             tempLineRef.current = {
@@ -755,8 +754,7 @@ const GraphCanvas = ({
   return (
     <div style={containerStyle}>
       <div style={controlsStyle}>
-        {editable && onRelationCreate && (
-          <>
+        {editable && onRelationCreate ? <>
             <div style={{ display: "flex", flexDirection: "column", gap: token.marginXXS }}>
               <label style={labelStyle}>
                 关系类型
@@ -824,8 +822,7 @@ const GraphCanvas = ({
                 }}
               />
             </div>
-          </>
-        )}
+          </> : null}
         <div style={zoomInfoStyle}>缩放: {(transform.k * 100).toFixed(0)}%</div>
       </div>
 
@@ -857,12 +854,10 @@ const GraphCanvas = ({
           <li style={{ marginBottom: token.marginXXS }}>🖱️ 拖拽节点来重新布局</li>
           <li style={{ marginBottom: token.marginXXS }}>🔍 滚轮缩放画布</li>
           <li style={{ marginBottom: token.marginXXS }}>👆 点击节点查看详情</li>
-          {editable && (
-            <>
+          {editable ? <>
               <li style={{ marginBottom: token.marginXXS }}>🖱️ 双击画布创建新节点</li>
               <li style={{ marginBottom: 0 }}>🔗 Ctrl+点击节点，再点击另一个节点创建关系</li>
-            </>
-          )}
+            </> : null}
         </ul>
       </div>
     </div>

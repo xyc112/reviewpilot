@@ -18,7 +18,7 @@ import {
   DownOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Post, Comment } from "../types";
+import type { Post, Comment } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -46,9 +46,9 @@ const Community = () => {
 
   // 优先使用URL参数，其次使用当前学习的课程，最后使用选中的课程
   const courseId =
-    courseIdParam ||
-    currentStudyingCourse?.id?.toString() ||
-    selectedCourse?.id?.toString();
+    courseIdParam ??
+    (currentStudyingCourse != null ? String(currentStudyingCourse.id) : undefined) ??
+    (selectedCourse != null ? String(selectedCourse.id) : undefined);
   const [, setCourse] = useState<{ id: number; title: string } | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +81,7 @@ const Community = () => {
 
   // 获取回复框的 key
   const getReplyKey = (postId: number, parentId: number | null) => {
-    return `${postId}-${parentId}`;
+    return `${String(postId)}-${String(parentId)}`;
   };
 
   // 获取特定回复框的内容
@@ -104,19 +104,20 @@ const Community = () => {
   // 清除特定回复框的内容
   const clearReplyContent = (postId: number, parentId: number | null) => {
     setReplyComments((prev) => {
-      const newState = { ...prev };
-      delete newState[getReplyKey(postId, parentId)];
-      return newState;
+      const key = getReplyKey(postId, parentId);
+      const { [key]: _omit, ...rest } = prev;
+      void _omit;
+      return rest;
     });
   };
 
   useEffect(() => {
     if (!courseId) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
-    fetchCourse();
-    fetchPosts();
+    void fetchCourse();
+    void fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourse/fetchPosts 依赖 courseId，已在依赖中
   }, [courseId, navigate, currentStudyingCourse, selectedCourse]);
 
@@ -128,7 +129,7 @@ const Community = () => {
     } catch (err: unknown) {
       console.error("Failed to fetch course:", getErrorMessage(err));
       // 如果获取失败，使用selectedCourse作为后备
-      if (selectedCourse && selectedCourse.id === Number(courseId)) {
+      if (selectedCourse?.id === Number(courseId)) {
         setCourse({ id: selectedCourse.id, title: selectedCourse.title });
       }
     }
@@ -165,8 +166,8 @@ const Community = () => {
       setExpandedPost(null);
     } else {
       setExpandedPost(postId);
-      if (!comments[postId]) {
-        fetchComments(postId);
+      if (!(postId in comments)) {
+        void fetchComments(postId);
       }
     }
   };
@@ -184,7 +185,7 @@ const Community = () => {
       success("帖子创建成功");
       setNewPost({ title: "", content: "" });
       setShowCreatePost(false);
-      fetchPosts();
+      void fetchPosts();
     } catch (err: unknown) {
       showError("创建帖子失败: " + getErrorMessage(err));
     }
@@ -207,7 +208,7 @@ const Community = () => {
       success("帖子更新成功");
       setEditingPost(null);
       setEditPostData({ title: "", content: "" });
-      fetchPosts();
+      void fetchPosts();
     } catch (err: unknown) {
       showError("更新帖子失败: " + getErrorMessage(err));
     }
@@ -219,7 +220,7 @@ const Community = () => {
       await postAPI.deletePost(Number(courseId), deleteConfirm.id);
       success("帖子删除成功");
       setDeleteConfirm(null);
-      fetchPosts();
+      void fetchPosts();
       if (expandedPost === deleteConfirm.id) {
         setExpandedPost(null);
       }
@@ -245,7 +246,7 @@ const Community = () => {
       success("评论发布成功");
       clearReplyContent(postId, parentId);
       setShowReplyForm(null);
-      fetchComments(postId);
+      void fetchComments(postId);
     } catch (err: unknown) {
       showError("发布评论失败: " + getErrorMessage(err));
     }
@@ -267,7 +268,7 @@ const Community = () => {
       );
       success("评论删除成功");
       setDeleteConfirm(null);
-      fetchComments(deleteConfirm.postId);
+      void fetchComments(deleteConfirm.postId);
     } catch (err: unknown) {
       showError("删除评论失败: " + getErrorMessage(err));
     }
@@ -301,10 +302,7 @@ const Community = () => {
         !searchQuery ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (post.authorUsername &&
-          post.authorUsername
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()));
+        (post.authorUsername?.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesSearch;
     });
   }, [posts, searchQuery]);
@@ -312,18 +310,21 @@ const Community = () => {
   const renderComments = (
     postId: number,
     parentId: number | null = null,
-    level: number = 0,
+    level = 0,
   ): React.ReactNode => {
-    const postComments = comments[postId] || [];
+    // postId 可能尚未拉取评论，需兜底
+    const postComments = comments[postId] ?? [];
     const filteredComments = postComments.filter(
       (c) => c.parentId === parentId,
     );
 
-    if (filteredComments.length === 0) return null;
+    if (filteredComments.length === 0) {
+      return null;
+    }
 
     return (
       <Space
-        direction="vertical"
+        orientation="vertical"
         size="small"
         style={{
           width: "100%",
@@ -341,7 +342,7 @@ const Community = () => {
               border: "1px solid #f0f0f0",
             }}
           >
-            <Space direction="vertical" size="small" style={{ width: "100%" }}>
+            <Space orientation="vertical" size="small" style={{ width: "100%" }}>
               <div
                 style={{
                   display: "flex",
@@ -351,28 +352,26 @@ const Community = () => {
               >
                 <Space>
                   <Text strong style={{ fontSize: "0.875rem" }}>
-                    {comment.authorUsername || `用户 ${comment.authorId}`}
+                    {comment.authorUsername ?? `用户 ${String(comment.authorId)}`}
                   </Text>
                   <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
                     {formatDate(comment.createdAt)}
                   </Text>
                 </Space>
-                {(isAdmin || user?.id === comment.authorId) && (
-                  <Button
+                {(isAdmin || user?.id === comment.authorId) ? <Button
                     type="text"
                     danger
                     size="small"
                     icon={<DeleteOutlined />}
                     onClick={() =>
-                      setDeleteConfirm({
+                      { setDeleteConfirm({
                         type: "comment",
                         id: comment.id,
                         postId,
-                      })
+                      }); }
                     }
                     title="删除评论"
-                  />
-                )}
+                  /> : null}
               </div>
               <div>
                 <MarkdownRenderer content={comment.content} />
@@ -389,7 +388,7 @@ const Community = () => {
                 回复
               </Button>
               {showReplyForm?.postId === postId &&
-                showReplyForm?.parentId === comment.id && (
+                showReplyForm.parentId === comment.id && (
                   <Card
                     size="small"
                     style={{
@@ -399,7 +398,7 @@ const Community = () => {
                     }}
                   >
                     <Space
-                      direction="vertical"
+                      orientation="vertical"
                       size="small"
                       style={{ width: "100%" }}
                     >
@@ -407,7 +406,7 @@ const Community = () => {
                         ref={commentInputRef}
                         value={getReplyContent(postId, comment.id)}
                         onChange={(e) =>
-                          setReplyContent(postId, comment.id, e.target.value)
+                          { setReplyContent(postId, comment.id, e.target.value); }
                         }
                         placeholder="输入回复..."
                         rows={3}
@@ -417,9 +416,9 @@ const Community = () => {
                           type="primary"
                           size="small"
                           icon={<SendOutlined />}
-                          onClick={() =>
-                            handleCreateComment(postId, comment.id)
-                          }
+                          onClick={() => {
+                            void handleCreateComment(postId, comment.id);
+                          }}
                         >
                           发送
                         </Button>
@@ -447,7 +446,7 @@ const Community = () => {
   if (!courseId) {
     return (
       <Alert
-        message="课程ID无效"
+        title="课程ID无效"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -474,27 +473,25 @@ const Community = () => {
         type="danger"
         onConfirm={() => {
           if (deleteConfirm?.type === "post") {
-            handleDeletePost();
+            void handleDeletePost();
           } else {
-            handleDeleteComment();
+            void handleDeleteComment();
           }
         }}
-        onCancel={() => setDeleteConfirm(null)}
+        onCancel={() => { setDeleteConfirm(null); }}
       />
 
-      {error && (
-        <Alert
-          message={error}
+      {error ? <Alert
+          title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        />
-      )}
+        /> : null}
 
       {/* 搜索栏 */}
       <Space
         style={{ width: "100%", marginBottom: "1.5rem" }}
-        direction="vertical"
+        orientation="vertical"
         size="middle"
       >
         <Space.Compact style={{ width: "100%" }}>
@@ -508,28 +505,27 @@ const Community = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => setShowCreatePost(!showCreatePost)}
+            onClick={() => { setShowCreatePost(!showCreatePost); }}
           >
             {showCreatePost ? "取消发布" : "发布新帖"}
           </Button>
         </Space.Compact>
       </Space>
 
-      {showCreatePost && (
-        <Card style={{ marginBottom: "2rem" }}>
+      {showCreatePost ? <Card style={{ marginBottom: "2rem" }}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleCreatePost();
+              void handleCreatePost();
             }}
           >
-            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
               <div>
                 <Text strong>标题:</Text>
                 <Input
                   value={newPost.title}
                   onChange={(e) =>
-                    setNewPost({ ...newPost, title: e.target.value })
+                    { setNewPost({ ...newPost, title: e.target.value }); }
                   }
                   required
                   placeholder="输入帖子标题"
@@ -542,7 +538,7 @@ const Community = () => {
                 <TextArea
                   value={newPost.content}
                   onChange={(e) =>
-                    setNewPost({ ...newPost, content: e.target.value })
+                    { setNewPost({ ...newPost, content: e.target.value }); }
                   }
                   rows={15}
                   required
@@ -571,10 +567,9 @@ const Community = () => {
               </Space>
             </Space>
           </form>
-        </Card>
-      )}
+        </Card> : null}
 
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {posts.length === 0 && !showCreatePost ? (
           <ListEmptyState
             variant="empty"
@@ -582,7 +577,7 @@ const Community = () => {
               <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4}>还没有帖子</Title>
                 <Text type="secondary">成为第一个发布帖子的人吧！</Text>
               </Space>
@@ -595,12 +590,12 @@ const Community = () => {
               <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4}>未找到匹配的帖子</Title>
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => setSearchQuery("")}
+            onClearFilter={() => { setSearchQuery(""); }}
             clearFilterLabel="清除搜索"
           />
         ) : filteredPosts.length > 0 ? (
@@ -611,12 +606,11 @@ const Community = () => {
               style={{ border: "1px solid #d9d9d9" }}
               actions={[
                 <Space key="actions">
-                  {(isAdmin || user?.id === post.authorId) && (
-                    <>
+                  {(isAdmin || user?.id === post.authorId) ? <>
                       <Button
                         type="text"
                         icon={<EditOutlined />}
-                        onClick={() => startEditPost(post)}
+                        onClick={() => { startEditPost(post); }}
                         title="编辑"
                       />
                       <Button
@@ -624,12 +618,11 @@ const Community = () => {
                         danger
                         icon={<DeleteOutlined />}
                         onClick={() =>
-                          setDeleteConfirm({ type: "post", id: post.id })
+                          { setDeleteConfirm({ type: "post", id: post.id }); }
                         }
                         title="删除"
                       />
-                    </>
-                  )}
+                    </> : null}
                   <Button
                     type="text"
                     icon={
@@ -639,14 +632,14 @@ const Community = () => {
                         <DownOutlined />
                       )
                     }
-                    onClick={() => handleTogglePost(post.id)}
+                    onClick={() => { handleTogglePost(post.id); }}
                     title={expandedPost === post.id ? "收起" : "展开"}
                   />
                 </Space>,
               ]}
             >
               <Space
-                direction="vertical"
+                orientation="vertical"
                 size="middle"
                 style={{ width: "100%" }}
               >
@@ -659,7 +652,7 @@ const Community = () => {
                   </Title>
                   <Space>
                     <Text type="secondary" strong>
-                      {post.authorUsername || `用户 ${post.authorId}`}
+                      {post.authorUsername ?? `用户 ${String(post.authorId)}`}
                     </Text>
                     <Text type="secondary">{formatDate(post.createdAt)}</Text>
                   </Space>
@@ -667,26 +660,26 @@ const Community = () => {
 
                 {editingPost === post.id ? (
                   <Space
-                    direction="vertical"
+                    orientation="vertical"
                     size="middle"
                     style={{ width: "100%" }}
                   >
                     <Input
                       value={editPostData.title}
                       onChange={(e) =>
-                        setEditPostData({
+                        { setEditPostData({
                           ...editPostData,
                           title: e.target.value,
-                        })
+                        }); }
                       }
                     />
                     <TextArea
                       value={editPostData.content}
                       onChange={(e) =>
-                        setEditPostData({
+                        { setEditPostData({
                           ...editPostData,
                           content: e.target.value,
-                        })
+                        }); }
                       }
                       rows={6}
                     />
@@ -694,7 +687,7 @@ const Community = () => {
                       <Button
                         type="primary"
                         size="small"
-                        onClick={() => handleUpdatePost(post.id)}
+                        onClick={() => { void handleUpdatePost(post.id); }}
                       >
                         保存
                       </Button>
@@ -718,7 +711,7 @@ const Community = () => {
                     }}
                   >
                     <Space
-                      direction="vertical"
+                      orientation="vertical"
                       size="middle"
                       style={{ width: "100%" }}
                     >
@@ -732,27 +725,24 @@ const Community = () => {
                         <Title level={5} style={{ margin: 0 }}>
                           评论
                         </Title>
-                        {loadingComments[post.id] && (
-                          <Text type="secondary">加载中...</Text>
-                        )}
+                        {loadingComments[post.id] ? <Text type="secondary">加载中...</Text> : null}
                       </div>
 
-                      {!showReplyForm ||
-                      showReplyForm.postId !== post.id ||
+                      {showReplyForm?.postId !== post.id ||
                       showReplyForm.parentId !== null ? (
                         <Card
                           size="small"
                           style={{ backgroundColor: "#fafafa" }}
                         >
                           <Space
-                            direction="vertical"
+                            orientation="vertical"
                             size="small"
                             style={{ width: "100%" }}
                           >
                             <TextArea
                               value={getReplyContent(post.id, null)}
                               onChange={(e) =>
-                                setReplyContent(post.id, null, e.target.value)
+                                { setReplyContent(post.id, null, e.target.value); }
                               }
                               placeholder="输入评论..."
                               rows={3}
@@ -761,7 +751,9 @@ const Community = () => {
                               type="primary"
                               size="small"
                               icon={<SendOutlined />}
-                              onClick={() => handleCreateComment(post.id, null)}
+                              onClick={() => {
+                                void handleCreateComment(post.id, null);
+                              }}
                             >
                               发布评论
                             </Button>

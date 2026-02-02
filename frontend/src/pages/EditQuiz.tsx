@@ -15,7 +15,7 @@ import {
   Divider,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, MinusOutlined } from "@ant-design/icons";
-import { Quiz, QuizQuestion } from "../types";
+import type { Quiz, QuizQuestion } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { getErrorMessage } from "../utils";
@@ -236,7 +236,7 @@ const EditQuiz = () => {
 
   if (error && !quiz) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -276,14 +276,14 @@ const EditQuiz = () => {
           >
             <Input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); }}
               placeholder="输入测验标题"
             />
           </Form.Item>
 
           <Divider orientation="left">题目设置</Divider>
 
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+          <Space orientation="vertical" size="large" style={{ width: "100%" }}>
             {questions.map((question, qIndex) => (
               <Card
                 key={qIndex}
@@ -294,7 +294,7 @@ const EditQuiz = () => {
                       danger
                       size="small"
                       icon={<DeleteOutlined />}
-                      onClick={() => handleRemoveQuestion(qIndex)}
+                      onClick={() => { handleRemoveQuestion(qIndex); }}
                     >
                       删除题目
                     </Button>
@@ -302,7 +302,7 @@ const EditQuiz = () => {
                 }
               >
                 <Space
-                  direction="vertical"
+                  orientation="vertical"
                   size="middle"
                   style={{ width: "100%" }}
                 >
@@ -310,7 +310,7 @@ const EditQuiz = () => {
                     <Select
                       value={question.type}
                       onChange={(value) =>
-                        handleQuestionChange(qIndex, "type", value)
+                        { handleQuestionChange(qIndex, "type", value); }
                       }
                       style={{ width: "100%" }}
                     >
@@ -324,7 +324,7 @@ const EditQuiz = () => {
                     <TextArea
                       value={question.question}
                       onChange={(e) =>
-                        handleQuestionChange(qIndex, "question", e.target.value)
+                        { handleQuestionChange(qIndex, "question", e.target.value); }
                       }
                       rows={3}
                       placeholder="输入问题内容"
@@ -333,7 +333,7 @@ const EditQuiz = () => {
 
                   <Form.Item label="选项" required>
                     <Space
-                      direction="vertical"
+                      orientation="vertical"
                       size="small"
                       style={{ width: "100%" }}
                     >
@@ -342,7 +342,7 @@ const EditQuiz = () => {
                           <Input
                             value={option}
                             onChange={(e) =>
-                              handleOptionChange(qIndex, oIndex, e.target.value)
+                              { handleOptionChange(qIndex, oIndex, e.target.value); }
                             }
                             placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
                             disabled={question.type === "truefalse"}
@@ -353,7 +353,7 @@ const EditQuiz = () => {
                             <Radio
                               checked={question.answer.includes(oIndex)}
                               onChange={() =>
-                                handleAnswerChange(qIndex, oIndex)
+                                { handleAnswerChange(qIndex, oIndex); }
                               }
                             >
                               正确答案
@@ -362,7 +362,7 @@ const EditQuiz = () => {
                             <Checkbox
                               checked={question.answer.includes(oIndex)}
                               onChange={() =>
-                                handleAnswerChange(qIndex, oIndex)
+                                { handleAnswerChange(qIndex, oIndex); }
                               }
                             >
                               正确答案
@@ -374,7 +374,7 @@ const EditQuiz = () => {
                                 danger
                                 icon={<MinusOutlined />}
                                 onClick={() =>
-                                  handleRemoveOption(qIndex, oIndex)
+                                  { handleRemoveOption(qIndex, oIndex); }
                                 }
                               />
                             )}
@@ -383,7 +383,7 @@ const EditQuiz = () => {
                       {question.type !== "truefalse" && (
                         <Button
                           icon={<PlusOutlined />}
-                          onClick={() => handleAddOption(qIndex)}
+                          onClick={() => { handleAddOption(qIndex); }}
                         >
                           添加选项
                         </Button>
@@ -406,14 +406,12 @@ const EditQuiz = () => {
             </Button>
           </Space>
 
-          {error && (
-            <Alert
+          {error ? <Alert
               message={error}
               type="error"
               showIcon
               style={{ marginTop: "1.5rem" }}
-            />
-          )}
+            /> : null}
 
           <Form.Item style={{ marginTop: "1.5rem" }}>
             <Space>

@@ -14,7 +14,7 @@ import {
   FileTextOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
-import { OverallStats, CourseProgress } from "../types";
+import type { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services";
 import { useCourseStore } from "../stores";
 import {
@@ -106,7 +106,7 @@ const ProgressPage = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -416,8 +416,7 @@ const ProgressPage = () => {
             minHeight: 0,
           }}
         >
-          {overallStats && (
-            <>
+          {overallStats ? <>
               <CompactStatCard
                 icon={<BookOutlined style={{ fontSize: 24 }} />}
                 title="学习课程"
@@ -456,8 +455,7 @@ const ProgressPage = () => {
                 color="#8b5cf6"
                 large
               />
-            </>
-          )}
+            </> : null}
         </div>
 
         {/* 中间：整体完成度圆形图 */}
@@ -487,7 +485,7 @@ const ProgressPage = () => {
             <Card style={{ textAlign: "center", width: "100%" }}>
               <Empty
                 description={
-                  <Space direction="vertical" size="small">
+                  <Space orientation="vertical" size="small">
                     <Text type="secondary">暂无学习记录</Text>
                     <Link to="/courses">
                       <Button type="primary" size="small">
@@ -591,7 +589,7 @@ const CompactStatCard = ({
         justifyContent: "space-between",
       }}
     >
-      <Space direction="vertical" size="small" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="small" style={{ width: "100%" }}>
         <Space>
           <div style={{ color, display: "flex", alignItems: "center" }}>
             {icon}

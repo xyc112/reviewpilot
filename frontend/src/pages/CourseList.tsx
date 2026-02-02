@@ -18,7 +18,7 @@ import {
   StarOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { Course } from "../types";
+import type { Course } from "../types";
 import { courseAPI, userCourseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -228,14 +228,13 @@ const CourseList = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
   return (
     <div style={{ padding: "0", maxWidth: 1400, margin: "0 auto" }}>
-      {isAdmin && (
-        <div
+      {isAdmin ? <div
           style={{
             display: "flex",
             justifyContent: "flex-end",
@@ -252,8 +251,7 @@ const CourseList = () => {
               创建新课程
             </Button>
           </Link>
-        </div>
-      )}
+        </div> : null}
 
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
@@ -263,12 +261,12 @@ const CourseList = () => {
         cancelText="取消"
         type="danger"
         onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({ isOpen: false, courseId: null })}
+        onCancel={() => { setDeleteConfirm({ isOpen: false, courseId: null }); }}
       />
 
       {/* 搜索和过滤栏 */}
       <Space
-        direction="vertical"
+        orientation="vertical"
         size="middle"
         style={{ width: "100%", marginBottom: "1.5rem" }}
       >
@@ -293,7 +291,7 @@ const CourseList = () => {
                     <Tag
                       key={tag}
                       color={selectedTags.has(tag) ? "blue" : "default"}
-                      onClick={() => toggleTag(tag)}
+                      onClick={() => { toggleTag(tag); }}
                       style={{ cursor: "pointer" }}
                     >
                       {tag}
@@ -380,8 +378,7 @@ const CourseList = () => {
                         />
                       )}
                     </div>
-                    {course.description && (
-                      <Paragraph
+                    {course.description ? <Paragraph
                         ellipsis={{ rows: 2, expandable: false }}
                         style={{
                           margin: 0,
@@ -393,8 +390,7 @@ const CourseList = () => {
                           text={course.description}
                           searchQuery={searchQuery}
                         />
-                      </Paragraph>
-                    )}
+                      </Paragraph> : null}
                     {course.tags.length > 0 && (
                       <Space wrap>
                         {course.tags.map((tag) => (
@@ -453,8 +449,7 @@ const CourseList = () => {
                       结束学习
                     </Button>
                   )}
-                  {isAdmin && (
-                    <>
+                  {isAdmin ? <>
                       <Button
                         icon={<EditOutlined />}
                         onClick={(e) => {
@@ -470,8 +465,7 @@ const CourseList = () => {
                           handleDeleteCourse(course.id);
                         }}
                       />
-                    </>
-                  )}
+                    </> : null}
                 </Space>
               </ListItemCard>
             );

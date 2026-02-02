@@ -22,7 +22,7 @@ import {
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { ReviewPlan as ReviewPlanType } from "../types";
+import type { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services";
 import { useToast, useTheme, ConfirmDialog } from "../components";
 import { getErrorMessage } from "../utils";
@@ -309,7 +309,7 @@ const ReviewPlanPage = () => {
         cancelText="取消"
         type="danger"
         onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({ isOpen: false, planId: null })}
+        onCancel={() => { setDeleteConfirm({ isOpen: false, planId: null }); }}
       />
 
       {/* 日历和计划列表 */}
@@ -394,8 +394,7 @@ const ReviewPlanPage = () => {
 
                 const isToday = date.toDateString() === today.toDateString();
                 const isSelected =
-                  selectedDate &&
-                  date.toDateString() === selectedDate.toDateString();
+                  date.toDateString() === selectedDate?.toDateString();
                 const hasPlans = hasPlansOnDate(date);
                 const planCount = getPlanCountOnDate(date);
                 const isPast = date < today;
@@ -415,7 +414,7 @@ const ReviewPlanPage = () => {
                 return (
                   <button
                     key={index}
-                    onClick={() => handleDateClick(date)}
+                    onClick={() => { handleDateClick(date); }}
                     style={{
                       aspectRatio: "1",
                       border: isToday
@@ -461,8 +460,7 @@ const ReviewPlanPage = () => {
                     >
                       {date.getDate()}
                     </span>
-                    {hasPlans && (
-                      <div
+                    {hasPlans ? <div
                         style={{
                           marginTop: "0.25rem",
                           width: "6px",
@@ -492,8 +490,7 @@ const ReviewPlanPage = () => {
                             {planCount}
                           </span>
                         )}
-                      </div>
-                    )}
+                      </div> : null}
                   </button>
                 );
               })}
@@ -506,8 +503,7 @@ const ReviewPlanPage = () => {
           style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
         >
           {/* 新建/编辑计划表单 */}
-          {showPlanForm && (
-            <Card>
+          {showPlanForm ? <Card>
               <div
                 style={{
                   display: "flex",
@@ -539,10 +535,10 @@ const ReviewPlanPage = () => {
                   <Input
                     value={formData.title}
                     onChange={(e) =>
-                      setFormData((prev) => ({
+                      { setFormData((prev) => ({
                         ...prev,
                         title: e.target.value,
-                      }))
+                      })); }
                     }
                     placeholder="输入计划标题"
                   />
@@ -553,10 +549,10 @@ const ReviewPlanPage = () => {
                       formData.planDate ? dayjs(formData.planDate) : undefined
                     }
                     onChange={(date) =>
-                      setFormData((prev) => ({
+                      { setFormData((prev) => ({
                         ...prev,
                         planDate: date ? date.format("YYYY-MM-DD") : "",
-                      }))
+                      })); }
                     }
                     style={{ width: "100%" }}
                   />
@@ -565,10 +561,10 @@ const ReviewPlanPage = () => {
                   <Select
                     value={formData.type}
                     onChange={(value) =>
-                      setFormData((prev) => ({
+                      { setFormData((prev) => ({
                         ...prev,
-                        type: value as "plan" | "exam",
-                      }))
+                        type: value,
+                      })); }
                     }
                   >
                     <Select.Option value="plan">计划</Select.Option>
@@ -579,10 +575,10 @@ const ReviewPlanPage = () => {
                   <TextArea
                     value={formData.description}
                     onChange={(e) =>
-                      setFormData((prev) => ({
+                      { setFormData((prev) => ({
                         ...prev,
                         description: e.target.value,
-                      }))
+                      })); }
                     }
                     rows={4}
                     placeholder="输入计划描述（可选）"
@@ -615,8 +611,7 @@ const ReviewPlanPage = () => {
                   </Space>
                 </Form.Item>
               </Form>
-            </Card>
-          )}
+            </Card> : null}
 
           {/* 如果没有显示表单，显示新建计划按钮 */}
           {!showPlanForm && (
@@ -633,8 +628,7 @@ const ReviewPlanPage = () => {
           )}
 
           {/* 选中日期的计划 */}
-          {selectedDate && !showPlanForm && (
-            <Card>
+          {selectedDate && !showPlanForm ? <Card>
               <div style={{ padding: "1rem" }}>
                 <Title level={5} style={{ margin: "0 0 1rem 0" }}>
                   {selectedDate.toLocaleDateString("zh-CN", {
@@ -728,8 +722,7 @@ const ReviewPlanPage = () => {
                                 {plan.type === "exam" ? "考试" : "计划"}
                               </Tag>
                             </div>
-                            {plan.description && (
-                              <p
+                            {plan.description ? <p
                                 style={{
                                   margin: 0,
                                   fontSize: "0.8125rem",
@@ -737,8 +730,7 @@ const ReviewPlanPage = () => {
                                 }}
                               >
                                 {plan.description}
-                              </p>
-                            )}
+                              </p> : null}
                           </div>
                         </div>
                         <div
@@ -765,13 +757,13 @@ const ReviewPlanPage = () => {
                           <Button
                             size="small"
                             icon={<EditOutlined />}
-                            onClick={() => handleEditPlan(plan)}
+                            onClick={() => { handleEditPlan(plan); }}
                           />
                           <Button
                             size="small"
                             danger
                             icon={<DeleteOutlined />}
-                            onClick={() => handleDeletePlan(plan.id)}
+                            onClick={() => { handleDeletePlan(plan.id); }}
                           />
                         </div>
                       </div>
@@ -779,8 +771,7 @@ const ReviewPlanPage = () => {
                   </div>
                 )}
               </div>
-            </Card>
-          )}
+            </Card> : null}
 
           {/* 即将到来的计划 */}
           {upcomingPlans.length > 0 && (

@@ -138,16 +138,14 @@ const CreateCourse = () => {
             </Select>
           </Form.Item>
 
-          {error && (
-            <Alert
+          {error ? <Alert
               message={error}
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
               closable
-              onClose={() => setError("")}
-            />
-          )}
+              onClose={() => { setError(""); }}
+            /> : null}
 
           <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>

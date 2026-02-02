@@ -23,7 +23,7 @@ import {
   MessageOutlined,
   BookOutlined,
 } from "@ant-design/icons";
-import { Course } from "../types";
+import type { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
@@ -142,7 +142,7 @@ const CourseOverview = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -170,12 +170,12 @@ const CourseOverview = () => {
         cancelText="取消"
         type="danger"
         onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm(false)}
+        onCancel={() => { setDeleteConfirm(false); }}
       />
 
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <Card>
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
             <div
               style={{
                 display: "flex",
@@ -185,13 +185,10 @@ const CourseOverview = () => {
                 gap: "1rem",
               }}
             >
-              {isCurrentCourse && (
-                <Tag color="gold" icon={<BookOutlined />}>
+              {isCurrentCourse ? <Tag color="gold" icon={<BookOutlined />}>
                   当前学习课程
-                </Tag>
-              )}
-              {canEdit && (
-                <Space>
+                </Tag> : null}
+              {canEdit ? <Space>
                   <Link to={`/courses/edit/${course.id}`}>
                     <Button icon={<EditOutlined />}>编辑课程</Button>
                   </Link>
@@ -202,8 +199,7 @@ const CourseOverview = () => {
                   >
                     删除课程
                   </Button>
-                </Space>
-              )}
+                </Space> : null}
             </div>
 
             <Space wrap>
@@ -217,12 +213,10 @@ const CourseOverview = () => {
                 <CalendarOutlined />
                 <Text type="secondary">{formatDate(course.createdAt)}</Text>
               </Space>
-              {course.authorId && (
-                <Space>
+              {course.authorId ? <Space>
                   <UserOutlined />
                   <Text type="secondary">作者 ID: {course.authorId}</Text>
-                </Space>
-              )}
+                </Space> : null}
             </Space>
 
             <div>

@@ -11,7 +11,7 @@ import {
   Alert,
   Spin,
 } from "antd";
-import { Course } from "../types";
+import type { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";
@@ -108,7 +108,7 @@ const EditCourse = () => {
 
   if (error && !course) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -197,16 +197,14 @@ const EditCourse = () => {
             </Select>
           </Form.Item>
 
-          {error && (
-            <Alert
+          {error ? <Alert
               message={error}
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
               closable
-              onClose={() => setError("")}
-            />
-          )}
+              onClose={() => { setError(""); }}
+            /> : null}
 
           <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>

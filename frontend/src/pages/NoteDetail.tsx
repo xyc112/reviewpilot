@@ -15,7 +15,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Note } from "../types";
+import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -126,7 +126,7 @@ const NoteDetail = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -151,10 +151,10 @@ const NoteDetail = () => {
         cancelText="取消"
         type="danger"
         onConfirm={handleDelete}
-        onCancel={() => setDeleteConfirm(false)}
+        onCancel={() => { setDeleteConfirm(false); }}
       />
 
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -182,7 +182,7 @@ const NoteDetail = () => {
               <Button
                 danger
                 icon={<DeleteOutlined />}
-                onClick={() => setDeleteConfirm(true)}
+                onClick={() => { setDeleteConfirm(true); }}
               >
                 删除笔记
               </Button>
@@ -191,7 +191,7 @@ const NoteDetail = () => {
         </div>
 
         <Card>
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
             <Title level={1} style={{ margin: 0 }}>
               {note.title}
             </Title>
@@ -200,11 +200,9 @@ const NoteDetail = () => {
                 {note.visibility === "public" ? "公开" : "私有"}
               </Tag>
               <Text type="secondary">创建于: {formatDate(note.createdAt)}</Text>
-              {note.updatedAt && (
-                <Text type="secondary">
+              {note.updatedAt ? <Text type="secondary">
                   更新于: {formatDate(note.updatedAt)}
-                </Text>
-              )}
+                </Text> : null}
             </Space>
             <Divider />
             <div style={{ minHeight: "400px" }}>

@@ -22,7 +22,7 @@ import {
   ReloadOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { Quiz, QuizAttempt, AttemptResult } from "../types";
+import type { Quiz, QuizAttempt, AttemptResult } from "../types";
 import { quizAPI, wrongQuestionAPI } from "../services";
 import { useCourseStore } from "../stores";
 import { useToast } from "../components";
@@ -124,11 +124,11 @@ const QuizDetail = () => {
       setAttempt(response.data);
 
       if (response.data?.results) {
-        const wrongQuestions: Array<{
+        const wrongQuestions: {
           questionEntityId: number;
           userAnswer: number[];
           questionId: string;
-        }> = [];
+        }[] = [];
         response.data.results.forEach((result: AttemptResult) => {
           if (!result.correct && result.questionEntityId) {
             const questionId = result.questionId;
@@ -220,7 +220,7 @@ const QuizDetail = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
@@ -241,7 +241,7 @@ const QuizDetail = () => {
 
     return (
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Space orientation="vertical" size="large" style={{ width: "100%" }}>
           {/* 结果摘要 */}
           <Card
             style={{
@@ -253,7 +253,7 @@ const QuizDetail = () => {
             }}
             bodyStyle={{ padding: "3rem 2rem" }}
           >
-            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Space orientation="vertical" size="large" style={{ width: "100%" }}>
               <div style={{ fontSize: "4rem" }}>{isPassed ? "🎉" : "📝"}</div>
               <Title level={2} style={{ color: "#fff", margin: 0 }}>
                 测验完成
@@ -288,7 +288,7 @@ const QuizDetail = () => {
           {/* 题目解析 */}
           <Card>
             <Title level={3}>题目解析</Title>
-            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Space orientation="vertical" size="large" style={{ width: "100%" }}>
               {quiz.questions.map((question, index) => {
                 const result = attempt.results.find(
                   (r) => r.questionId === question.id,
@@ -306,7 +306,7 @@ const QuizDetail = () => {
                     }}
                   >
                     <Space
-                      direction="vertical"
+                      orientation="vertical"
                       size="middle"
                       style={{ width: "100%" }}
                     >
@@ -347,7 +347,7 @@ const QuizDetail = () => {
                       </Title>
 
                       <Space
-                        direction="vertical"
+                        orientation="vertical"
                         size="small"
                         style={{ width: "100%" }}
                       >
@@ -421,8 +421,7 @@ const QuizDetail = () => {
                                 </Text>
                                 <Text>{option}</Text>
                                 <Space style={{ marginLeft: "auto" }}>
-                                  {isSelected && (
-                                    <Tag
+                                  {isSelected ? <Tag
                                       color={
                                         isCorrectlySelected
                                           ? "success"
@@ -432,11 +431,8 @@ const QuizDetail = () => {
                                       {isCorrectlySelected
                                         ? "你的答案（正确）"
                                         : "你的答案"}
-                                    </Tag>
-                                  )}
-                                  {!isSelected && isCorrectAnswer && (
-                                    <Tag color="success">正确答案</Tag>
-                                  )}
+                                    </Tag> : null}
+                                  {!isSelected && isCorrectAnswer ? <Tag color="success">正确答案</Tag> : null}
                                 </Space>
                               </Space>
                             </Card>
@@ -444,15 +440,14 @@ const QuizDetail = () => {
                         })}
                       </Space>
 
-                      {question.explanation && (
-                        <Card
+                      {question.explanation ? <Card
                           size="small"
                           style={{
                             backgroundColor: "#e6f7ff",
                             borderLeft: "4px solid #1890ff",
                           }}
                         >
-                          <Space direction="vertical" size="small">
+                          <Space orientation="vertical" size="small">
                             <Text strong style={{ color: "#1890ff" }}>
                               📖 解析
                             </Text>
@@ -460,8 +455,7 @@ const QuizDetail = () => {
                               {question.explanation}
                             </Paragraph>
                           </Space>
-                        </Card>
-                      )}
+                        </Card> : null}
 
                       <Divider style={{ margin: "0.5rem 0" }} />
 
@@ -480,8 +474,7 @@ const QuizDetail = () => {
                         </Text>
                       </Space>
 
-                      {!isCorrect && result?.questionEntityId && (
-                        <Button
+                      {!isCorrect && result?.questionEntityId ? <Button
                           icon={<BookOutlined />}
                           onClick={() =>
                             handleAddToWrongBook(
@@ -496,8 +489,7 @@ const QuizDetail = () => {
                           {addingToWrongBook.has(question.id)
                             ? "已添加"
                             : "添加到错题本"}
-                        </Button>
-                      )}
+                        </Button> : null}
                     </Space>
                   </Card>
                 );
@@ -524,10 +516,10 @@ const QuizDetail = () => {
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {quiz.questions.map((question, index) => (
           <Card key={question.id} title={`题目 ${index + 1}`}>
-            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
               <Title level={4} style={{ margin: 0 }}>
                 {question.question}
                 {question.type === "multiple" && (
@@ -550,14 +542,14 @@ const QuizDetail = () => {
                       : undefined
                   }
                   onChange={(e) =>
-                    handleOptionSelect(
+                    { handleOptionSelect(
                       question.id,
                       e.target.value,
                       question.type,
-                    )
+                    ); }
                   }
                 >
-                  <Space direction="vertical" size="middle">
+                  <Space orientation="vertical" size="middle">
                     {question.options?.map((option, optIndex) => (
                       <Radio key={optIndex} value={optIndex}>
                         <Text>
@@ -571,14 +563,14 @@ const QuizDetail = () => {
                 <Checkbox.Group
                   value={answers[question.id] || []}
                   onChange={(values) => {
-                    const newAnswers = values as number[];
+                    const newAnswers = values;
                     setAnswers((prev) => ({
                       ...prev,
                       [question.id]: newAnswers,
                     }));
                   }}
                 >
-                  <Space direction="vertical" size="middle">
+                  <Space orientation="vertical" size="middle">
                     {question.options?.map((option, optIndex) => (
                       <Checkbox key={optIndex} value={optIndex}>
                         <Text>

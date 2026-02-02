@@ -19,7 +19,7 @@ import {
   ArrowLeftOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
-import { Course } from "../types";
+import type { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
@@ -40,7 +40,7 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (id) {
-      fetchCourse(Number(id));
+      void fetchCourse(Number(id));
     }
   }, [id]);
 
@@ -64,7 +64,7 @@ const CourseDetail = () => {
     try {
       await courseAPI.deleteCourse(course.id);
       success("课程删除成功");
-      navigate("/courses");
+      void navigate("/courses");
     } catch (err: unknown) {
       const errorMsg =
         "删除课程失败: " + (getErrorMessage(err) || "无权限");
@@ -101,13 +101,13 @@ const CourseDetail = () => {
 
   if (error)
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
 
   if (!course)
     return (
       <Alert
-        message="课程不存在"
+        title="课程不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -134,14 +134,14 @@ const CourseDetail = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm(false)}
+        onConfirm={() => { void confirmDelete(); }}
+        onCancel={() => { setDeleteConfirm(false); }}
       />
 
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate("/courses")}
+          onClick={() => { void navigate("/courses"); }}
         >
           返回课程列表
         </Button>
@@ -152,23 +152,21 @@ const CourseDetail = () => {
             boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
           }}
         >
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            {canEdit && (
-              <div
+          <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+            {canEdit ? <div
                 style={{
                   display: "flex",
                   justifyContent: "flex-end",
                   gap: "0.5rem",
                 }}
               >
-                <Link to={`/courses/edit/${course.id}`}>
+                <Link to={`/courses/edit/${String(course.id)}`}>
                   <Button icon={<EditOutlined />}>编辑课程</Button>
                 </Link>
                 <Button danger icon={<DeleteOutlined />} onClick={handleDelete}>
                   删除课程
                 </Button>
-              </div>
-            )}
+              </div> : null}
 
             <Space wrap>
               <Space>
@@ -181,12 +179,10 @@ const CourseDetail = () => {
                 <CalendarOutlined />
                 <Text type="secondary">{formatDate(course.createdAt)}</Text>
               </Space>
-              {course.authorId && (
-                <Space>
+              {course.authorId ? <Space>
                   <UserOutlined />
                   <Text type="secondary">作者 ID: {course.authorId}</Text>
-                </Space>
-              )}
+                </Space> : null}
             </Space>
 
             <div>
@@ -204,7 +200,7 @@ const CourseDetail = () => {
 
             <Divider />
 
-            <Link to={`/courses/${course.id}/community`}>
+            <Link to={`/courses/${String(course.id)}/community`}>
               <Button type="primary" icon={<MessageOutlined />}>
                 进入课程社区
               </Button>

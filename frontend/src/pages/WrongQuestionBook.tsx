@@ -22,7 +22,7 @@ import {
   DeleteOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { WrongQuestion } from "../types";
+import type { WrongQuestion } from "../types";
 import { wrongQuestionAPI } from "../services";
 import { useCourseStore } from "../stores";
 import {
@@ -83,7 +83,7 @@ const WrongQuestionBook = () => {
       const timer = setTimeout(() => {
         fetchStats();
       }, 100);
-      return () => clearTimeout(timer);
+      return () => { clearTimeout(timer); };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchStats 依赖 course
   }, [wrongQuestions.length, course, loading]);
@@ -214,10 +214,7 @@ const WrongQuestionBook = () => {
       // 搜索过滤
       const matchesSearch =
         !searchQuery ||
-        (wq.question?.question &&
-          wq.question.question
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()));
+        (wq.question?.question?.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesSearch;
     });
   }, [wrongQuestions, searchQuery]);
@@ -251,11 +248,10 @@ const WrongQuestionBook = () => {
         cancelText="取消"
         type="danger"
         onConfirm={handleRemove}
-        onCancel={() => setDeleteConfirm(null)}
+        onCancel={() => { setDeleteConfirm(null); }}
       />
 
-      {stats && (
-        <Row gutter={16} style={{ marginBottom: "2rem" }}>
+      {stats ? <Row gutter={16} style={{ marginBottom: "2rem" }}>
           <Col xs={24} sm={8}>
             <Card>
               <Statistic
@@ -283,25 +279,24 @@ const WrongQuestionBook = () => {
               />
             </Card>
           </Col>
-        </Row>
-      )}
+        </Row> : null}
 
       <Space wrap style={{ marginBottom: "1.5rem" }}>
         <Button
           type={filter === "all" ? "primary" : "default"}
-          onClick={() => setFilter("all")}
+          onClick={() => { setFilter("all"); }}
         >
           全部
         </Button>
         <Button
           type={filter === "notMastered" ? "primary" : "default"}
-          onClick={() => setFilter("notMastered")}
+          onClick={() => { setFilter("notMastered"); }}
         >
           未掌握
         </Button>
         <Button
           type={filter === "mastered" ? "primary" : "default"}
-          onClick={() => setFilter("mastered")}
+          onClick={() => { setFilter("mastered"); }}
         >
           已掌握
         </Button>
@@ -315,17 +310,14 @@ const WrongQuestionBook = () => {
         style={{ marginBottom: "2rem" }}
       />
 
-      {error && (
-        <Alert
+      {error ? <Alert
           message={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
-        />
-      )}
+        /> : null}
 
-      {practicingQuestion && practicingQuestion.question && (
-        <Card
+      {practicingQuestion?.question ? <Card
           style={{ marginBottom: "2rem" }}
           title={
             <div
@@ -346,7 +338,7 @@ const WrongQuestionBook = () => {
             </div>
           }
         >
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
             <div>
               <Title level={5} style={{ margin: "0 0 1rem 0" }}>
                 {practicingQuestion.question.question}
@@ -380,7 +372,7 @@ const WrongQuestionBook = () => {
                   showPracticeResult[practicingQuestion.questionId] || false
                 }
               >
-                <Space direction="vertical" size="middle">
+                <Space orientation="vertical" size="middle">
                   {practicingQuestion.question.options?.map(
                     (option, optIndex) => {
                       const isSelected = (
@@ -422,19 +414,11 @@ const WrongQuestionBook = () => {
                             {String.fromCharCode(65 + optIndex)}.
                           </Text>
                           {option}
-                          {showResult && (
-                            <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected && (
-                                <Tag color="success">你的答案（正确）</Tag>
-                              )}
-                              {isIncorrectlySelected && (
-                                <Tag color="error">你的答案</Tag>
-                              )}
-                              {!isSelected && isCorrect && (
-                                <Tag color="success">正确答案</Tag>
-                              )}
-                            </Space>
-                          )}
+                          {showResult ? <Space style={{ marginLeft: "0.5rem" }}>
+                              {isCorrectlySelected ? <Tag color="success">你的答案（正确）</Tag> : null}
+                              {isIncorrectlySelected ? <Tag color="error">你的答案</Tag> : null}
+                              {!isSelected && isCorrect ? <Tag color="success">正确答案</Tag> : null}
+                            </Space> : null}
                         </Radio>
                       );
                     },
@@ -446,7 +430,7 @@ const WrongQuestionBook = () => {
                 value={practiceAnswers[practicingQuestion.questionId] || []}
                 onChange={(values) => {
                   if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const newAnswers = values as number[];
+                    const newAnswers = values;
                     setPracticeAnswers((prev) => ({
                       ...prev,
                       [practicingQuestion.questionId]: newAnswers,
@@ -457,7 +441,7 @@ const WrongQuestionBook = () => {
                   showPracticeResult[practicingQuestion.questionId] || false
                 }
               >
-                <Space direction="vertical" size="middle">
+                <Space orientation="vertical" size="middle">
                   {practicingQuestion.question.options?.map(
                     (option, optIndex) => {
                       const isSelected = (
@@ -499,19 +483,11 @@ const WrongQuestionBook = () => {
                             {String.fromCharCode(65 + optIndex)}.
                           </Text>
                           {option}
-                          {showResult && (
-                            <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected && (
-                                <Tag color="success">你的答案（正确）</Tag>
-                              )}
-                              {isIncorrectlySelected && (
-                                <Tag color="error">你的答案</Tag>
-                              )}
-                              {!isSelected && isCorrect && (
-                                <Tag color="success">正确答案</Tag>
-                              )}
-                            </Space>
-                          )}
+                          {showResult ? <Space style={{ marginLeft: "0.5rem" }}>
+                              {isCorrectlySelected ? <Tag color="success">你的答案（正确）</Tag> : null}
+                              {isIncorrectlySelected ? <Tag color="error">你的答案</Tag> : null}
+                              {!isSelected && isCorrect ? <Tag color="success">正确答案</Tag> : null}
+                            </Space> : null}
                         </Checkbox>
                       );
                     },
@@ -520,8 +496,7 @@ const WrongQuestionBook = () => {
               </Checkbox.Group>
             )}
 
-            {showPracticeResult[practicingQuestion.questionId] && (
-              <Card
+            {showPracticeResult[practicingQuestion.questionId] ? <Card
                 size="small"
                 style={{
                   backgroundColor: "#e6f7ff",
@@ -529,7 +504,7 @@ const WrongQuestionBook = () => {
                 }}
               >
                 <Space
-                  direction="vertical"
+                  orientation="vertical"
                   size="small"
                   style={{ width: "100%" }}
                 >
@@ -547,8 +522,7 @@ const WrongQuestionBook = () => {
                         .join(", ")}
                     </Text>
                   </div>
-                  {practicingQuestion.question.explanation && (
-                    <>
+                  {practicingQuestion.question.explanation ? <>
                       <Divider style={{ margin: "0.5rem 0" }} />
                       <div>
                         <Text
@@ -561,11 +535,9 @@ const WrongQuestionBook = () => {
                           {practicingQuestion.question.explanation}
                         </Paragraph>
                       </div>
-                    </>
-                  )}
+                    </> : null}
                 </Space>
-              </Card>
-            )}
+              </Card> : null}
 
             <Space>
               {!showPracticeResult[practicingQuestion.questionId] ? (
@@ -577,16 +549,15 @@ const WrongQuestionBook = () => {
               )}
             </Space>
           </Space>
-        </Card>
-      )}
+        </Card> : null}
 
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         {!loading && wrongQuestions.length === 0 ? (
           <ListEmptyState
             variant="empty"
             icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
                   暂无错题
                 </Title>
@@ -605,14 +576,14 @@ const WrongQuestionBook = () => {
             variant="noResults"
             icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
                   未找到匹配的错题
                 </Title>
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => setSearchQuery("")}
+            onClearFilter={() => { setSearchQuery(""); }}
             clearFilterLabel="清除搜索"
           />
         ) : filteredWrongQuestions.length > 0 ? (
@@ -626,7 +597,7 @@ const WrongQuestionBook = () => {
                     size="small"
                     type="primary"
                     icon={<ReloadOutlined />}
-                    onClick={() => handleStartPractice(wq)}
+                    onClick={() => { handleStartPractice(wq); }}
                   >
                     重新练习
                   </Button>
@@ -643,7 +614,7 @@ const WrongQuestionBook = () => {
                     size="small"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => setDeleteConfirm(wq.id)}
+                    onClick={() => { setDeleteConfirm(wq.id); }}
                   >
                     移除
                   </Button>
@@ -651,7 +622,7 @@ const WrongQuestionBook = () => {
               ]}
             >
               <Space
-                direction="vertical"
+                orientation="vertical"
                 size="small"
                 style={{ width: "100%" }}
               >

@@ -15,7 +15,7 @@ import {
   DeleteOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
-import { Quiz } from "../types";
+import type { Quiz } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -131,22 +131,20 @@ const QuizList = () => {
 
   if (error) {
     return (
-      <Alert message={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
     );
   }
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        {course && isAdmin && (
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+        {course && isAdmin ? <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link to="/quizzes/new">
               <Button type="primary" icon={<PlusOutlined />}>
                 创建测验
               </Button>
             </Link>
-          </div>
-        )}
+          </div> : null}
 
         <SearchBox
           placeholder="搜索测验标题..."
@@ -162,7 +160,7 @@ const QuizList = () => {
           cancelText="取消"
           type="danger"
           onConfirm={confirmDelete}
-          onCancel={() => setDeleteConfirm({ isOpen: false, quizId: null })}
+          onCancel={() => { setDeleteConfirm({ isOpen: false, quizId: null }); }}
         />
 
         {quizzes.length === 0 ? (
@@ -172,7 +170,7 @@ const QuizList = () => {
               <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
                   暂无测验
                 </Title>
@@ -200,14 +198,14 @@ const QuizList = () => {
               <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
             }
             description={
-              <Space direction="vertical" size="small">
+              <Space orientation="vertical" size="small">
                 <Title level={4} style={{ margin: 0 }}>
                   未找到匹配的测验
                 </Title>
                 <Text type="secondary">尝试调整搜索条件</Text>
               </Space>
             }
-            onClearFilter={() => setSearchQuery("")}
+            onClearFilter={() => { setSearchQuery(""); }}
             clearFilterLabel="清除搜索"
           />
         ) : (
@@ -218,7 +216,7 @@ const QuizList = () => {
                 <Space
                   style={{ width: "100%", justifyContent: "space-between" }}
                 >
-                  <Space direction="vertical" size="small" style={{ flex: 1 }}>
+                  <Space orientation="vertical" size="small" style={{ flex: 1 }}>
                     <Space wrap>
                       <Title
                         level={4}
@@ -237,8 +235,7 @@ const QuizList = () => {
                     <Link to={`/quizzes/${quiz.id}`}>
                       <Button type="primary">开始测验</Button>
                     </Link>
-                    {isAdmin && (
-                      <>
+                    {isAdmin ? <>
                         <Button
                           icon={<EditOutlined />}
                           onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
@@ -247,11 +244,10 @@ const QuizList = () => {
                         <Button
                           danger
                           icon={<DeleteOutlined />}
-                          onClick={() => handleDelete(quiz.id)}
+                          onClick={() => { handleDelete(quiz.id); }}
                           title="删除测验"
                         />
-                      </>
-                    )}
+                      </> : null}
                   </Space>
                 </Space>
               </ListItemCard>
