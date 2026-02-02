@@ -22,7 +22,9 @@ const GroupPanel = ({
   return (
     <div>
       <div
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => {
+          setExpanded(!expanded);
+        }}
         style={{
           cursor: "pointer",
           display: "flex",
@@ -32,7 +34,9 @@ const GroupPanel = ({
       >
         <h3 style={{ margin: 0 }}>
           {title}
-          {showCount && <span style={{ marginLeft: token.marginXXS }}>({count})</span>}
+          {showCount ? (
+            <span style={{ marginLeft: token.marginXXS }}>({count})</span>
+          ) : null}
         </h3>
         <span
           style={{
@@ -44,7 +48,7 @@ const GroupPanel = ({
           ▼
         </span>
       </div>
-      {expanded && <div>{children}</div>}
+      {expanded ? <div>{children}</div> : null}
     </div>
   );
 };

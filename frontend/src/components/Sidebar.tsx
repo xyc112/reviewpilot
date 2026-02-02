@@ -67,34 +67,38 @@ const Sidebar = () => {
     setIsMobileMenuOpen(false);
     switch (key) {
       case "review-plan":
-        navigate("/review-plan");
+        void navigate("/review-plan");
         break;
       case "courses":
-        navigate("/courses");
+        void navigate("/courses");
         break;
       case "progress":
-        navigate("/progress");
+        void navigate("/progress");
         break;
       case "course-overview":
         if (currentStudyingCourse) {
-          navigate(`/courses/${currentStudyingCourse.id}/overview`);
+          void navigate(
+            `/courses/${String(currentStudyingCourse.id)}/overview`,
+          );
         }
         break;
       case "graph":
-        navigate("/graph");
+        void navigate("/graph");
         break;
       case "notes":
-        navigate("/notes");
+        void navigate("/notes");
         break;
       case "quizzes":
-        navigate("/quizzes");
+        void navigate("/quizzes");
         break;
       case "wrong-questions":
-        navigate("/wrong-questions");
+        void navigate("/wrong-questions");
         break;
       case "community":
         if (currentStudyingCourse) {
-          navigate(`/courses/${currentStudyingCourse.id}/community`);
+          void navigate(
+            `/courses/${String(currentStudyingCourse.id)}/community`,
+          );
         }
         break;
     }
@@ -173,7 +177,7 @@ const Sidebar = () => {
         >
           导航
         </Title>
-        {currentStudyingCourse && (
+        {currentStudyingCourse ? (
           <Tag
             color="gold"
             icon={<StarOutlined />}
@@ -197,7 +201,7 @@ const Sidebar = () => {
               {currentStudyingCourse.title}
             </Text>
           </Tag>
-        )}
+        ) : null}
       </div>
       <Menu
         mode="inline"
@@ -221,13 +225,15 @@ const Sidebar = () => {
       setIsMobile(window.innerWidth <= 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
     <>
       {/* 移动端菜单按钮和抽屉 */}
-      {isMobile && (
+      {isMobile ? (
         <div
           style={{
             position: "fixed",
@@ -238,26 +244,30 @@ const Sidebar = () => {
         >
           <Button
             icon={<MenuOutlined />}
-            onClick={() => setIsMobileMenuOpen(true)}
+            onClick={() => {
+              setIsMobileMenuOpen(true);
+            }}
             type="default"
             size="large"
           />
         </div>
-      )}
+      ) : null}
 
       <Drawer
         title="导航"
         placement="left"
-        onClose={() => setIsMobileMenuOpen(false)}
+        onClose={() => {
+          setIsMobileMenuOpen(false);
+        }}
         open={isMobileMenuOpen}
-        width={260}
+        size={260}
         styles={{ body: { padding: 0 } }}
       >
         {menuContent}
       </Drawer>
 
       {/* 桌面端侧边栏 - 使用 Ant Design Sider */}
-      {!isMobile && (
+      {!isMobile ? (
         <Sider
           width={260}
           style={{
@@ -273,7 +283,7 @@ const Sidebar = () => {
         >
           {menuContent}
         </Sider>
-      )}
+      ) : null}
     </>
   );
 };

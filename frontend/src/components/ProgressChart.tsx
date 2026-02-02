@@ -93,7 +93,7 @@ export const CircularProgressChart = ({
 };
 
 interface BarChartProps {
-  data: Array<{ label: string; value: number; color: string }>;
+  data: { label: string; value: number; color: string }[];
   height?: number;
 }
 
@@ -129,7 +129,7 @@ export const SimpleBarChart = ({ data, height = 200 }: BarChartProps) => {
           <div
             style={{
               width: "100%",
-              height: `${(item.value / maxValue) * (height - 60)}px`,
+              height: `${String((item.value / maxValue) * (height - 60))}px`,
               backgroundColor: item.color,
               borderRadius: "0.25rem 0.25rem 0 0",
               minHeight: item.value > 0 ? "4px" : "0",
@@ -140,13 +140,13 @@ export const SimpleBarChart = ({ data, height = 200 }: BarChartProps) => {
               paddingBottom: "0.25rem",
             }}
           >
-            {item.value > 0 && (
-              <span
+          {item.value > 0 ? (
+            <span
                 style={{ color: "white", fontSize: "0.75rem", fontWeight: 600 }}
               >
                 {item.value}
               </span>
-            )}
+            ) : null}
           </div>
           <div
             style={{
@@ -164,7 +164,7 @@ export const SimpleBarChart = ({ data, height = 200 }: BarChartProps) => {
 };
 
 interface ScoreDistributionProps {
-  scores: Array<{ score: number; count: number }>;
+  scores: { score: number; count: number }[];
 }
 
 /**

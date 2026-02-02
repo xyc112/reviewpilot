@@ -38,7 +38,9 @@ export const useKeyboardShortcuts = (shortcuts: Shortcut[]) => {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [shortcuts]);
 };
 
@@ -50,12 +52,9 @@ export const useGlobalShortcuts = () => {
       ctrl: true,
       action: () => {
         // 可以打开搜索或命令面板
-        const searchInput = document.querySelector(
-          'input[type="text"]',
-        ) as HTMLInputElement;
-        if (searchInput) {
-          searchInput.focus();
-        }
+        document
+          .querySelector<HTMLInputElement>('input[type="text"]')
+          ?.focus();
       },
       description: "聚焦搜索框",
     },

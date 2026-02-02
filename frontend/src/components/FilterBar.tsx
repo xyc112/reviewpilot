@@ -25,16 +25,16 @@ const FilterBar = ({
   if (!hasActiveFilters && !extra) return null;
 
   return (
-    <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-      {hasActiveFilters && (
+    <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+      {hasActiveFilters ? (
         <Button onClick={onClearFilters} icon={<CloseOutlined />}>
           {clearLabel}
         </Button>
-      )}
+      ) : null}
       {extra}
-      {hasActiveFilters && resultSummary && (
+      {hasActiveFilters && resultSummary ? (
         <Typography.Text type="secondary">{resultSummary}</Typography.Text>
-      )}
+      ) : null}
     </Space>
   );
 };

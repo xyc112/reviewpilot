@@ -101,7 +101,7 @@ const ErrorFallback = ({
           </Space>
         }
       >
-        {error && (
+        {error ? (
           <details
             style={{
               marginTop: "2rem",
@@ -134,7 +134,7 @@ const ErrorFallback = ({
                   {error.toString()}
                 </pre>
               </div>
-              {errorInfo && (
+              {errorInfo ? (
                 <div>
                   <strong>组件堆栈：</strong>
                   <pre
@@ -148,10 +148,10 @@ const ErrorFallback = ({
                     {errorInfo.componentStack}
                   </pre>
                 </div>
-              )}
+              ) : null}
             </div>
           </details>
-        )}
+        ) : null}
       </Result>
     </div>
   );

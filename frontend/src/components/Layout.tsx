@@ -36,7 +36,9 @@ const Layout = () => {
       setIsMobile(window.innerWidth <= 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   // 启用全局快捷键
@@ -44,7 +46,7 @@ const Layout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    void navigate("/login");
   };
 
   const {
