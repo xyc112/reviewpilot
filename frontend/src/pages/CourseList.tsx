@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Tag, Space, Typography, List, Alert, Badge } from "antd";
+import { Button, Tag, Space, List, Alert, Badge } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -24,8 +24,6 @@ import {
   ListItemCard,
 } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text, Paragraph } = Typography;
 
 const CourseList = () => {
   const navigate = useNavigate();
@@ -216,25 +214,40 @@ const CourseList = () => {
   }
 
   if (error) {
-    return <Alert title={error} type="error" showIcon className="m-8" />;
+    return (
+      <Alert
+        title={error}
+        type="error"
+        showIcon
+        className="mx-auto my-8 max-w-[1400px] rounded-xl"
+      />
+    );
   }
 
   return (
     <div className="mx-auto max-w-[1400px] p-0">
-      {isAdmin ? (
-        <div className="mb-6 flex justify-end">
-          <Link to="/courses/new">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="m-0 text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 md:text-3xl">
+            课程列表
+          </h1>
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+            浏览并管理您的课程，添加到学习列表即可开始学习
+          </p>
+        </div>
+        {isAdmin ? (
+          <Link to="/courses/new" className="shrink-0">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               size="large"
-              className="rounded-lg font-medium"
+              className="rounded-xl font-medium shadow-md"
             >
               创建新课程
             </Button>
           </Link>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
 
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
@@ -252,7 +265,7 @@ const CourseList = () => {
       />
 
       {/* 搜索和过滤栏 */}
-      <Space orientation="vertical" size="middle" className="mb-6 w-full">
+      <div className="mb-8 flex w-full flex-col gap-4">
         <SearchBox
           placeholder="搜索课程标题、描述或标签..."
           value={searchQuery}
@@ -265,11 +278,11 @@ const CourseList = () => {
           clearLabel="清除筛选"
           extra={
             allTags.length > 0 ? (
-              <div>
-                <Text strong className="mr-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-stone-600 dark:text-stone-400">
                   标签：
-                </Text>
-                <Space wrap>
+                </span>
+                <Space wrap className="gap-1.5">
                   {allTags.map((tag) => (
                     <Tag
                       key={tag}
@@ -277,7 +290,7 @@ const CourseList = () => {
                       onClick={() => {
                         toggleTag(tag);
                       }}
-                      className="cursor-pointer"
+                      className="cursor-pointer rounded-lg transition-opacity hover:opacity-90"
                     >
                       {tag}
                     </Tag>
@@ -292,13 +305,15 @@ const CourseList = () => {
               : undefined
           }
         />
-      </Space>
+      </div>
 
       {/* 课程列表 */}
       {courses.length === 0 ? (
         <ListEmptyState
           variant="empty"
-          icon={<BookOutlined className="text-[64px] text-stone-300" />}
+          icon={
+            <BookOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
+          }
           description={
             <span>
               还没有创建任何课程，
@@ -308,7 +323,11 @@ const CourseList = () => {
           action={
             isAdmin ? (
               <Link to="/courses/new">
-                <Button type="primary" icon={<PlusOutlined />}>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  className="rounded-xl shadow-sm"
+                >
                   创建新课程
                 </Button>
               </Link>
@@ -318,47 +337,47 @@ const CourseList = () => {
       ) : filteredCourses.length === 0 ? (
         <ListEmptyState
           variant="noResults"
-          icon={<SearchOutlined className="text-[64px] text-stone-300" />}
+          icon={
+            <SearchOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
+          }
           description="未找到匹配的课程，尝试调整搜索条件或筛选器"
           onClearFilter={clearFilters}
           clearFilterLabel="清除所有筛选"
         />
       ) : (
         <List
+          className="[&_.ant-list-items]:space-y-0"
           dataSource={filteredCourses}
           renderItem={(course) => {
             const state = getCourseState(course);
             return (
               <ListItemCard cursor="pointer">
                 <div className="min-w-0 flex-1">
-                  <Space orientation="vertical" size="small" className="w-full">
+                  <div className="flex w-full flex-col gap-1">
                     <div className="flex flex-wrap items-center gap-3">
-                      <Title level={4} className="m-0 text-lg">
+                      <h4 className="m-0 text-lg font-semibold text-stone-900 dark:text-stone-100">
                         <SearchHighlight
                           text={course.title}
                           searchQuery={searchQuery}
                         />
-                      </Title>
+                      </h4>
                       <Tag color={getLevelColor(course.level)}>
                         {getLevelText(course.level)}
                       </Tag>
                       {currentStudyingCourse?.id === course.id && (
                         <Badge
                           count="正在学习"
-                          className="[&_.ant-badge-count]:!bg-[#faad14]"
+                          className="[&_.ant-badge-count]:!bg-amber-500"
                         />
                       )}
                     </div>
                     {course.description ? (
-                      <Paragraph
-                        ellipsis={{ rows: 2, expandable: false }}
-                        className="m-0 text-sm text-stone-500"
-                      >
+                      <p className="m-0 line-clamp-2 text-sm text-stone-500 dark:text-stone-400">
                         <SearchHighlight
                           text={course.description}
                           searchQuery={searchQuery}
                         />
-                      </Paragraph>
+                      </p>
                     ) : null}
                     {course.tags.length > 0 && (
                       <Space wrap>
@@ -372,7 +391,7 @@ const CourseList = () => {
                         ))}
                       </Space>
                     )}
-                  </Space>
+                  </div>
                 </div>
                 <Space className="shrink-0">
                   {state === 0 && (
@@ -382,6 +401,7 @@ const CourseList = () => {
                         e.stopPropagation();
                         void handleAddToStudyList(course);
                       }}
+                      className="rounded-xl"
                     >
                       添加到学习
                     </Button>
@@ -395,6 +415,7 @@ const CourseList = () => {
                           e.stopPropagation();
                           void handleSetCurrentStudying(course);
                         }}
+                        className="rounded-xl shadow-sm"
                       >
                         开始学习
                       </Button>
@@ -404,6 +425,7 @@ const CourseList = () => {
                           e.stopPropagation();
                           void handleRemoveFromStudyList(course);
                         }}
+                        className="rounded-xl"
                       />
                     </>
                   )}
@@ -414,6 +436,7 @@ const CourseList = () => {
                         e.stopPropagation();
                         void handleEndStudying(course);
                       }}
+                      className="rounded-xl"
                     >
                       结束学习
                     </Button>
@@ -426,6 +449,7 @@ const CourseList = () => {
                           e.stopPropagation();
                           void navigate(`/courses/edit/${String(course.id)}`);
                         }}
+                        className="rounded-xl"
                       />
                       <Button
                         danger
@@ -434,6 +458,7 @@ const CourseList = () => {
                           e.stopPropagation();
                           handleDeleteCourse(course.id);
                         }}
+                        className="rounded-xl"
                       />
                     </>
                   ) : null}

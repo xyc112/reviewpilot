@@ -12,6 +12,12 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
+const iconColorClass = {
+  danger: "text-red-500",
+  warning: "text-amber-500",
+  info: "text-blue-500",
+} as const;
+
 const ConfirmDialog = ({
   isOpen,
   title,
@@ -26,19 +32,13 @@ const ConfirmDialog = ({
     <Modal
       open={isOpen}
       title={
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="flex items-center gap-3">
           <ExclamationCircleOutlined
-            style={{
-              color:
-                type === "danger"
-                  ? "#ff4d4f"
-                  : type === "warning"
-                    ? "#faad14"
-                    : "#1677ff",
-              fontSize: 20,
-            }}
+            className={`text-xl ${iconColorClass[type]}`}
           />
-          <span style={{ fontWeight: 600, fontSize: 16 }}>{title}</span>
+          <span className="text-base font-semibold text-stone-900 dark:text-stone-100">
+            {title}
+          </span>
         </div>
       }
       onOk={onConfirm}
@@ -47,14 +47,14 @@ const ConfirmDialog = ({
       cancelText={cancelText}
       okButtonProps={{
         danger: type === "danger",
-        style: { borderRadius: 8, fontWeight: 500 },
+        className: "rounded-xl font-medium",
       }}
       cancelButtonProps={{
-        style: { borderRadius: 8 },
+        className: "rounded-xl",
       }}
-      style={{ borderRadius: 12 }}
+      className="[&_.ant-modal-content]:rounded-2xl [&_.ant-modal-header]:border-b [&_.ant-modal-header]:border-stone-200 [&_.ant-modal-header]:pb-4 dark:[&_.ant-modal-header]:border-neutral-700"
     >
-      <p style={{ margin: 0, lineHeight: 1.6, color: "rgba(0, 0, 0, 0.88)" }}>
+      <p className="m-0 leading-relaxed text-stone-700 dark:text-stone-300">
         {message}
       </p>
     </Modal>

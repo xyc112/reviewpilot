@@ -1,4 +1,4 @@
-import { Button, Space, Typography } from "antd";
+import { Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import type { ReactNode } from "react";
 
@@ -25,17 +25,23 @@ const FilterBar = ({
   if (!hasActiveFilters && !extra) return null;
 
   return (
-    <Space orientation="vertical" size="middle" className="w-full">
+    <div className="flex w-full flex-col gap-3 rounded-xl border border-stone-200/80 bg-stone-50/50 p-4 dark:border-neutral-700/80 dark:bg-neutral-900/50">
       {hasActiveFilters ? (
-        <Button onClick={onClearFilters} icon={<CloseOutlined />}>
+        <Button
+          onClick={onClearFilters}
+          icon={<CloseOutlined />}
+          className="w-fit rounded-xl border-stone-300 text-stone-600 hover:!border-stone-400 hover:!text-stone-800 dark:border-neutral-600 dark:text-stone-400 dark:hover:!border-neutral-500 dark:hover:!text-stone-200"
+        >
           {clearLabel}
         </Button>
       ) : null}
       {extra}
       {hasActiveFilters && resultSummary ? (
-        <Typography.Text type="secondary">{resultSummary}</Typography.Text>
+        <span className="text-sm text-stone-500 dark:text-stone-400">
+          {resultSummary}
+        </span>
       ) : null}
-    </Space>
+    </div>
   );
 };
 

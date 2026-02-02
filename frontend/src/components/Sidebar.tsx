@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Layout, Menu, Drawer, Typography, Tag, Button } from "antd";
+import { Layout, Menu, Drawer, Tag, Button } from "antd";
 import type { MenuProps } from "antd";
 import {
   MenuOutlined,
@@ -18,7 +18,6 @@ import {
 import { useCourseStore, useAuthStore } from "../stores";
 
 const { Sider } = Layout;
-const { Title, Text } = Typography;
 
 const Sidebar = () => {
   const location = useLocation();
@@ -157,23 +156,22 @@ const Sidebar = () => {
 
   const menuContent = (
     <>
-      <div className="border-b border-black/[0.06] dark:border-white/10 p-6">
-        <Title level={4} className="!m-0 !mb-4 font-semibold text-lg">
+      <div className="border-b border-stone-200/80 p-5 dark:border-neutral-700/80">
+        <h4 className="m-0 mb-3 text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
           导航
-        </Title>
+        </h4>
         {currentStudyingCourse ? (
           <Tag
             color="gold"
             icon={<StarOutlined />}
-            className="flex items-center gap-2 py-2 px-3 rounded-lg text-[13px] font-medium border-0 max-w-full"
+            className="flex max-w-full items-center gap-2 rounded-xl border-0 px-3 py-2 text-[13px] font-medium shadow-sm"
           >
-            <Text
-              ellipsis
-              className="max-w-[200px] text-[13px]"
+            <span
+              className="max-w-[200px] truncate text-[13px]"
               title={currentStudyingCourse.title}
             >
               {currentStudyingCourse.title}
-            </Text>
+            </span>
           </Tag>
         ) : null}
       </div>
@@ -182,7 +180,7 @@ const Sidebar = () => {
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
         onClick={handleMenuClick}
-        className="!border-r-0 flex-1 bg-transparent !p-2"
+        className="!border-r-0 flex-1 bg-transparent !p-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item-selected]:bg-blue-500/10 [&_.ant-menu-item-selected]:text-blue-600 dark:[&_.ant-menu-item-selected]:bg-blue-500/20 dark:[&_.ant-menu-item-selected]:text-blue-400"
       />
     </>
   );
@@ -203,7 +201,7 @@ const Sidebar = () => {
     <>
       {/* 移动端菜单按钮和抽屉 */}
       {isMobile ? (
-        <div className="fixed top-4 left-4 z-[100]">
+        <div className="fixed left-4 top-4 z-[100]">
           <Button
             icon={<MenuOutlined />}
             onClick={() => {
@@ -211,6 +209,7 @@ const Sidebar = () => {
             }}
             type="default"
             size="large"
+            className="rounded-xl shadow-md"
           />
         </div>
       ) : null}
@@ -222,8 +221,12 @@ const Sidebar = () => {
           setIsMobileMenuOpen(false);
         }}
         open={isMobileMenuOpen}
-        size={260}
-        styles={{ body: { padding: 0 } }}
+        size={280}
+        classNames={{
+          body: "p-0",
+          header: "border-b border-stone-200 dark:border-neutral-700",
+        }}
+        className="[&_.ant-drawer-content]:rounded-r-2xl"
       >
         {menuContent}
       </Drawer>
@@ -232,7 +235,7 @@ const Sidebar = () => {
       {!isMobile ? (
         <Sider
           width={260}
-          className="!fixed left-0 top-0 bottom-0 !h-screen overflow-auto bg-white dark:bg-[#141414] border-r border-black/[0.06] dark:border-white/10"
+          className="!fixed left-0 top-0 bottom-0 !h-screen overflow-auto border-r border-stone-200/80 bg-white shadow-sm dark:border-neutral-700/80 dark:bg-neutral-900 dark:shadow-black/20"
         >
           {menuContent}
         </Sider>

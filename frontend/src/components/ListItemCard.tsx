@@ -17,9 +17,9 @@ const ListItemCard = ({
   return (
     <List.Item
       className={
-        "mb-4 rounded-xl bg-white px-6 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.08)] " +
-        "transition-all duration-200 ease-out hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 " +
-        "dark:bg-[#141414] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] " +
+        "mb-4 rounded-xl border border-stone-200/80 bg-white px-6 py-5 shadow-sm transition-all duration-200 ease-out " +
+        "hover:-translate-y-0.5 hover:border-stone-300/80 hover:shadow-md " +
+        "dark:border-neutral-700/80 dark:bg-neutral-900 dark:shadow-none dark:hover:border-neutral-600 dark:hover:shadow-lg dark:hover:shadow-black/20 " +
         (cursor === "pointer" ? "cursor-pointer" : "cursor-default")
       }
       onClick={onClick}

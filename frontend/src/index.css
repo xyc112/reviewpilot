@@ -1,4 +1,50 @@
 @import "tailwindcss";
 
-/* 使用 data-theme 控制暗色模式，与 ThemeProvider 一致 */
+/* 使用 data-theme 控制暗色模式，与 ThemeProvider 一致；布局与样式由 Tailwind 负责 */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* 扩展主题：与 antd 主色一致，便于 Tailwind 与组件视觉统一 */
+@theme {
+  --color-primary: #1677ff;
+  --color-primary-hover: #4096ff;
+  --color-primary-active: #0958d9;
+  --radius-card: 1rem;
+  --radius-button: 0.5rem;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+}
+
+/* 基础样式：焦点环、滚动条、选中文字 */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply text-stone-800 dark:text-stone-200;
+}
+
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-blue-500;
+}
+
+/* 可选：美化滚动条（仅 WebKit/Chromium） */
+.overflow-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.overflow-auto::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-stone-300 dark:bg-stone-600;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  @apply bg-stone-400 dark:bg-stone-500;
+}

@@ -1,4 +1,4 @@
-import { Skeleton as AntSkeleton, Card, Row, Col } from "antd";
+import { Skeleton as AntSkeleton, Card } from "antd";
 
 interface SkeletonProps {
   width?: string | number;
@@ -17,7 +17,7 @@ const Skeleton = ({
     <AntSkeleton.Button
       active={active}
       style={{ width, height }}
-      className={className}
+      className={`rounded-lg ${className}`.trim()}
     />
   );
 };
@@ -28,23 +28,33 @@ interface SkeletonGridProps {
 
 const SkeletonGrid = ({ count = 3 }: SkeletonGridProps) => {
   return (
-    <Row gutter={[16, 16]}>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, index) => (
-        <Col key={index} xs={24} sm={12} md={8} lg={8}>
-          <Card>
-            <AntSkeleton
+        <Card
+          key={index}
+          className="rounded-xl border border-stone-200/80 shadow-sm dark:border-neutral-700/80 dark:bg-neutral-900 [&_.ant-card-body]:p-6"
+        >
+          <AntSkeleton
+            active
+            paragraph={{ rows: 3 }}
+            title={{ width: "60%" }}
+            className="[&_.ant-skeleton-content]:space-y-3 [&_.ant-skeleton-title]:rounded [&_.ant-skeleton-paragraph>li]:rounded"
+          />
+          <div className="mt-5 flex gap-2">
+            <AntSkeleton.Button
               active
-              paragraph={{ rows: 3 }}
-              title={{ width: "60%" }}
+              size="small"
+              className="min-w-20 w-20 rounded-xl"
             />
-            <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
-              <AntSkeleton.Button active size="small" style={{ width: 80 }} />
-              <AntSkeleton.Button active size="small" style={{ width: 80 }} />
-            </div>
-          </Card>
-        </Col>
+            <AntSkeleton.Button
+              active
+              size="small"
+              className="min-w-20 w-20 rounded-xl"
+            />
+          </div>
+        </Card>
       ))}
-    </Row>
+    </div>
   );
 };
 

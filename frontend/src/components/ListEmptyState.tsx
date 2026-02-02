@@ -1,11 +1,10 @@
-import { Empty, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ReactNode } from "react";
 
 export interface ListEmptyStateProps {
   /** 空状态类型：无数据 / 筛选无结果 */
   variant: "empty" | "noResults";
-  /** 图标，如 <BookOutlined style={{ fontSize: 64, color: '#d9d9d9' }} /> */
+  /** 图标，如 <BookOutlined className="text-[64px] text-stone-300" /> */
   icon?: ReactNode;
   /** 无结果时的默认图标（未传 icon 且 variant=noResults 时使用） */
   defaultNoResultsIcon?: ReactNode;
@@ -20,7 +19,7 @@ export interface ListEmptyStateProps {
 }
 
 const DEFAULT_NO_RESULTS_ICON = (
-  <SearchOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+  <SearchOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
 );
 
 const ListEmptyState = ({
@@ -39,15 +38,27 @@ const ListEmptyState = ({
     variant === "empty" ? (
       action
     ) : showClear ? (
-      <Button type="primary" onClick={onClearFilter}>
+      <button
+        type="button"
+        onClick={onClearFilter}
+        className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 hover:shadow-md dark:bg-blue-500 dark:hover:bg-blue-600"
+      >
         {clearFilterLabel}
-      </Button>
+      </button>
     ) : null;
 
   return (
-    <Empty image={resolvedIcon} description={description}>
-      {mainAction}
-    </Empty>
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-stone-200 bg-stone-50/50 py-16 dark:border-neutral-700 dark:bg-neutral-900/30">
+      {resolvedIcon ? (
+        <div className="mb-5 flex justify-center text-stone-400 dark:text-stone-500">
+          {resolvedIcon}
+        </div>
+      ) : null}
+      <div className="max-w-sm text-center text-base text-stone-600 dark:text-stone-400">
+        {description}
+      </div>
+      {mainAction ? <div className="mt-6">{mainAction}</div> : null}
+    </div>
   );
 };
 

@@ -32,8 +32,10 @@ const SearchBox = ({
   size = "large",
   allowClear = true,
   style,
+  className,
   ...rest
 }: SearchBoxProps) => {
+  const isDefaultMaxWidth = maxWidth === 600;
   return (
     <Input.Search
       placeholder={placeholder}
@@ -51,8 +53,14 @@ const SearchBox = ({
         )
       }
       size={size}
-      className="max-w-[600px] w-full"
-      style={{ maxWidth, ...style }}
+      className={[
+        "w-full rounded-xl border-stone-200 shadow-sm transition-shadow focus-within:shadow-md focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-neutral-600 dark:bg-neutral-900/50",
+        isDefaultMaxWidth ? "max-w-[600px]" : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      style={isDefaultMaxWidth ? style : { maxWidth, ...style }}
       {...rest}
     />
   );
