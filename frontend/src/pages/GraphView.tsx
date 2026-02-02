@@ -27,7 +27,7 @@ const GraphView = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
 
   const [nodes, setNodes] = useState<Node[]>([]);
   const [relations, setRelations] = useState<Relation[]>([]);
@@ -71,10 +71,10 @@ const GraphView = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
-    fetchGraphData();
+    void fetchGraphData();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchGraphData 依赖 course
   }, [course, navigate]);
 
@@ -94,7 +94,7 @@ const GraphView = () => {
       // 更新正在编辑的节点和选中的节点
       setEditingNode((prev) => {
         if (prev) {
-          const updatedNode = fetchedNodes.find((n) => n.id === prev?.id);
+          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
           return updatedNode ?? prev;
         }
         return prev;
@@ -102,7 +102,7 @@ const GraphView = () => {
 
       setSelectedNode((prev) => {
         if (prev) {
-          const updatedNode = fetchedNodes.find((n) => n.id === prev?.id);
+          const updatedNode = fetchedNodes.find((n) => n.id === prev.id);
           return updatedNode ?? prev;
         }
         return prev;
@@ -137,7 +137,7 @@ const GraphView = () => {
       const getUniqueNodeLabel = (): string => {
         const baseLabel = "新节点";
         const existingLabels = nodes
-          .map((n) => n.label || "")
+          .map((n) => n.label ?? "")
           .filter((label) => label.startsWith(baseLabel));
 
         if (existingLabels.length === 0) {
@@ -152,7 +152,7 @@ const GraphView = () => {
 
         // 找到下一个可用的数字
         const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
-        return `${baseLabel}${maxNumber + 1}`;
+        return `${baseLabel}${String(maxNumber + 1)}`;
       };
 
       const nodeData: Partial<Node> = {
@@ -199,7 +199,7 @@ const GraphView = () => {
         weight: relationWeight,
       });
       success("关系创建成功");
-      fetchGraphData();
+      void fetchGraphData();
     } catch (err: unknown) {
       const errorMsg = "创建关系失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -222,7 +222,7 @@ const GraphView = () => {
           setEditingNode(null);
         }
         success("节点删除成功");
-      } else if (deleteConfirm.type === "relation") {
+      } else {
         if (!course) return;
         await graphAPI.deleteRelation(course.id, deleteConfirm.id);
         if (selectedRelation?.id === deleteConfirm.id) {
@@ -230,7 +230,7 @@ const GraphView = () => {
         }
         success("关系删除成功");
       }
-      fetchGraphData();
+      void fetchGraphData();
     } catch (err: unknown) {
       const errorMsg =
         `删除${deleteConfirm.type === "node" ? "节点" : "关系"}失败: ` +
@@ -245,9 +245,9 @@ const GraphView = () => {
   const handleStartEditNode = (node: Node) => {
     setEditingNode(node);
     setEditNodeForm({
-      label: node.label || "",
-      type: node.type || "",
-      description: node.description || "",
+      label: node.label ?? "",
+      type: node.type ?? "",
+      description: node.description ?? "",
     });
   };
 
@@ -261,17 +261,17 @@ const GraphView = () => {
 
     try {
       const nodeData: Partial<Node> = {
-        label: editNodeForm.label.trim() || "新节点",
+        label: editNodeForm.label.trim() ?? "新节点",
       };
       if (editNodeForm.type) nodeData.type = editNodeForm.type;
       if (editNodeForm.description)
         nodeData.description = editNodeForm.description;
 
-      await graphAPI.updateNode(course.id, editingNode.id!, nodeData);
+      await graphAPI.updateNode(course.id, editingNode.id ?? "", nodeData);
       success("节点更新成功");
       setEditingNode(null);
       setEditNodeForm({ label: "", type: "", description: "" });
-      fetchGraphData();
+      void fetchGraphData();
       if (selectedNode?.id === editingNode.id) {
         const updatedNode = { ...selectedNode, ...nodeData };
         setSelectedNode(updatedNode);
@@ -296,7 +296,7 @@ const GraphView = () => {
     setEditingRelation(relation);
     setEditRelationForm({
       type:
-        (relation.type as "prerequisite" | "related" | "part_of") || "related",
+        (relation.type as "prerequisite" | "related" | "part_of") ?? "related",
       directed: relation.directed ?? true,
       weight: relation.weight ?? 0.5,
     });
@@ -315,7 +315,7 @@ const GraphView = () => {
     if (!editingRelation || !course) return;
 
     try {
-      await graphAPI.updateRelation(course.id, editingRelation.id!, {
+      await graphAPI.updateRelation(course.id, editingRelation.id ?? "", {
         type: editRelationForm.type,
         directed: editRelationForm.directed,
         weight: editRelationForm.weight,
@@ -327,7 +327,7 @@ const GraphView = () => {
         directed: true,
         weight: 0.5,
       });
-      fetchGraphData();
+      void fetchGraphData();
       if (selectedRelation?.id === editingRelation.id) {
         const updatedRelation = { ...selectedRelation, ...editRelationForm };
         setSelectedRelation(updatedRelation);
@@ -342,11 +342,11 @@ const GraphView = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -381,7 +381,7 @@ const GraphView = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
+        onConfirm={() => { void confirmDelete(); }}
         onCancel={() =>
           { setDeleteConfirm({ isOpen: false, type: null, id: null }); }
         }
@@ -414,23 +414,25 @@ const GraphView = () => {
             onRelationTypeChange={setRelationType}
             onRelationDirectedChange={setRelationDirected}
             onRelationWeightChange={setRelationWeight}
-            onNodeUpdate={async (nodeId, position) => {
+            onNodeUpdate={(nodeId, position) => {
               if (!course) return;
-              try {
-                const node = nodes.find((n) => n.id === nodeId);
-                if (node) {
-                  await graphAPI.updateNode(course.id, nodeId, {
-                    ...node,
-                    meta: {
-                      ...node.meta,
-                      x: position.x,
-                      y: position.y,
-                    },
-                  });
+              void (async () => {
+                try {
+                  const node = nodes.find((n) => n.id === nodeId);
+                  if (node) {
+                    await graphAPI.updateNode(course.id, nodeId, {
+                      ...node,
+                      meta: {
+                        ...node.meta,
+                        x: position.x,
+                        y: position.y,
+                      },
+                    });
+                  }
+                } catch (err) {
+                  console.error("Failed to update node position:", err);
                 }
-              } catch (err) {
-                console.error("Failed to update node position:", err);
-              }
+              })();
             }}
           />
         </div>
@@ -513,7 +515,7 @@ const GraphView = () => {
                       <Button
                         type="primary"
                         size="small"
-                        onClick={handleSaveEditNode}
+                        onClick={() => { void handleSaveEditNode(); }}
                       >
                         保存
                       </Button>
@@ -534,10 +536,10 @@ const GraphView = () => {
                       标签:
                     </Text>
                     <div>
-                      <Text strong>{selectedNode.label || "未命名节点"}</Text>
+                      <Text strong>{selectedNode.label ?? "未命名节点"}</Text>
                     </div>
                   </div>
-                  {selectedNode.type ? <div>
+                  {selectedNode.type !== undefined && selectedNode.type !== "" ? <div>
                       <Text type="secondary" style={{ fontSize: "0.875rem" }}>
                         类型:
                       </Text>
@@ -566,7 +568,7 @@ const GraphView = () => {
                         size="small"
                         danger
                         icon={<DeleteOutlined />}
-                        onClick={() => { handleDeleteNode(selectedNode.id!); }}
+                        onClick={() => { handleDeleteNode(selectedNode.id ?? ""); }}
                       >
                         删除
                       </Button>
@@ -585,17 +587,12 @@ const GraphView = () => {
                           type: value,
                         }); }
                       }
-                    >
-                      <Select.Option value="prerequisite">
-                        前置 (prerequisite)
-                      </Select.Option>
-                      <Select.Option value="related">
-                        相关 (related)
-                      </Select.Option>
-                      <Select.Option value="part_of">
-                        包含 (part_of)
-                      </Select.Option>
-                    </Select>
+                      options={[
+                        { value: "prerequisite", label: "前置 (prerequisite)" },
+                        { value: "related", label: "相关 (related)" },
+                        { value: "part_of", label: "包含 (part_of)" },
+                      ]}
+                    />
                   </Form.Item>
                   <Form.Item>
                     <Space>
@@ -637,7 +634,7 @@ const GraphView = () => {
                           ...editRelationForm,
                           weight: Math.max(
                             0,
-                            Math.min(1, Number(e.target.value) || 0),
+                            Math.min(1, Number(e.target.value) ?? 0),
                           ),
                         }); }
                       }
@@ -646,12 +643,12 @@ const GraphView = () => {
                   <Form.Item label="从">
                     <Text>
                       {nodes.find((n) => n.id === selectedRelation.from)
-                        ?.label || selectedRelation.from}
+                        ?.label ?? selectedRelation.from}
                     </Text>
                   </Form.Item>
                   <Form.Item label="到">
                     <Text>
-                      {nodes.find((n) => n.id === selectedRelation.to)?.label ||
+                      {nodes.find((n) => n.id === selectedRelation.to)?.label ??
                         selectedRelation.to}
                     </Text>
                   </Form.Item>
@@ -660,7 +657,7 @@ const GraphView = () => {
                       <Button
                         type="primary"
                         size="small"
-                        onClick={handleSaveEditRelation}
+                        onClick={() => { void handleSaveEditRelation(); }}
                       >
                         保存
                       </Button>
@@ -686,7 +683,7 @@ const GraphView = () => {
                           prerequisite: "前置 (prerequisite)",
                           related: "相关 (related)",
                           part_of: "包含 (part_of)",
-                        }[selectedRelation.type] || selectedRelation.type}
+                        }[selectedRelation.type] ?? selectedRelation.type}
                       </Text>
                     </div>
                   </div>
@@ -746,7 +743,7 @@ const GraphView = () => {
                         danger
                         icon={<DeleteOutlined />}
                         onClick={() =>
-                          { handleDeleteRelation(selectedRelation.id!); }
+                          { handleDeleteRelation(selectedRelation.id ?? ""); }
                         }
                       >
                         删除

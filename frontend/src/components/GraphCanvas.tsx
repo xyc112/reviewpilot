@@ -91,15 +91,15 @@ const GraphCanvas = ({
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 4])
-      .on("zoom", (event) => {
-        container.attr("transform", event.transform);
+      .on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        container.attr("transform", String(event.transform));
         setTransform({
           x: event.transform.x,
           y: event.transform.y,
           k: event.transform.k,
         });
       })
-      .filter((event) => {
+      .filter((event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
         // 允许滚轮和拖拽，但阻止在拖拽节点时缩放
         // 双击事件不在filter中处理，由专门的双击处理器处理
         return (
@@ -114,7 +114,7 @@ const GraphCanvas = ({
 
     // 双击创建节点
     if (editable && onNodeCreate) {
-      svg.on("dblclick.create-node", function (event) {
+      svg.on("dblclick.create-node", function (event: MouseEvent) {
         // 检查是否点击在节点上
         const target = event.target as Element;
         // 如果点击的是节点相关的元素，不创建新节点
@@ -128,23 +128,26 @@ const GraphCanvas = ({
 
         event.preventDefault();
         event.stopPropagation();
-        const [x, y] = d3.pointer(event, svgRef.current);
-        const transform = d3.zoomTransform(svgRef.current!);
-        const worldX = (x - transform.x) / transform.k;
-        const worldY = (y - transform.y) / transform.k;
+        const svgEl = svgRef.current;
+        if (!svgEl) return;
+        const [x, y] = d3.pointer(event, svgEl);
+        const zoomTransform = d3.zoomTransform(svgEl);
+        const worldX = (x - zoomTransform.x) / zoomTransform.k;
+        const worldY = (y - zoomTransform.y) / zoomTransform.k;
         onNodeCreate({ x: worldX, y: worldY });
       });
     }
 
     // 转换数据格式，从meta中读取位置信息
     const d3Nodes: D3Node[] = nodes.map((node) => {
-      const meta = node.meta || {};
+      const meta = node.meta ?? {};
+      const nodeId = node.id ?? "";
       const d3Node: D3Node = {
-        id: node.id!,
+        id: nodeId,
         label: node.label,
         type: node.type,
         description: node.description,
-        group: node.type || "default",
+        group: node.type ?? "default",
       };
       // 如果meta中有x和y坐标，使用它们
       if (typeof meta.x === "number" && typeof meta.y === "number") {
@@ -157,7 +160,7 @@ const GraphCanvas = ({
     });
 
     const d3Links: D3Link[] = relations.map((rel) => ({
-      id: rel.id!,
+      id: rel.id ?? "",
       source: rel.from,
       target: rel.to,
       type: rel.type,
@@ -216,10 +219,11 @@ const GraphCanvas = ({
       .attr("class", "link")
       .attr(
         "stroke",
-        (d) => arrowColors[d.type as keyof typeof arrowColors] || "#999",
+        (d) =>
+          (arrowColors[d.type as keyof typeof arrowColors] as string | undefined) ?? "#999",
       )
       .attr("stroke-width", (d) => {
-        const base = (d.weight || 0.5) * 4;
+        const base = (d.weight ?? 0.5) * 4;
         return d.id === selectedRelationId ? base + 2 : base;
       })
       .attr("stroke-opacity", (d) => (d.id === selectedRelationId ? 0.9 : 0.6))
@@ -254,15 +258,15 @@ const GraphCanvas = ({
           related: "相关",
           part_of: "包含",
         };
-        return typeMap[d.type] || d.type;
+        return typeMap[d.type] ?? d.type;
       });
 
-    links.on("click", function (event, d) {
+    links.on("click", function (event: MouseEvent, d: D3Link) {
       event.stopPropagation();
       handleRelationSelect(d.id);
     });
 
-    linkLabels.on("click", function (event, d) {
+    linkLabels.on("click", function (event: MouseEvent, d: D3Link) {
       event.stopPropagation();
       handleRelationSelect(d.id);
     });
@@ -292,7 +296,7 @@ const GraphCanvas = ({
     nodeGroups
       .append("circle")
       .attr("r", 20)
-      .attr("fill", (d) => colorScale(d.group || "default"))
+      .attr("fill", (d) => colorScale(d.group ?? "default"))
       .attr("stroke", (d) => (d.id === selectedNodeId ? "#f39c12" : "#fff"))
       .attr("stroke-width", (d) => (d.id === selectedNodeId ? 4 : 2))
       .attr("class", "node-circle")
@@ -318,7 +322,7 @@ const GraphCanvas = ({
       .attr("text-anchor", "middle")
       .attr("font-size", "10px")
       .attr("fill", "#7f8c8d")
-      .text((d) => d.type || "")
+      .text((d) => d.type ?? "")
       .style("pointer-events", "none");
 
     // 节点点击和拖拽处理
@@ -331,7 +335,7 @@ const GraphCanvas = ({
       }
     >();
 
-    nodeGroups.on("mousedown", function (event, d) {
+    nodeGroups.on("mousedown", function (event: MouseEvent, d: D3Node) {
       // 如果是右键或中键，不处理
       if (event.button !== 0) return;
 
@@ -362,7 +366,7 @@ const GraphCanvas = ({
     });
 
     // 在节点组上添加点击事件处理（在拖拽结束后）
-    nodeGroups.on("click", function (event, d) {
+    nodeGroups.on("click", function (event: MouseEvent, d: D3Node) {
       // 如果按住Ctrl键，不处理点击
       if (event.ctrlKey) return;
 
@@ -386,7 +390,7 @@ const GraphCanvas = ({
     });
 
     // 鼠标悬停效果
-    nodeGroups.on("mouseenter", function (event, d) {
+    nodeGroups.on("mouseenter", function (_event: MouseEvent, d: D3Node) {
       d3.select(this).select("circle").transition().duration(200).attr("r", 25);
 
       // 显示连接的边
@@ -406,12 +410,12 @@ const GraphCanvas = ({
           const target =
             typeof link.target === "object" ? link.target.id : link.target;
           return source === d.id || target === d.id
-            ? (link.weight || 0.5) * 6
-            : (link.weight || 0.5) * 4;
+            ? (link.weight ?? 0.5) * 6
+            : (link.weight ?? 0.5) * 4;
         });
     });
 
-    nodeGroups.on("mouseleave", function (event, d) {
+    nodeGroups.on("mouseleave", function (_event: MouseEvent, d: D3Node) {
       if (draggingFromRef.current && draggingFromRef.current !== d.id) {
         // 恢复目标节点样式
         d3.select(this)
@@ -433,13 +437,13 @@ const GraphCanvas = ({
         .transition()
         .duration(200)
         .attr("stroke-opacity", 0.6)
-        .attr("stroke-width", (d) => (d.weight || 0.5) * 4);
+        .attr("stroke-width", (d) => (d.weight ?? 0.5) * 4);
     });
 
     // 处理Ctrl+点击创建关系
     if (editable && onRelationCreate) {
       // 在节点上释放鼠标时创建关系
-      nodeGroups.on("mouseup", function (event, d) {
+      nodeGroups.on("mouseup", function (event: MouseEvent, d: D3Node) {
         const from = draggingFromRef.current;
         if (from && from !== d.id && event.button === 0 && event.ctrlKey) {
           event.stopPropagation();
@@ -453,23 +457,25 @@ const GraphCanvas = ({
 
     // 更新位置
     function ticked() {
+      const getX = (n: D3Node): number => n.x ?? 0;
+      const getY = (n: D3Node): number => n.y ?? 0;
       links
-        .attr("x1", (d) => (d.source as D3Node).x!)
-        .attr("y1", (d) => (d.source as D3Node).y!)
-        .attr("x2", (d) => (d.target as D3Node).x!)
-        .attr("y2", (d) => (d.target as D3Node).y!);
+        .attr("x1", (d) => getX(d.source as D3Node))
+        .attr("y1", (d) => getY(d.source as D3Node))
+        .attr("x2", (d) => getX(d.target as D3Node))
+        .attr("y2", (d) => getY(d.target as D3Node));
 
       linkLabels
         .attr(
           "x",
-          (d) => ((d.source as D3Node).x! + (d.target as D3Node).x!) / 2,
+          (d) => (getX(d.source as D3Node) + getX(d.target as D3Node)) / 2,
         )
         .attr(
           "y",
-          (d) => ((d.source as D3Node).y! + (d.target as D3Node).y!) / 2,
+          (d) => (getY(d.source as D3Node) + getY(d.target as D3Node)) / 2,
         );
 
-      nodeGroups.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      nodeGroups.attr("transform", (d) => `translate(${String(d.x ?? 0)},${String(d.y ?? 0)})`);
     }
 
     // 拖拽函数
@@ -534,31 +540,31 @@ const GraphCanvas = ({
 
     // 鼠标移动时更新临时线条
     if (editable && onRelationCreate) {
-      svg.on("mousemove.temp", function (event) {
-        if (draggingFromRef.current) {
-          const [x, y] = d3.pointer(event, svgRef.current);
-          const transform = d3.zoomTransform(svgRef.current!);
-          const worldX = (x - transform.x) / transform.k;
-          const worldY = (y - transform.y) / transform.k;
-          const fromNode = d3Nodes.find(
-            (n) => n.id === draggingFromRef.current,
-          );
-          if (
-            fromNode?.x !== undefined &&
-            fromNode.y !== undefined
-          ) {
-            tempLineRef.current = {
-              x1: fromNode.x,
-              y1: fromNode.y,
-              x2: worldX,
-              y2: worldY,
-            };
-            updateTempLine();
-          }
+      svg.on("mousemove.temp", function (event: MouseEvent) {
+        const svgEl = svgRef.current;
+        if (!draggingFromRef.current || !svgEl) return;
+        const [x, y] = d3.pointer(event, svgEl);
+        const zoomTransform = d3.zoomTransform(svgEl);
+        const worldX = (x - zoomTransform.x) / zoomTransform.k;
+        const worldY = (y - zoomTransform.y) / zoomTransform.k;
+        const fromNode = d3Nodes.find(
+          (n) => n.id === draggingFromRef.current,
+        );
+        if (
+          fromNode?.x !== undefined &&
+          fromNode.y !== undefined
+        ) {
+          tempLineRef.current = {
+            x1: fromNode.x,
+            y1: fromNode.y,
+            x2: worldX,
+            y2: worldY,
+          };
+          updateTempLine();
         }
       });
 
-      svg.on("click.temp", function (event) {
+      svg.on("click.temp", function (event: MouseEvent) {
         // 点击空白处取消创建关系
         const target = event.target as Element;
         if (
@@ -574,32 +580,34 @@ const GraphCanvas = ({
     }
 
     // 点击空白区域清除选中状态
-    svg.on("click.deselect", function (event) {
+    svg.on("click.deselect", function (event: MouseEvent) {
       const target = event.target as Element;
+      const svgEl = svgRef.current;
       // 如果点击的是画布背景（不是节点、边或标签）
       if (
-        target === svgRef.current ||
-        target.tagName === "svg" ||
-        (target.tagName === "g" && target.classList.contains("graph-container"))
+        !svgEl ||
+        (target !== svgEl &&
+          target.tagName !== "svg" &&
+          !(target.tagName === "g" && target.classList.contains("graph-container")))
       ) {
-        const [x, y] = d3.pointer(event, svgRef.current);
-        const rect = svgRef.current?.getBoundingClientRect();
-        if (rect) {
-          const clickedElement = document.elementFromPoint(
-            x + rect.left,
-            y + rect.top,
-          );
-          const isBackground =
-            clickedElement &&
-            !clickedElement.closest(".node-group") &&
-            !clickedElement.closest(".link") &&
-            !clickedElement.closest(".link-label") &&
-            !clickedElement.closest(".graph-controls") &&
-            !clickedElement.closest(".node-details-panel") &&
-            !clickedElement.closest(".graph-legend") &&
-            !clickedElement.closest(".graph-help");
-          if (isBackground) onDeselect?.();
-        }
+        return;
+      }
+      const [x, y] = d3.pointer(event, svgEl);
+      const rect = svgEl.getBoundingClientRect();
+      const clickedElement = document.elementFromPoint(
+        x + rect.left,
+        y + rect.top,
+      );
+      if (clickedElement) {
+        const isBackground =
+          !clickedElement.closest(".node-group") &&
+          !clickedElement.closest(".link") &&
+          !clickedElement.closest(".link-label") &&
+          !clickedElement.closest(".graph-controls") &&
+          !clickedElement.closest(".node-details-panel") &&
+          !clickedElement.closest(".graph-legend") &&
+          !clickedElement.closest(".graph-help");
+        if (isBackground) onDeselect?.();
       }
     });
 
@@ -682,7 +690,7 @@ const GraphCanvas = ({
   const zoomInfoStyle: React.CSSProperties = {
     fontSize: token.fontSizeSM,
     color: isDark ? token.colorTextSecondary : "#64748b",
-    padding: `${token.paddingXXS} ${token.paddingXS}`,
+    padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
     background: isDark
       ? "rgba(255, 255, 255, 0.08)"
       : "rgba(0, 0, 0, 0.04)",
@@ -767,7 +775,7 @@ const GraphCanvas = ({
                   )
                 }
                 style={{
-                  padding: `${token.paddingXXS} ${token.paddingXS}`,
+                  padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
                   borderRadius: token.borderRadiusSM,
                   border: `1px solid ${token.colorBorder}`,
                   fontSize: token.fontSizeSM,
@@ -806,14 +814,15 @@ const GraphCanvas = ({
                 max={1}
                 step={0.1}
                 value={relationWeight}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const v = Number(e.target.value);
                   onRelationWeightChange?.(
-                    Math.max(0, Math.min(1, Number(e.target.value) || 0)),
-                  )
-                }
+                    Math.max(0, Math.min(1, Number.isNaN(v) ? 0 : v)),
+                  );
+                }}
                 style={{
                   width: 50,
-                  padding: `${token.paddingXXS} ${token.paddingXS}`,
+                  padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
                   borderRadius: token.borderRadiusSM,
                   border: `1px solid ${token.colorBorder}`,
                   fontSize: token.fontSizeSM,
@@ -823,7 +832,7 @@ const GraphCanvas = ({
               />
             </div>
           </> : null}
-        <div style={zoomInfoStyle}>缩放: {(transform.k * 100).toFixed(0)}%</div>
+        <div style={zoomInfoStyle}>缩放: {String(Math.round(transform.k * 100))}%</div>
       </div>
 
       <svg
@@ -847,7 +856,7 @@ const GraphCanvas = ({
       </div>
 
       <div style={helpStyle}>
-        <p style={{ margin: `0 0 ${token.marginXS} 0`, fontWeight: 600, color: token.colorText, fontSize: token.fontSizeSM }}>
+        <p style={{ margin: `0 0 ${String(token.marginXS)} 0`, fontWeight: 600, color: token.colorText, fontSize: token.fontSizeSM }}>
           💡 <strong>操作提示：</strong>
         </p>
         <ul style={{ margin: 0, paddingLeft: token.paddingLG, color: isDark ? token.colorTextSecondary : "#64748b" }}>
