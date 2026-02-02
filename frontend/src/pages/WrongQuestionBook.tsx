@@ -215,7 +215,7 @@ const WrongQuestionBook = () => {
       // 搜索过滤
       const matchesSearch =
         !searchQuery ||
-        (wq.question?.question?.toLowerCase().includes(searchQuery.toLowerCase()));
+        (wq.question?.question ?? "").toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
   }, [wrongQuestions, searchQuery]);
@@ -362,10 +362,11 @@ const WrongQuestionBook = () => {
                 value={(practiceAnswers[practicingQuestion.questionId] ?? [])[0]}
                 onChange={(e) => {
                   if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const val = e.target.value;
+                    const rawVal = e.target.value as unknown;
+                    const val = typeof rawVal === "number" ? rawVal : Number(rawVal);
                     handlePracticeOptionSelect(
                       practicingQuestion.questionId,
-                      typeof val === "number" ? val : Number(val),
+                      val,
                       practicingQuestion.question.type,
                     );
                   }
@@ -375,15 +376,13 @@ const WrongQuestionBook = () => {
                 }
               >
                 <Space orientation="vertical" size="middle">
-                  {practicingQuestion.question.options?.map(
+                  {practicingQuestion.question.options.map(
                     (option, optIndex) => {
-                      const isSelected = (
-                        practiceAnswers[practicingQuestion.questionId] || []
-                      ).includes(optIndex);
+                      const answers = practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const isSelected = answers.includes(optIndex);
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect =
-                        (practicingQuestion.question?.answer ?? []).includes(optIndex);
+                      const isCorrect = practicingQuestion.question.answer.includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -446,15 +445,13 @@ const WrongQuestionBook = () => {
                 }
               >
                 <Space orientation="vertical" size="middle">
-                  {practicingQuestion.question.options?.map(
+                  {practicingQuestion.question.options.map(
                     (option, optIndex) => {
-                      const isSelected = (
-                        practiceAnswers[practicingQuestion.questionId] || []
-                      ).includes(optIndex);
+                      const answers = practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const isSelected = answers.includes(optIndex);
                       const showResult =
                         showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect =
-                        (practicingQuestion.question?.answer ?? []).includes(optIndex);
+                      const isCorrect = practicingQuestion.question.answer.includes(optIndex);
                       const isCorrectlySelected = isSelected && isCorrect;
                       const isIncorrectlySelected = isSelected && !isCorrect;
 
@@ -556,7 +553,7 @@ const WrongQuestionBook = () => {
         </Card> : null}
 
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        {!loading && wrongQuestions.length === 0 ? (
+        {wrongQuestions.length === 0 ? (
           <ListEmptyState
             variant="empty"
             icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}

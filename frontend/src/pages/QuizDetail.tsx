@@ -481,10 +481,7 @@ const QuizDetail = () => {
                         <Button
                           icon={<BookOutlined />}
                           onClick={() => {
-                            const qeid =
-                              result !== undefined
-                                ? result.questionEntityId
-                                : undefined;
+                            const qeid = result.questionEntityId;
                             if (qeid !== undefined) {
                               void handleAddToWrongBook(
                                 qeid,
@@ -553,12 +550,9 @@ const QuizDetail = () => {
                       : undefined
                   }
                   onChange={(e) => {
-                    const val = e.target.value;
-                    handleOptionSelect(
-                      question.id,
-                      typeof val === "number" ? val : Number(val),
-                      question.type,
-                    );
+                    const rawVal = e.target.value as unknown;
+                    const val = typeof rawVal === "number" ? rawVal : Number(rawVal);
+                    handleOptionSelect(question.id, val, question.type);
                   }}
                 >
                   <Space orientation="vertical" size="middle">
