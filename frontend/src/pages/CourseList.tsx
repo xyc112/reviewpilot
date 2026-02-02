@@ -216,27 +216,19 @@ const CourseList = () => {
   }
 
   if (error) {
-    return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
-    );
+    return <Alert title={error} type="error" showIcon className="m-8" />;
   }
 
   return (
-    <div style={{ padding: "0", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="mx-auto max-w-[1400px] p-0">
       {isAdmin ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="mb-6 flex justify-end">
           <Link to="/courses/new">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               size="large"
-              style={{ borderRadius: 8, fontWeight: 500 }}
+              className="rounded-lg font-medium"
             >
               创建新课程
             </Button>
@@ -260,11 +252,7 @@ const CourseList = () => {
       />
 
       {/* 搜索和过滤栏 */}
-      <Space
-        orientation="vertical"
-        size="middle"
-        style={{ width: "100%", marginBottom: "1.5rem" }}
-      >
+      <Space orientation="vertical" size="middle" className="mb-6 w-full">
         <SearchBox
           placeholder="搜索课程标题、描述或标签..."
           value={searchQuery}
@@ -278,7 +266,7 @@ const CourseList = () => {
           extra={
             allTags.length > 0 ? (
               <div>
-                <Text strong style={{ marginRight: "0.5rem" }}>
+                <Text strong className="mr-2">
                   标签：
                 </Text>
                 <Space wrap>
@@ -289,7 +277,7 @@ const CourseList = () => {
                       onClick={() => {
                         toggleTag(tag);
                       }}
-                      style={{ cursor: "pointer" }}
+                      className="cursor-pointer"
                     >
                       {tag}
                     </Tag>
@@ -310,7 +298,7 @@ const CourseList = () => {
       {courses.length === 0 ? (
         <ListEmptyState
           variant="empty"
-          icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+          icon={<BookOutlined className="text-[64px] text-stone-300" />}
           description={
             <span>
               还没有创建任何课程，
@@ -330,7 +318,7 @@ const CourseList = () => {
       ) : filteredCourses.length === 0 ? (
         <ListEmptyState
           variant="noResults"
-          icon={<SearchOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+          icon={<SearchOutlined className="text-[64px] text-stone-300" />}
           description="未找到匹配的课程，尝试调整搜索条件或筛选器"
           onClearFilter={clearFilters}
           clearFilterLabel="清除所有筛选"
@@ -342,24 +330,10 @@ const CourseList = () => {
             const state = getCourseState(course);
             return (
               <ListItemCard cursor="pointer">
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Space
-                    orientation="vertical"
-                    size="small"
-                    style={{ width: "100%" }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <Title
-                        level={4}
-                        style={{ margin: 0, fontSize: "1.125rem" }}
-                      >
+                <div className="min-w-0 flex-1">
+                  <Space orientation="vertical" size="small" className="w-full">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Title level={4} className="m-0 text-lg">
                         <SearchHighlight
                           text={course.title}
                           searchQuery={searchQuery}
@@ -371,18 +345,14 @@ const CourseList = () => {
                       {currentStudyingCourse?.id === course.id && (
                         <Badge
                           count="正在学习"
-                          style={{ backgroundColor: "#faad14" }}
+                          className="[&_.ant-badge-count]:!bg-[#faad14]"
                         />
                       )}
                     </div>
                     {course.description ? (
                       <Paragraph
                         ellipsis={{ rows: 2, expandable: false }}
-                        style={{
-                          margin: 0,
-                          fontSize: "0.875rem",
-                          color: "#78716c",
-                        }}
+                        className="m-0 text-sm text-stone-500"
                       >
                         <SearchHighlight
                           text={course.description}
@@ -404,7 +374,7 @@ const CourseList = () => {
                     )}
                   </Space>
                 </div>
-                <Space style={{ flexShrink: 0 }}>
+                <Space className="shrink-0">
                   {state === 0 && (
                     <Button
                       icon={<BookOutlined />}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Form, Input, Button, Typography, Alert, Space, Card } from "antd";
 import {
@@ -16,17 +16,6 @@ const Login = () => {
   const [form] = Form.useForm();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1024);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
@@ -56,151 +45,52 @@ const Login = () => {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      }}
-    >
-      {/* 左侧欢迎区域 */}
-      {!isMobile && (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "2.5rem",
-            color: "white",
-          }}
-        >
-          <div style={{ maxWidth: 500, position: "relative", zIndex: 1 }}>
-            <div style={{ marginBottom: "1.5rem", fontSize: "4rem" }}>✓</div>
-            <Title
-              level={1}
-              style={{ color: "white", marginBottom: "0.75rem" }}
-            >
-              欢迎来到 ReviewPilot
-            </Title>
-            <Text
-              style={{
-                fontSize: "1.125rem",
-                opacity: 0.95,
-                display: "block",
-                marginBottom: "2rem",
-              }}
-            >
-              一体化复习平台，让学习更高效，让复习更系统
-            </Text>
-            <Space
-              orientation="vertical"
-              size="middle"
-              style={{ width: "100%" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: "0.875rem",
-                  padding: "0.875rem",
-                  background: "rgba(255,255,255,0.1)",
-                  borderRadius: "0.75rem",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📚</div>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                    课程与知识图谱
-                  </div>
-                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                    管理课程，可视化知识关联
-                  </div>
+    <div className="flex min-h-screen bg-[linear-gradient(135deg,#667eea_0%,#764ba2_100%)]">
+      {/* 左侧欢迎区域 - 小屏隐藏 */}
+      <div className="hidden flex-1 items-center justify-center p-10 text-white lg:flex">
+        <div className="relative z-10 max-w-[500px]">
+          <div className="mb-6 text-6xl">✓</div>
+          <Title level={1} className="!m-0 !mb-3 !text-white">
+            欢迎来到 ReviewPilot
+          </Title>
+          <Text className="mb-8 block text-lg opacity-95">
+            一体化复习平台，让学习更高效，让复习更系统
+          </Text>
+          <Space orientation="vertical" size="middle" className="w-full">
+            <div className="flex gap-3.5 rounded-xl border border-white/20 bg-white/10 p-3.5">
+              <div className="shrink-0 text-[1.75rem]">📚</div>
+              <div>
+                <div className="mb-0.5 font-semibold">课程与知识图谱</div>
+                <div className="text-sm opacity-90">
+                  管理课程，可视化知识关联
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "0.875rem",
-                  padding: "0.875rem",
-                  background: "rgba(255,255,255,0.1)",
-                  borderRadius: "0.75rem",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📝</div>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                    笔记与测验
-                  </div>
-                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                    记录笔记，检验学习成果
-                  </div>
-                </div>
+            </div>
+            <div className="flex gap-3.5 rounded-xl border border-white/20 bg-white/10 p-3.5">
+              <div className="shrink-0 text-[1.75rem]">📝</div>
+              <div>
+                <div className="mb-0.5 font-semibold">笔记与测验</div>
+                <div className="text-sm opacity-90">记录笔记，检验学习成果</div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "0.875rem",
-                  padding: "0.875rem",
-                  background: "rgba(255,255,255,0.1)",
-                  borderRadius: "0.75rem",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <div style={{ fontSize: "1.75rem", flexShrink: 0 }}>📅</div>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-                    复习计划与社区
-                  </div>
-                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                    制定计划，交流学习心得
-                  </div>
-                </div>
+            </div>
+            <div className="flex gap-3.5 rounded-xl border border-white/20 bg-white/10 p-3.5">
+              <div className="shrink-0 text-[1.75rem]">📅</div>
+              <div>
+                <div className="mb-0.5 font-semibold">复习计划与社区</div>
+                <div className="text-sm opacity-90">制定计划，交流学习心得</div>
               </div>
-            </Space>
-          </div>
+            </div>
+          </Space>
         </div>
-      )}
+      </div>
 
       {/* 右侧表单区域 */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "3rem",
-          background: "#fafaf9",
-        }}
-      >
-        <Card
-          style={{
-            width: "100%",
-            maxWidth: 450,
-            borderRadius: 16,
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
-          }}
-        >
-          <Title
-            level={2}
-            style={{
-              textAlign: "center",
-              marginBottom: "0.5rem",
-              fontWeight: 600,
-            }}
-          >
+      <div className="flex flex-1 items-center justify-center bg-[#fafaf9] p-12">
+        <Card className="w-full max-w-[450px] rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+          <Title level={2} className="!mb-2 !text-center font-semibold">
             登录
           </Title>
-          <Text
-            type="secondary"
-            style={{
-              display: "block",
-              textAlign: "center",
-              marginBottom: "2.5rem",
-              fontSize: 14,
-            }}
-          >
+          <Text type="secondary" className="mb-10 block text-center text-sm">
             请登录继续访问学习辅助系统
           </Text>
 
@@ -254,15 +144,10 @@ const Login = () => {
             </Form.Item>
 
             {error ? (
-              <Alert
-                title={error}
-                type="error"
-                showIcon
-                style={{ marginBottom: "1.5rem" }}
-              />
+              <Alert title={error} type="error" showIcon className="mb-6" />
             ) : null}
 
-            <Form.Item style={{ marginBottom: 0 }}>
+            <Form.Item className="mb-0">
               <Button
                 type="primary"
                 htmlType="submit"
@@ -270,22 +155,16 @@ const Login = () => {
                 loading={loading}
                 icon={<ArrowRightOutlined />}
                 size="large"
-                style={{ height: 48, borderRadius: 8, fontWeight: 500 }}
+                className="h-12 rounded-lg font-medium"
               >
                 登录
               </Button>
             </Form.Item>
           </Form>
 
-          <div
-            style={{
-              marginTop: "2rem",
-              textAlign: "center",
-              fontSize: "0.875rem",
-            }}
-          >
+          <div className="mt-8 text-center text-sm">
             <Text type="secondary">没有账号？</Text>{" "}
-            <Link to="/register" style={{ fontWeight: 500 }}>
+            <Link to="/register" className="font-medium">
               立即注册
             </Link>
           </div>

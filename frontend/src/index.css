@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* 使用 data-theme 控制暗色模式，与 ThemeProvider 一致 */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

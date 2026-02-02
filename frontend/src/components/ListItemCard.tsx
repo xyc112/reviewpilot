@@ -1,4 +1,4 @@
-import { List, theme } from "antd";
+import { List } from "antd";
 import type { ReactNode } from "react";
 
 export interface ListItemCardProps {
@@ -14,28 +14,14 @@ const ListItemCard = ({
   onClick,
   cursor = onClick ? "pointer" : "default",
 }: ListItemCardProps) => {
-  const { token } = theme.useToken();
-  const baseStyle: React.CSSProperties = {
-    background: token.colorBgContainer,
-    marginBottom: token.margin,
-    padding: token.paddingLG,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: token.boxShadow,
-    transition: `box-shadow ${token.motionDurationMid} ${token.motionEaseOut}, transform ${token.motionDurationMid} ${token.motionEaseOut}`,
-    cursor,
-  };
-
   return (
     <List.Item
-      style={baseStyle}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = token.boxShadowSecondary;
-        e.currentTarget.style.transform = "translateY(-2px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = token.boxShadow;
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
+      className={
+        "mb-4 rounded-xl bg-white px-6 py-6 shadow-[0_2px_8px_rgba(0,0,0,0.08)] " +
+        "transition-all duration-200 ease-out hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 " +
+        "dark:bg-[#141414] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] " +
+        (cursor === "pointer" ? "cursor-pointer" : "cursor-default")
+      }
       onClick={onClick}
     >
       {children}

@@ -25,7 +25,7 @@ const FilterBar = ({
   if (!hasActiveFilters && !extra) return null;
 
   return (
-    <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+    <Space orientation="vertical" size="middle" className="w-full">
       {hasActiveFilters ? (
         <Button onClick={onClearFilters} icon={<CloseOutlined />}>
           {clearLabel}

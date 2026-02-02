@@ -5,7 +5,6 @@ import {
   Button,
   Space,
   Typography,
-  theme as antdTheme,
   Avatar,
   Dropdown,
   type MenuProps,
@@ -49,16 +48,6 @@ const Layout = () => {
     void navigate("/login");
   };
 
-  const {
-    token: {
-      colorBgContainer,
-      colorBorder,
-      borderRadius,
-      motionDurationMid,
-      motionEaseInOut,
-    },
-  } = antdTheme.useToken();
-
   const userMenuItems: MenuProps["items"] = [
     {
       key: "profile",
@@ -87,33 +76,13 @@ const Layout = () => {
   ];
 
   return (
-    <AntLayout style={{ minHeight: "100vh" }}>
+    <AntLayout className="min-h-screen">
       <Sidebar />
-      <AntLayout
-        style={{
-          marginLeft: isMobile ? 0 : 260,
-        }}
-      >
-        <Header
-          style={{
-            padding: "0 2rem",
-            background: colorBgContainer,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "sticky",
-            top: 0,
-            zIndex: 100,
-            borderBottom: `1px solid ${colorBorder}`,
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
-            height: 64,
-          }}
-        >
+      <AntLayout className={isMobile ? "" : "ml-[260px]"}>
+        <Header className="sticky top-0 z-[100] flex h-16 items-center justify-between border-b border-[var(--ant-color-border)] bg-[var(--ant-color-bg-container)] px-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-[12px]">
           <Space size="middle">
-            <DashboardOutlined style={{ fontSize: 22, color: "#1677ff" }} />
-            <Text strong style={{ fontSize: 20, fontWeight: 600 }}>
+            <DashboardOutlined className="text-[22px] text-[#1677ff]" />
+            <Text strong className="text-xl font-semibold">
               ReviewPilot
             </Text>
           </Space>
@@ -123,48 +92,21 @@ const Layout = () => {
               icon={theme === "light" ? <MoonOutlined /> : <SunOutlined />}
               onClick={toggleTheme}
               title={theme === "light" ? "切换到暗色模式" : "切换到亮色模式"}
-              style={{ borderRadius: 8 }}
+              className="rounded-lg"
             />
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <Space
-                style={{
-                  cursor: "pointer",
-                  padding: "4px 12px",
-                  borderRadius: borderRadius,
-                  transition: `background-color ${motionDurationMid} ${motionEaseInOut}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    theme === "dark"
-                      ? "rgba(255, 255, 255, 0.08)"
-                      : "rgba(0, 0, 0, 0.04)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
+              <Space className="cursor-pointer rounded-[var(--ant-border-radius)] px-3 py-1 transition-colors hover:bg-black/5 dark:hover:bg-white/[0.08]">
                 <Avatar
                   size="small"
                   icon={<UserOutlined />}
-                  style={{ backgroundColor: "#1677ff" }}
+                  className="!bg-[#1677ff]"
                 />
-                <Text style={{ fontWeight: 500 }}>{user?.username}</Text>
+                <Text className="font-medium">{user?.username}</Text>
               </Space>
             </Dropdown>
           </Space>
         </Header>
-        <Content
-          style={{
-            margin: "2rem",
-            padding: 0,
-            minHeight: 280,
-            background: "transparent",
-            maxWidth: 1400,
-            marginLeft: "auto",
-            marginRight: "auto",
-            width: "100%",
-          }}
-        >
+        <Content className="mx-auto my-8 min-h-[280px] max-w-[1400px] w-full bg-transparent p-0">
           <Outlet />
         </Content>
       </AntLayout>

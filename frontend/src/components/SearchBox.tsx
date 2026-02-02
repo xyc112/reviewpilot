@@ -51,10 +51,8 @@ const SearchBox = ({
         )
       }
       size={size}
-      style={{
-        maxWidth,
-        ...style,
-      }}
+      className="max-w-[600px] w-full"
+      style={{ maxWidth, ...style }}
       {...rest}
     />
   );

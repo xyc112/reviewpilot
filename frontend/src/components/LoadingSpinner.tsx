@@ -2,7 +2,7 @@ import { Spin } from "antd";
 
 const LoadingSpinner = () => {
   return (
-    <div style={{ textAlign: "center", padding: "4rem 2rem" }}>
+    <div className="text-center py-16 px-8">
       <Spin size="large" />
     </div>
   );

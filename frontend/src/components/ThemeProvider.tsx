@@ -204,16 +204,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       <ConfigProvider theme={antdThemeConfig}>
-        <App
-          style={{
-            minHeight: "100vh",
-            fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif`,
-            WebkitFontSmoothing: "antialiased",
-            MozOsxFontSmoothing: "grayscale",
-          }}
-        >
-          {children}
-        </App>
+        <App className="min-h-screen font-sans antialiased">{children}</App>
       </ConfigProvider>
     </ThemeContext.Provider>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Layout, Menu, Drawer, Typography, Tag, Button, theme } from "antd";
+import { Layout, Menu, Drawer, Typography, Tag, Button } from "antd";
 import type { MenuProps } from "antd";
 import {
   MenuOutlined,
@@ -23,9 +23,6 @@ const { Title, Text } = Typography;
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const {
-    token: { colorBgContainer, colorBorder },
-  } = theme.useToken();
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
@@ -160,42 +157,19 @@ const Sidebar = () => {
 
   const menuContent = (
     <>
-      <div
-        style={{
-          padding: "1.5rem",
-          borderBottom: `1px solid ${colorBorder}`,
-        }}
-      >
-        <Title
-          level={4}
-          style={{
-            margin: 0,
-            marginBottom: "1rem",
-            fontWeight: 600,
-            fontSize: 18,
-          }}
-        >
+      <div className="border-b border-black/[0.06] dark:border-white/10 p-6">
+        <Title level={4} className="!m-0 !mb-4 font-semibold text-lg">
           导航
         </Title>
         {currentStudyingCourse ? (
           <Tag
             color="gold"
             icon={<StarOutlined />}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.5rem 0.75rem",
-              borderRadius: 8,
-              fontSize: 13,
-              fontWeight: 500,
-              border: "none",
-              maxWidth: "100%",
-            }}
+            className="flex items-center gap-2 py-2 px-3 rounded-lg text-[13px] font-medium border-0 max-w-full"
           >
             <Text
               ellipsis
-              style={{ maxWidth: "200px", fontSize: 13 }}
+              className="max-w-[200px] text-[13px]"
               title={currentStudyingCourse.title}
             >
               {currentStudyingCourse.title}
@@ -208,12 +182,7 @@ const Sidebar = () => {
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
         onClick={handleMenuClick}
-        style={{
-          borderRight: 0,
-          flex: 1,
-          background: "transparent",
-          padding: "0.5rem",
-        }}
+        className="!border-r-0 flex-1 bg-transparent !p-2"
       />
     </>
   );
@@ -234,14 +203,7 @@ const Sidebar = () => {
     <>
       {/* 移动端菜单按钮和抽屉 */}
       {isMobile ? (
-        <div
-          style={{
-            position: "fixed",
-            top: "1rem",
-            left: "1rem",
-            zIndex: 100,
-          }}
-        >
+        <div className="fixed top-4 left-4 z-[100]">
           <Button
             icon={<MenuOutlined />}
             onClick={() => {
@@ -270,16 +232,7 @@ const Sidebar = () => {
       {!isMobile ? (
         <Sider
           width={260}
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            background: colorBgContainer,
-            borderRight: `1px solid ${colorBorder}`,
-            overflow: "auto",
-            height: "100vh",
-          }}
+          className="!fixed left-0 top-0 bottom-0 !h-screen overflow-auto bg-white dark:bg-[#141414] border-r border-black/[0.06] dark:border-white/10"
         >
           {menuContent}
         </Sider>
