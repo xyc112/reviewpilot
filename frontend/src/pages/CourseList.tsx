@@ -61,7 +61,7 @@ const CourseList = () => {
   const { success, error: showError } = useToast();
 
   useEffect(() => {
-    fetchCourses();
+    void fetchCourses();
   }, []);
 
   const fetchCourses = async () => {
@@ -144,7 +144,7 @@ const CourseList = () => {
       success("课程删除成功");
       // 删除课程后刷新用户课程列表
       await refreshUserCourses();
-      fetchCourses();
+      void fetchCourses();
     } catch (err: unknown) {
       const errorMsg =
         "删除课程失败: " + (getErrorMessage(err) || "未知错误");
@@ -189,7 +189,7 @@ const CourseList = () => {
       const matchesSearch =
         !searchQuery ||
         course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.tags.some((tag) =>
           tag.toLowerCase().includes(searchQuery.toLowerCase()),
         );
@@ -260,7 +260,7 @@ const CourseList = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
+        onConfirm={() => { void confirmDelete(); }}
         onCancel={() => { setDeleteConfirm({ isOpen: false, courseId: null }); }}
       />
 
@@ -303,7 +303,7 @@ const CourseList = () => {
           }
           resultSummary={
             hasActiveFilters
-              ? `找到 ${filteredCourses.length} 个课程（共 ${courses.length} 个）`
+              ? `找到 ${String(filteredCourses.length)} 个课程（共 ${String(courses.length)} 个）`
               : undefined
           }
         />
@@ -411,7 +411,7 @@ const CourseList = () => {
                       icon={<BookOutlined />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleAddToStudyList(course);
+                        void handleAddToStudyList(course);
                       }}
                     >
                       添加到学习
@@ -424,7 +424,7 @@ const CourseList = () => {
                         icon={<StarOutlined />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleSetCurrentStudying(course);
+                          void handleSetCurrentStudying(course);
                         }}
                       >
                         开始学习
@@ -433,7 +433,7 @@ const CourseList = () => {
                         icon={<CloseOutlined />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRemoveFromStudyList(course);
+                          void handleRemoveFromStudyList(course);
                         }}
                       />
                     </>
@@ -441,10 +441,10 @@ const CourseList = () => {
                   {state === 2 && (
                     <Button
                       icon={<StarOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEndStudying(course);
-                      }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleEndStudying(course);
+                        }}
                     >
                       结束学习
                     </Button>
@@ -454,7 +454,7 @@ const CourseList = () => {
                         icon={<EditOutlined />}
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/courses/edit/${course.id}`);
+                          void navigate(`/courses/edit/${String(course.id)}`);
                         }}
                       />
                       <Button

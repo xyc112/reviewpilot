@@ -29,7 +29,7 @@ const NoteCreate = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
   const { success, error: showError } = useToast();
 
   const [saving, setSaving] = useState(false);
@@ -44,11 +44,11 @@ const NoteCreate = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
     }
   }, [course, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!course) return;
 
@@ -58,7 +58,7 @@ const NoteCreate = () => {
     try {
       const response = await noteAPI.createNote(course.id, noteForm);
       success("笔记创建成功");
-      navigate(`/notes/${response.data.id}`);
+      void navigate(`/notes/${response.data.id}`);
     } catch (err: unknown) {
       const errorMsg = "创建笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -71,7 +71,7 @@ const NoteCreate = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         style={{ margin: "2rem" }}
@@ -82,7 +82,7 @@ const NoteCreate = () => {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/notes")}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => { void navigate("/notes"); }}>
           返回笔记列表
         </Button>
 
@@ -92,7 +92,7 @@ const NoteCreate = () => {
           <Title level={2}>创建新笔记</Title>
           <Form
             layout="vertical"
-            onFinish={handleSubmit}
+            onFinish={() => { void handleSubmit({ preventDefault: () => { return; } } as React.SyntheticEvent); }}
             initialValues={noteForm}
           >
             <Form.Item
@@ -148,19 +148,18 @@ const NoteCreate = () => {
                     visibility: value,
                   }); }
                 }
-              >
-                <Select.Option value="private">
-                  私有（仅自己可见）
-                </Select.Option>
-                <Select.Option value="public">公开（所有人可见）</Select.Option>
-              </Select>
+                options={[
+                  { value: "private", label: "私有（仅自己可见）" },
+                  { value: "public", label: "公开（所有人可见）" },
+                ]}
+              />
             </Form.Item>
 
             <Form.Item>
               <Space>
                 <Button
                   icon={<CloseOutlined />}
-                  onClick={() => navigate("/notes")}
+                  onClick={() => { void navigate("/notes"); }}
                   disabled={saving}
                 >
                   取消

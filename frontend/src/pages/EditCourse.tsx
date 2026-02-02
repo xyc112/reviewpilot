@@ -35,7 +35,7 @@ const EditCourse = () => {
 
   useEffect(() => {
     if (id) {
-      fetchCourse(Number(id));
+      void fetchCourse(Number(id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourse 依赖 id
   }, [id]);
@@ -87,7 +87,7 @@ const EditCourse = () => {
 
       await courseAPI.updateCourse(course.id, courseData);
       success("课程更新成功");
-      navigate(`/courses/${course.id}`);
+      void navigate(`/courses/${String(course.id)}`);
     } catch (err: unknown) {
       const errorMsg =
         getErrorMessage(err) || "更新课程失败";
@@ -115,7 +115,7 @@ const EditCourse = () => {
   if (!course) {
     return (
       <Alert
-        message="课程不存在"
+        title="课程不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -128,7 +128,7 @@ const EditCourse = () => {
   if (!canEdit) {
     return (
       <Alert
-        message="无权限编辑此课程"
+        title="无权限编辑此课程"
         type="warning"
         showIcon
         style={{ margin: "2rem" }}
@@ -150,7 +150,7 @@ const EditCourse = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleSubmit}
+          onFinish={(values: { title: string; description: string; tags: string; level: string }) => { void handleSubmit(values); }}
           size="large"
         >
           <Form.Item
@@ -190,25 +190,27 @@ const EditCourse = () => {
             name="level"
             rules={[{ required: true, message: "请选择难度等级" }]}
           >
-            <Select placeholder="请选择难度等级">
-              <Select.Option value="BEGINNER">初级</Select.Option>
-              <Select.Option value="INTERMEDIATE">中级</Select.Option>
-              <Select.Option value="ADVANCED">高级</Select.Option>
-            </Select>
+            <Select
+              placeholder="请选择难度等级"
+              options={[
+                { value: "BEGINNER", label: "初级" },
+                { value: "INTERMEDIATE", label: "中级" },
+                { value: "ADVANCED", label: "高级" },
+              ]}
+            />
           </Form.Item>
 
           {error ? <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
-              closable
-              onClose={() => { setError(""); }}
+              closable={{ onClose: () => { setError(""); } }}
             /> : null}
 
           <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => navigate(-1)} size="large">
+              <Button onClick={() => { void navigate(-1); }} size="large">
                 取消
               </Button>
               <Button type="primary" htmlType="submit" loading={saving} size="large">

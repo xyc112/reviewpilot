@@ -52,7 +52,7 @@ const CreateCourse = () => {
 
       await courseAPI.createCourse(courseData);
       success("课程创建成功");
-      navigate("/courses");
+      void navigate("/courses");
     } catch (err: unknown) {
       const errorMsg =
         getErrorMessage(err) || "创建课程失败";
@@ -66,7 +66,7 @@ const CreateCourse = () => {
   if (!isAdmin) {
     return (
       <Alert
-        message="无权限访问此页面"
+        title="无权限访问此页面"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -88,7 +88,7 @@ const CreateCourse = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleSubmit}
+          onFinish={(values: { title: string; description: string; tags: string; level: string }) => { void handleSubmit(values); }}
           initialValues={{
             level: "BEGINNER",
           }}
@@ -131,25 +131,27 @@ const CreateCourse = () => {
             name="level"
             rules={[{ required: true, message: "请选择难度等级" }]}
           >
-            <Select placeholder="请选择难度等级">
-              <Select.Option value="BEGINNER">初级</Select.Option>
-              <Select.Option value="INTERMEDIATE">中级</Select.Option>
-              <Select.Option value="ADVANCED">高级</Select.Option>
-            </Select>
+            <Select
+              placeholder="请选择难度等级"
+              options={[
+                { value: "BEGINNER", label: "初级" },
+                { value: "INTERMEDIATE", label: "中级" },
+                { value: "ADVANCED", label: "高级" },
+              ]}
+            />
           </Form.Item>
 
           {error ? <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               style={{ marginBottom: "1rem" }}
-              closable
-              onClose={() => { setError(""); }}
+              closable={{ onClose: () => { setError(""); } }}
             /> : null}
 
           <Form.Item style={{ marginBottom: 0, marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => navigate(-1)} size="large">
+              <Button onClick={() => { void navigate(-1); }} size="large">
                 取消
               </Button>
               <Button type="primary" htmlType="submit" loading={loading} size="large">

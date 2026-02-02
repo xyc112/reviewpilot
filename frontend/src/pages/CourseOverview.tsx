@@ -51,7 +51,7 @@ const CourseOverview = () => {
 
   useEffect(() => {
     if (id) {
-      fetchCourseData(Number(id));
+      void fetchCourseData(Number(id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchCourseData 依赖 id
   }, [id]);
@@ -149,7 +149,7 @@ const CourseOverview = () => {
   if (!course) {
     return (
       <Alert
-        message="课程不存在"
+        title="课程不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -169,7 +169,7 @@ const CourseOverview = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
+        onConfirm={() => { void confirmDelete(); }}
         onCancel={() => { setDeleteConfirm(false); }}
       />
 
@@ -189,7 +189,7 @@ const CourseOverview = () => {
                   当前学习课程
                 </Tag> : null}
               {canEdit ? <Space>
-                  <Link to={`/courses/edit/${course.id}`}>
+                  <Link to={`/courses/edit/${String(course.id)}`}>
                     <Button icon={<EditOutlined />}>编辑课程</Button>
                   </Link>
                   <Button

@@ -30,7 +30,7 @@ const NoteList = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,10 +48,10 @@ const NoteList = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
-    fetchNotes();
+    void fetchNotes();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNotes 依赖 course
   }, [course, navigate]);
 
@@ -69,7 +69,7 @@ const NoteList = () => {
     }
   };
 
-  const handleDeleteNote = async (noteId: string) => {
+  const handleDeleteNote = (noteId: string) => {
     setDeleteConfirm({ isOpen: true, noteId });
   };
 
@@ -79,7 +79,7 @@ const NoteList = () => {
     try {
       await noteAPI.deleteNote(course.id, deleteConfirm.noteId);
       success("笔记删除成功");
-      fetchNotes();
+      void fetchNotes();
     } catch (err: unknown) {
       const errorMsg = "删除笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -115,11 +115,11 @@ const NoteList = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -138,7 +138,7 @@ const NoteList = () => {
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       {error ? <Alert
-          message={error}
+          title={error}
           type="error"
           showIcon
           style={{ marginBottom: "1.5rem" }}
@@ -158,11 +158,11 @@ const NoteList = () => {
             maxWidth={undefined}
             style={{ flex: 1 }}
           />
-          {course ? <Link to="/notes/new">
+          <Link to="/notes/new">
               <Button type="primary" icon={<PlusOutlined />}>
                 创建笔记
               </Button>
-            </Link> : null}
+            </Link>
         </Space.Compact>
       </Space>
 
@@ -174,7 +174,7 @@ const NoteList = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={confirmDelete}
+        onConfirm={() => { void confirmDelete(); }}
         onCancel={() => { setDeleteConfirm({ isOpen: false, noteId: null }); }}
       />
 
@@ -193,13 +193,11 @@ const NoteList = () => {
             </Space>
           }
           action={
-            course ? (
-              <Link to="/notes/new">
-                <Button type="primary" icon={<PlusOutlined />}>
-                  创建笔记
-                </Button>
-              </Link>
-            ) : undefined
+            <Link to="/notes/new">
+              <Button type="primary" icon={<PlusOutlined />}>
+                创建笔记
+              </Button>
+            </Link>
           }
         />
       ) : filteredNotes.length === 0 ? (
@@ -257,7 +255,7 @@ const NoteList = () => {
                       color: "#78716c",
                     }}
                   >
-                    {note.summary ||
+                    {note.summary ??
                       (note.content.length > 150
                         ? note.content.substring(0, 150) + "..."
                         : note.content

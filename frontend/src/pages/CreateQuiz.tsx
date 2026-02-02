@@ -27,7 +27,7 @@ const CreateQuiz = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
 
@@ -45,10 +45,10 @@ const CreateQuiz = () => {
 
   useEffect(() => {
     if (!isAdmin) {
-      navigate("/quizzes");
+      void navigate("/quizzes");
     }
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
     }
   }, [isAdmin, course, navigate]);
 
@@ -132,7 +132,7 @@ const CreateQuiz = () => {
     setQuestions(newQuestions);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!course) return;
 
@@ -144,17 +144,17 @@ const CreateQuiz = () => {
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
       if (!q.question.trim()) {
-        setError(`第${i + 1}题的问题内容不能为空`);
+        setError(`第${String(i + 1)}题的问题内容不能为空`);
         return;
       }
 
       if (q.options.some((opt) => !opt.trim())) {
-        setError(`第${i + 1}题的选项不能为空`);
+        setError(`第${String(i + 1)}题的选项不能为空`);
         return;
       }
 
       if (q.answer.length === 0) {
-        setError(`第${i + 1}题必须选择正确答案`);
+        setError(`第${String(i + 1)}题必须选择正确答案`);
         return;
       }
     }
@@ -174,7 +174,7 @@ const CreateQuiz = () => {
       };
 
       await quizAPI.createQuiz(course.id, quizData);
-      navigate("/quizzes");
+      void navigate("/quizzes");
     } catch (err: unknown) {
       setError(getErrorMessage(err) || "创建测验失败");
     } finally {
@@ -185,7 +185,7 @@ const CreateQuiz = () => {
   if (!isAdmin) {
     return (
       <Alert
-        message="无权限访问此页面"
+        title="无权限访问此页面"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -196,11 +196,11 @@ const CreateQuiz = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -213,7 +213,7 @@ const CreateQuiz = () => {
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 1rem" }}>
       <Card>
         <Title level={2}>创建新测验</Title>
-        <Form layout="vertical" onFinish={handleSubmit}>
+        <Form layout="vertical" onFinish={() => { void handleSubmit({ preventDefault: () => { return; } } as React.SyntheticEvent); }}>
           <Form.Item
             label="测验标题"
             required
@@ -232,7 +232,7 @@ const CreateQuiz = () => {
             {questions.map((question, qIndex) => (
               <Card
                 key={qIndex}
-                title={`题目 ${qIndex + 1}`}
+                title={`题目 ${String(qIndex + 1)}`}
                 extra={
                   questions.length > 1 && (
                     <Button
@@ -258,11 +258,12 @@ const CreateQuiz = () => {
                         { handleQuestionChange(qIndex, "type", value); }
                       }
                       style={{ width: "100%" }}
-                    >
-                      <Select.Option value="single">单选题</Select.Option>
-                      <Select.Option value="multiple">多选题</Select.Option>
-                      <Select.Option value="truefalse">判断题</Select.Option>
-                    </Select>
+                      options={[
+                        { value: "single", label: "单选题" },
+                        { value: "multiple", label: "多选题" },
+                        { value: "truefalse", label: "判断题" },
+                      ]}
+                    />
                   </Form.Item>
 
                   <Form.Item label="问题内容" required>
@@ -335,7 +336,7 @@ const CreateQuiz = () => {
                       )}
                       {question.type === "truefalse" && (
                         <Alert
-                          message='判断题固定为"正确"和"错误"两个选项'
+                          title='判断题固定为"正确"和"错误"两个选项'
                           type="info"
                           showIcon
                         />
@@ -352,7 +353,7 @@ const CreateQuiz = () => {
           </Space>
 
           {error ? <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               style={{ marginTop: "1.5rem" }}
@@ -360,7 +361,7 @@ const CreateQuiz = () => {
 
           <Form.Item style={{ marginTop: "1.5rem" }}>
             <Space>
-              <Button onClick={() => navigate(-1)}>取消</Button>
+              <Button onClick={() => { void navigate(-1); }}>取消</Button>
               <Button type="primary" htmlType="submit" loading={loading}>
                 创建测验
               </Button>
