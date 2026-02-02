@@ -35,7 +35,7 @@ const QuizList = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
@@ -54,10 +54,10 @@ const QuizList = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
-    fetchQuizzes();
+    void fetchQuizzes();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchQuizzes 依赖 course
   }, [course, navigate]);
 
@@ -83,7 +83,7 @@ const QuizList = () => {
     try {
       await quizAPI.deleteQuiz(course.id, deleteConfirm.quizId);
       success("测验删除成功");
-      fetchQuizzes();
+      void fetchQuizzes();
     } catch (err: unknown) {
       const errorMsg =
         "删除测验失败: " + (getErrorMessage(err) || "未知错误");
@@ -108,11 +108,11 @@ const QuizList = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -138,7 +138,7 @@ const QuizList = () => {
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        {course && isAdmin ? <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        {isAdmin ? <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Link to="/quizzes/new">
               <Button type="primary" icon={<PlusOutlined />}>
                 创建测验
@@ -159,7 +159,7 @@ const QuizList = () => {
           confirmText="删除"
           cancelText="取消"
           type="danger"
-          onConfirm={confirmDelete}
+          onConfirm={() => { void confirmDelete(); }}
           onCancel={() => { setDeleteConfirm({ isOpen: false, quizId: null }); }}
         />
 
@@ -182,7 +182,7 @@ const QuizList = () => {
               </Space>
             }
             action={
-              isAdmin && course ? (
+              isAdmin ? (
                 <Link to="/quizzes/new">
                   <Button type="primary" icon={<PlusOutlined />}>
                     创建新测验
@@ -191,7 +191,7 @@ const QuizList = () => {
               ) : undefined
             }
           />
-        ) : filteredQuizzes.length === 0 && searchQuery ? (
+        ) : filteredQuizzes.length === 0 ? (
           <ListEmptyState
             variant="noResults"
             icon={
@@ -238,7 +238,7 @@ const QuizList = () => {
                     {isAdmin ? <>
                         <Button
                           icon={<EditOutlined />}
-                          onClick={() => navigate(`/quizzes/edit/${quiz.id}`)}
+                          onClick={() => { void navigate(`/quizzes/edit/${quiz.id}`); }}
                           title="编辑测验"
                         />
                         <Button
@@ -246,6 +246,7 @@ const QuizList = () => {
                           icon={<DeleteOutlined />}
                           onClick={() => { handleDelete(quiz.id); }}
                           title="删除测验"
+                          type="button"
                         />
                       </> : null}
                   </Space>

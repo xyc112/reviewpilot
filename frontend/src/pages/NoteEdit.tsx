@@ -32,7 +32,7 @@ const NoteEdit = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
@@ -51,11 +51,11 @@ const NoteEdit = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
     if (noteId) {
-      fetchNote();
+      void fetchNote();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNote 依赖 course, noteId
   }, [course, noteId, navigate]);
@@ -70,7 +70,7 @@ const NoteEdit = () => {
       setNoteForm({
         title: noteData.title,
         content: noteData.content,
-        summary: noteData.summary || "",
+        summary: noteData.summary ?? "",
         visibility: noteData.visibility,
       });
     } catch (err: unknown) {
@@ -82,8 +82,7 @@ const NoteEdit = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!note) return;
 
     setSaving(true);
@@ -93,7 +92,7 @@ const NoteEdit = () => {
     try {
       await noteAPI.updateNote(course.id, note.id, noteForm);
       success("笔记更新成功");
-      navigate(`/notes/${noteId}`);
+      void navigate(`/notes/${noteId ?? ""}`);
     } catch (err: unknown) {
       const errorMsg = "更新笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -110,11 +109,11 @@ const NoteEdit = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -140,7 +139,7 @@ const NoteEdit = () => {
   if (!note) {
     return (
       <Alert
-        message="笔记不存在"
+        title="笔记不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -151,11 +150,11 @@ const NoteEdit = () => {
   if (!canEdit()) {
     return (
       <Alert
-        message="无权限编辑此笔记"
+        title="无权限编辑此笔记"
         type="warning"
         showIcon
         action={
-          <Button onClick={() => navigate("/notes")}>返回笔记列表</Button>
+          <Button onClick={() => { void navigate("/notes"); }}>返回笔记列表</Button>
         }
         style={{ margin: "2rem" }}
       />
@@ -167,7 +166,7 @@ const NoteEdit = () => {
       <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate(`/notes/${noteId}`)}
+          onClick={() => { void navigate(`/notes/${noteId ?? ""}`); }}
         >
           取消编辑
         </Button>
@@ -176,9 +175,9 @@ const NoteEdit = () => {
 
         <Card>
           <Title level={2}>编辑笔记</Title>
-          <Form
+            <Form
             layout="vertical"
-            onFinish={handleSubmit}
+            onFinish={() => { void handleSubmit(); }}
             initialValues={noteForm}
           >
             <Form.Item
@@ -234,19 +233,18 @@ const NoteEdit = () => {
                     visibility: value,
                   }); }
                 }
-              >
-                <Select.Option value="private">
-                  私有（仅自己可见）
-                </Select.Option>
-                <Select.Option value="public">公开（所有人可见）</Select.Option>
-              </Select>
+                options={[
+                  { value: "private", label: "私有（仅自己可见）" },
+                  { value: "public", label: "公开（所有人可见）" },
+                ]}
+              />
             </Form.Item>
 
             <Form.Item>
               <Space>
                 <Button
                   icon={<CloseOutlined />}
-                  onClick={() => navigate(`/notes/${noteId}`)}
+                  onClick={() => { void navigate(`/notes/${String(noteId)}`); }}
                   disabled={saving}
                 >
                   取消

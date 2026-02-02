@@ -30,7 +30,8 @@ const ProgressPage = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  useTheme();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
   const [courseProgressList, setCourseProgressList] = useState<
     CourseProgress[]
@@ -76,7 +77,7 @@ const ProgressPage = () => {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [currentStudyingCourseId]);
 
   const getScoreColor = (score: number | null) => {
@@ -93,7 +94,7 @@ const ProgressPage = () => {
       INTERMEDIATE: "中级",
       ADVANCED: "高级",
     };
-    return levels[level] || level;
+    return levels[level] ?? level;
   };
 
   if (loading) {
@@ -117,7 +118,7 @@ const ProgressPage = () => {
     );
 
     // 如果找不到进度数据，使用默认值
-    const progressData = currentProgress || {
+    const progressData = currentProgress ?? {
       courseId: currentStudyingCourse.id,
       completedQuizzes: 0,
       totalQuizzes: 0,
@@ -170,8 +171,8 @@ const ProgressPage = () => {
             <CompactStatCard
               icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
               title="完成测验"
-              value={`${progressData.completedQuizzes}/${progressData.totalQuizzes}`}
-              subtitle={`完成率 ${progressData.completionRate}%`}
+              value={`${String(progressData.completedQuizzes)}/${String(progressData.totalQuizzes)}`}
+              subtitle={`完成率 ${String(progressData.completionRate)}%`}
               color="#22c55e"
             />
             <CompactStatCard
@@ -250,8 +251,8 @@ const ProgressPage = () => {
                   ).length > 0 ? (
                     <ScoreDistributionChart
                       scores={progressData.quizProgressList
-                        .filter((qp) => qp.score !== null)
-                        .map((qp) => ({ score: qp.score!, count: 1 }))}
+                        .filter((qp): qp is typeof qp & { score: number } => qp.score !== null)
+                        .map((qp) => ({ score: qp.score, count: 1 }))}
                     />
                   ) : (
                     <div
@@ -348,7 +349,7 @@ const ProgressPage = () => {
                         }}
                       >
                         {quizProgress.score !== null
-                          ? `${quizProgress.score}分`
+                          ? `${String(quizProgress.score)}分`
                           : "--"}
                       </div>
                     </div>
@@ -428,8 +429,8 @@ const ProgressPage = () => {
               <CompactStatCard
                 icon={<CheckCircleOutlined style={{ fontSize: 24 }} />}
                 title="完成测验"
-                value={`${overallStats.completedQuizzes}/${overallStats.totalQuizzes}`}
-                subtitle={`完成率 ${overallStats.completionRate}%`}
+                value={`${String(overallStats.completedQuizzes)}/${String(overallStats.totalQuizzes)}`}
+                subtitle={`完成率 ${String(overallStats.completionRate)}%`}
                 color="#22c55e"
                 large
               />
@@ -717,7 +718,7 @@ const CompactCourseCard = ({
       >
         <div
           style={{
-            width: `${Math.min(completionRate, 100)}%`,
+            width: `${String(Math.min(completionRate, 100))}%`,
             height: "100%",
             backgroundColor: getScoreColor(averageScore),
             borderRadius: "9999px",

@@ -34,7 +34,7 @@ const NoteDetail = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const course = selectedCourse || currentStudyingCourse;
+  const course = selectedCourse ?? currentStudyingCourse;
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.role === "ADMIN";
   const { success, error: showError } = useToast();
@@ -46,11 +46,11 @@ const NoteDetail = () => {
 
   useEffect(() => {
     if (!course) {
-      navigate("/courses");
+      void navigate("/courses");
       return;
     }
     if (noteId) {
-      fetchNote();
+      void fetchNote();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchNote 依赖 course, noteId
   }, [course, noteId, navigate]);
@@ -76,7 +76,7 @@ const NoteDetail = () => {
     try {
       await noteAPI.deleteNote(course.id, note.id);
       success("笔记删除成功");
-      navigate("/notes");
+      void navigate("/notes");
     } catch (err: unknown) {
       const errorMsg = "删除笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -103,11 +103,11 @@ const NoteDetail = () => {
   if (!course) {
     return (
       <Alert
-        message="请先选择一个课程"
+        title="请先选择一个课程"
         type="warning"
         showIcon
         action={
-          <Button type="primary" onClick={() => navigate("/courses")}>
+          <Button type="primary" onClick={() => { void navigate("/courses"); }}>
             前往课程列表
           </Button>
         }
@@ -133,7 +133,7 @@ const NoteDetail = () => {
   if (!note) {
     return (
       <Alert
-        message="笔记不存在"
+        title="笔记不存在"
         type="error"
         showIcon
         style={{ margin: "2rem" }}
@@ -150,7 +150,7 @@ const NoteDetail = () => {
         confirmText="删除"
         cancelText="取消"
         type="danger"
-        onConfirm={handleDelete}
+        onConfirm={() => { void handleDelete(); }}
         onCancel={() => { setDeleteConfirm(false); }}
       />
 
@@ -166,7 +166,7 @@ const NoteDetail = () => {
         >
           <Button
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/notes")}
+            onClick={() => { void navigate("/notes"); }}
           >
             返回笔记列表
           </Button>
@@ -175,7 +175,7 @@ const NoteDetail = () => {
               <Button
                 type="primary"
                 icon={<EditOutlined />}
-                onClick={() => navigate(`/notes/${noteId}/edit`)}
+                onClick={() => { void navigate(`/notes/${noteId ?? ""}/edit`); }}
               >
                 编辑笔记
               </Button>
