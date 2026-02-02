@@ -1,5 +1,5 @@
 import api from "./apiClient";
-import { User } from "../types";
+import type { User } from "../types";
 
 export const authAPI = {
   login: (credentials: { username: string; password: string }) =>

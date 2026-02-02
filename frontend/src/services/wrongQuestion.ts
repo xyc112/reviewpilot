@@ -1,11 +1,11 @@
 import api from "./apiClient";
-import { WrongQuestion } from "../types";
+import type { WrongQuestion } from "../types";
 
 export const wrongQuestionAPI = {
   getWrongQuestions: (courseId: number, mastered?: boolean) => {
     const params = mastered !== undefined ? { mastered } : {};
     return api.get<WrongQuestion[]>(
-      `/api/courses/${courseId}/wrong-questions`,
+      `/api/courses/${String(courseId)}/wrong-questions`,
       { params },
     );
   },
@@ -14,22 +14,22 @@ export const wrongQuestionAPI = {
     questionId: number,
     userAnswer: number[],
   ) =>
-    api.post<WrongQuestion>(`/api/courses/${courseId}/wrong-questions`, {
+    api.post<WrongQuestion>(`/api/courses/${String(courseId)}/wrong-questions`, {
       questionId,
       userAnswer,
     }),
   markAsMastered: (courseId: number, wrongQuestionId: number) =>
     api.put<WrongQuestion>(
-      `/api/courses/${courseId}/wrong-questions/${wrongQuestionId}/mastered`,
+      `/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}/mastered`,
     ),
   removeWrongQuestion: (courseId: number, wrongQuestionId: number) =>
-    api.delete(`/api/courses/${courseId}/wrong-questions/${wrongQuestionId}`),
+    api.delete(`/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}`),
   practiceWrongQuestion: (courseId: number, wrongQuestionId: number) =>
     api.post<WrongQuestion>(
-      `/api/courses/${courseId}/wrong-questions/${wrongQuestionId}/practice`,
+      `/api/courses/${String(courseId)}/wrong-questions/${String(wrongQuestionId)}/practice`,
     ),
   getStats: (courseId: number) =>
     api.get<{ total: number; mastered: number; notMastered: number }>(
-      `/api/courses/${courseId}/wrong-questions/stats`,
+      `/api/courses/${String(courseId)}/wrong-questions/stats`,
     ),
 };

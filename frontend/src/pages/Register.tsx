@@ -33,7 +33,7 @@ const Register = () => {
       setIsMobile(window.innerWidth <= 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => { window.removeEventListener("resize", handleResize); };
   }, []);
 
   const login = useAuthStore((state) => state.login);
@@ -50,7 +50,7 @@ const Register = () => {
     try {
       const response = await authAPI.register(values);
       login(response.data);
-      navigate("/");
+      void navigate("/");
     } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -208,7 +208,7 @@ const Register = () => {
 
           <Form
             form={form}
-            onFinish={handleSubmit}
+            onFinish={(values: { username: string; password: string; role: string }) => { void handleSubmit(values); }}
             layout="vertical"
             size="large"
             initialValues={{ role: "USER" }}
@@ -219,7 +219,7 @@ const Register = () => {
               rules={[
                 { required: true, message: "用户名不能为空" },
                 {
-                  validator: (_, value) => {
+                  validator: (_, value: string) => {
                     if (!value) return Promise.resolve();
                     const error = validateUsername(value);
                     return error
@@ -238,7 +238,7 @@ const Register = () => {
               rules={[
                 { required: true, message: "密码不能为空" },
                 {
-                  validator: (_, value) => {
+                  validator: (_, value: string) => {
                     if (!value) return Promise.resolve();
                     const error = validatePassword(value);
                     return error
@@ -264,14 +264,14 @@ const Register = () => {
               />
             </Form.Item>
 
-            {error && (
+            {error ? (
               <Alert
-                message={error}
+                title={error}
                 type="error"
                 showIcon
                 style={{ marginBottom: "1.5rem" }}
               />
-            )}
+            ) : null}
 
             <Form.Item style={{ marginBottom: 0 }}>
               <Button

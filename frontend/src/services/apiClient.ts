@@ -15,9 +15,10 @@ api.interceptors.request.use((config) => {
 // 响应拦截器，处理错误
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  (error: unknown) => {
     // 处理认证错误
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    const axiosError = error as { response?: { status?: number } };
+    if (axiosError.response?.status === 401 || axiosError.response?.status === 403) {
       // 清除本地存储
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -31,7 +32,7 @@ api.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   },
 );
 

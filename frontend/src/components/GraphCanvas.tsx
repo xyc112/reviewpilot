@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { theme } from "antd";
-import { Node, Relation } from "../types";
+import type { Node, Relation } from "../types";
 
 interface GraphCanvasProps {
   nodes: Node[];

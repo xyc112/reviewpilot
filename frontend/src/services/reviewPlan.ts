@@ -1,5 +1,5 @@
 import api from "./apiClient";
-import { ReviewPlan } from "../types";
+import type { ReviewPlan } from "../types";
 
 export const reviewPlanAPI = {
   getPlans: () => api.get<ReviewPlan[]>("/api/review-plans"),
@@ -9,10 +9,10 @@ export const reviewPlanAPI = {
     }),
   getPlansByDate: (date: string) =>
     api.get<ReviewPlan[]>(`/api/review-plans/date/${date}`),
-  getPlan: (id: number) => api.get<ReviewPlan>(`/api/review-plans/${id}`),
+  getPlan: (id: number) => api.get<ReviewPlan>(`/api/review-plans/${String(id)}`),
   createPlan: (planData: Partial<ReviewPlan>) =>
     api.post<ReviewPlan>("/api/review-plans", planData),
   updatePlan: (id: number, planData: Partial<ReviewPlan>) =>
-    api.put<ReviewPlan>(`/api/review-plans/${id}`, planData),
-  deletePlan: (id: number) => api.delete(`/api/review-plans/${id}`),
+    api.put<ReviewPlan>(`/api/review-plans/${String(id)}`, planData),
+  deletePlan: (id: number) => api.delete(`/api/review-plans/${String(id)}`),
 };

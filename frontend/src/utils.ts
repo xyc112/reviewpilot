@@ -104,27 +104,27 @@ export const validateEmail = (email: string): string | null => {
 
 export const validateTitle = (
   title: string,
-  minLength: number = 1,
-  maxLength: number = 100,
+  minLength = 1,
+  maxLength = 100,
 ): string | null => {
   if (!title || title.trim().length === 0) {
     return "标题不能为空";
   }
   if (title.length < minLength) {
-    return `标题至少需要${minLength}个字符`;
+    return `标题至少需要${String(minLength)}个字符`;
   }
   if (title.length > maxLength) {
-    return `标题不能超过${maxLength}个字符`;
+    return `标题不能超过${String(maxLength)}个字符`;
   }
   return null;
 };
 
 export const validateDescription = (
   description: string,
-  maxLength: number = 1000,
+  maxLength = 1000,
 ): string | null => {
   if (description && description.length > maxLength) {
-    return `描述不能超过${maxLength}个字符`;
+    return `描述不能超过${String(maxLength)}个字符`;
   }
   return null;
 };
@@ -143,7 +143,7 @@ export const useFieldValidation = <T extends Record<string, unknown>>(
       const error = validator(value);
       setErrors((prev) => ({
         ...prev,
-        [name]: error || "",
+        [name]: error ?? "",
       }));
       return error === null;
     }
@@ -180,12 +180,12 @@ export const useFieldValidation = <T extends Record<string, unknown>>(
 
     setErrors(newErrors);
     setTouched(
-      Object.keys(validators).reduce(
+      Object.keys(validators).reduce<Record<string, boolean>>(
         (acc, key) => {
           acc[key] = true;
           return acc;
         },
-        {} as Record<string, boolean>,
+        {},
       ),
     );
 

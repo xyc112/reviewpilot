@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { User } from "../types";
+import type { User } from "../types";
 import { clearAuthData, getStoredToken, getStoredUser } from "../utils";
 
 interface AuthState {
@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>()(
         const token = getStoredToken();
         const userData = getStoredUser();
 
-        if (token && userData && userData.username) {
+        if (token && userData?.username) {
           set({ user: userData });
         } else {
           clearAuthData();

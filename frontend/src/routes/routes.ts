@@ -9,11 +9,11 @@ export const ROUTES = {
   // 课程相关
   HOME: "/",
   COURSES: "/courses",
-  COURSE_DETAIL: (id: number) => `/courses/${id}`,
-  COURSE_OVERVIEW: (id: number) => `/courses/${id}/overview`,
+  COURSE_DETAIL: (id: number) => `/courses/${String(id)}`,
+  COURSE_OVERVIEW: (id: number) => `/courses/${String(id)}/overview`,
   CREATE_COURSE: "/courses/new",
-  EDIT_COURSE: (id: number) => `/courses/edit/${id}`,
-  COURSE_COMMUNITY: (courseId: number) => `/courses/${courseId}/community`,
+  EDIT_COURSE: (id: number) => `/courses/edit/${String(id)}`,
+  COURSE_COMMUNITY: (courseId: number) => `/courses/${String(courseId)}/community`,
 
   // 笔记相关
   NOTES: "/notes",

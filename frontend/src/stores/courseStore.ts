@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Course } from "../types";
+import type { Course } from "../types";
 import { userCourseAPI, courseAPI } from "../services";
 import { useAuthStore } from "./authStore";
 
@@ -101,7 +101,7 @@ useAuthStore.subscribe(
       useCourseStore.getState().reset();
     } else {
       // 用户已登录，刷新用户课程
-      useCourseStore.getState().refreshUserCourses();
+      void useCourseStore.getState().refreshUserCourses();
     }
   },
 );
