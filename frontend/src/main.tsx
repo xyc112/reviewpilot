@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ErrorBoundary } from "./components";
+import "./index.css";
 import "antd/dist/reset.css";
 
 const rootEl = document.getElementById("root");

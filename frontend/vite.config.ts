@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
-// @ts-expect-error - @vitejs/plugin-react type definitions may be missing
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   base: "./",
   server: {
     proxy: {
