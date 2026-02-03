@@ -1,16 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Tag, Space, List, Alert, Badge } from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  BookOutlined,
-  StarOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { Plus, Pencil, Trash2, BookOpen, Star, X } from "lucide-react";
 import type { Course } from "../types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { courseAPI, userCourseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import {
@@ -216,11 +210,11 @@ const CourseList = () => {
   if (error) {
     return (
       <Alert
-        title={error}
-        type="error"
-        showIcon
+        variant="destructive"
         className="mx-auto my-8 max-w-[1400px] rounded-xl"
-      />
+      >
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
@@ -237,12 +231,8 @@ const CourseList = () => {
         </div>
         {isAdmin ? (
           <Link to="/courses/new" className="shrink-0">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              size="large"
-              className="rounded-xl font-medium shadow-md"
-            >
+            <Button size="lg" className="rounded-xl font-medium shadow-md">
+              <Plus className="size-4" />
               创建新课程
             </Button>
           </Link>
@@ -270,7 +260,6 @@ const CourseList = () => {
           placeholder="搜索课程标题、描述或标签..."
           value={searchQuery}
           onChange={setSearchQuery}
-          enterButton
         />
         <FilterBar
           hasActiveFilters={hasActiveFilters}
@@ -279,23 +268,23 @@ const CourseList = () => {
           extra={
             allTags.length > 0 ? (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-stone-600 dark:text-stone-400">
+                <span className="text-sm font-medium text-muted-foreground">
                   标签：
                 </span>
-                <Space wrap className="gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {allTags.map((tag) => (
-                    <Tag
+                    <Badge
                       key={tag}
-                      color={selectedTags.has(tag) ? "blue" : "default"}
+                      variant={selectedTags.has(tag) ? "default" : "outline"}
+                      className="cursor-pointer rounded-lg transition-opacity hover:opacity-90"
                       onClick={() => {
                         toggleTag(tag);
                       }}
-                      className="cursor-pointer rounded-lg transition-opacity hover:opacity-90"
                     >
                       {tag}
-                    </Tag>
+                    </Badge>
                   ))}
-                </Space>
+                </div>
               </div>
             ) : undefined
           }
@@ -311,9 +300,7 @@ const CourseList = () => {
       {courses.length === 0 ? (
         <ListEmptyState
           variant="empty"
-          icon={
-            <BookOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
-          }
+          icon={<BookOpen className="size-16 text-muted-foreground" />}
           description={
             <span>
               还没有创建任何课程，
@@ -323,11 +310,8 @@ const CourseList = () => {
           action={
             isAdmin ? (
               <Link to="/courses/new">
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  className="rounded-xl shadow-sm"
-                >
+                <Button className="rounded-xl shadow-sm">
+                  <Plus className="size-4" />
                   创建新课程
                 </Button>
               </Link>
@@ -337,136 +321,152 @@ const CourseList = () => {
       ) : filteredCourses.length === 0 ? (
         <ListEmptyState
           variant="noResults"
-          icon={
-            <SearchOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
-          }
           description="未找到匹配的课程，尝试调整搜索条件或筛选器"
           onClearFilter={clearFilters}
           clearFilterLabel="清除所有筛选"
         />
       ) : (
-        <List
-          className="[&_.ant-list-items]:space-y-0"
-          dataSource={filteredCourses}
-          renderItem={(course) => {
+        <div className="space-y-0">
+          {filteredCourses.map((course) => {
             const state = getCourseState(course);
             return (
-              <ListItemCard cursor="pointer">
-                <div className="min-w-0 flex-1">
-                  <div className="flex w-full flex-col gap-1">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h4 className="m-0 text-lg font-semibold text-stone-900 dark:text-stone-100">
-                        <SearchHighlight
-                          text={course.title}
-                          searchQuery={searchQuery}
-                        />
-                      </h4>
-                      <Tag color={getLevelColor(course.level)}>
-                        {getLevelText(course.level)}
-                      </Tag>
-                      {currentStudyingCourse?.id === course.id && (
+              <ListItemCard key={course.id} cursor="pointer">
+                <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex w-full flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <h4 className="m-0 text-lg font-semibold text-foreground">
+                          <SearchHighlight
+                            text={course.title}
+                            searchQuery={searchQuery}
+                          />
+                        </h4>
                         <Badge
-                          count="正在学习"
-                          className="[&_.ant-badge-count]:!bg-amber-500"
-                        />
+                          variant={
+                            getLevelColor(course.level) === "green"
+                              ? "secondary"
+                              : getLevelColor(course.level) === "orange"
+                                ? "outline"
+                                : "destructive"
+                          }
+                        >
+                          {getLevelText(course.level)}
+                        </Badge>
+                        {currentStudyingCourse?.id === course.id && (
+                          <Badge className="bg-amber-500 hover:bg-amber-600">
+                            正在学习
+                          </Badge>
+                        )}
+                      </div>
+                      {course.description ? (
+                        <p className="m-0 line-clamp-2 text-sm text-muted-foreground">
+                          <SearchHighlight
+                            text={course.description}
+                            searchQuery={searchQuery}
+                          />
+                        </p>
+                      ) : null}
+                      {course.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {course.tags.map((tag) => (
+                            <Badge key={tag} variant="outline">
+                              <SearchHighlight
+                                text={tag}
+                                searchQuery={searchQuery}
+                              />
+                            </Badge>
+                          ))}
+                        </div>
                       )}
                     </div>
-                    {course.description ? (
-                      <p className="m-0 line-clamp-2 text-sm text-stone-500 dark:text-stone-400">
-                        <SearchHighlight
-                          text={course.description}
-                          searchQuery={searchQuery}
-                        />
-                      </p>
-                    ) : null}
-                    {course.tags.length > 0 && (
-                      <Space wrap>
-                        {course.tags.map((tag) => (
-                          <Tag key={tag}>
-                            <SearchHighlight
-                              text={tag}
-                              searchQuery={searchQuery}
-                            />
-                          </Tag>
-                        ))}
-                      </Space>
+                  </div>
+                  <div className="flex shrink-0 flex-wrap gap-2">
+                    {state === 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleAddToStudyList(course);
+                        }}
+                        className="rounded-xl"
+                      >
+                        <BookOpen className="size-4" />
+                        添加到学习
+                      </Button>
                     )}
+                    {state === 1 && (
+                      <>
+                        <Button
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleSetCurrentStudying(course);
+                          }}
+                          className="rounded-xl shadow-sm"
+                        >
+                          <Star className="size-4" />
+                          开始学习
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleRemoveFromStudyList(course);
+                          }}
+                          className="rounded-xl"
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </>
+                    )}
+                    {state === 2 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleEndStudying(course);
+                        }}
+                        className="rounded-xl"
+                      >
+                        <Star className="size-4" />
+                        结束学习
+                      </Button>
+                    )}
+                    {isAdmin ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void navigate(`/courses/edit/${String(course.id)}`);
+                          }}
+                          className="rounded-xl"
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteCourse(course.id);
+                          }}
+                          className="rounded-xl"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </>
+                    ) : null}
                   </div>
                 </div>
-                <Space className="shrink-0">
-                  {state === 0 && (
-                    <Button
-                      icon={<BookOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleAddToStudyList(course);
-                      }}
-                      className="rounded-xl"
-                    >
-                      添加到学习
-                    </Button>
-                  )}
-                  {state === 1 && (
-                    <>
-                      <Button
-                        type="primary"
-                        icon={<StarOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleSetCurrentStudying(course);
-                        }}
-                        className="rounded-xl shadow-sm"
-                      >
-                        开始学习
-                      </Button>
-                      <Button
-                        icon={<CloseOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleRemoveFromStudyList(course);
-                        }}
-                        className="rounded-xl"
-                      />
-                    </>
-                  )}
-                  {state === 2 && (
-                    <Button
-                      icon={<StarOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleEndStudying(course);
-                      }}
-                      className="rounded-xl"
-                    >
-                      结束学习
-                    </Button>
-                  )}
-                  {isAdmin ? (
-                    <>
-                      <Button
-                        icon={<EditOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void navigate(`/courses/edit/${String(course.id)}`);
-                        }}
-                        className="rounded-xl"
-                      />
-                      <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCourse(course.id);
-                        }}
-                        className="rounded-xl"
-                      />
-                    </>
-                  ) : null}
-                </Space>
               </ListItemCard>
             );
-          }}
-        />
+          })}
+        </div>
       )}
     </div>
   );

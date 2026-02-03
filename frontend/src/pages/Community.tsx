@@ -1,16 +1,15 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Input, Button, Space, Typography, Alert } from "antd";
 import {
-  PlusOutlined,
-  MessageOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  SendOutlined,
-  CloseOutlined,
-  DownOutlined,
-  UpOutlined,
-} from "@ant-design/icons";
+  ChevronDown,
+  ChevronUp,
+  MessageCircle,
+  Pencil,
+  Plus,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
 import type { Post, Comment } from "../types";
 import { postAPI, commentAPI, courseAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
@@ -22,9 +21,12 @@ import {
   ListEmptyState,
 } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { TextArea } = Input;
-const { Text, Title } = Typography;
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const Community = () => {
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
@@ -37,7 +39,6 @@ const Community = () => {
   );
   const { success, error: showError } = useToast();
 
-  // 优先使用URL参数，其次使用当前学习的课程，最后使用选中的课程
   const courseId =
     courseIdParam ??
     (currentStudyingCourse != null
@@ -74,17 +75,14 @@ const Community = () => {
 
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // 获取回复框的 key
   const getReplyKey = (postId: number, parentId: number | null) => {
     return `${String(postId)}-${String(parentId)}`;
   };
 
-  // 获取特定回复框的内容
   const getReplyContent = (postId: number, parentId: number | null) => {
     return replyComments[getReplyKey(postId, parentId)] ?? "";
   };
 
-  // 设置特定回复框的内容
   const setReplyContent = (
     postId: number,
     parentId: number | null,
@@ -96,7 +94,6 @@ const Community = () => {
     }));
   };
 
-  // 清除特定回复框的内容
   const clearReplyContent = (postId: number, parentId: number | null) => {
     setReplyComments((prev) => {
       const key = getReplyKey(postId, parentId);
@@ -123,7 +120,6 @@ const Community = () => {
       setCourse({ id: response.data.id, title: response.data.title });
     } catch (err: unknown) {
       console.error("Failed to fetch course:", getErrorMessage(err));
-      // 如果获取失败，使用selectedCourse作为后备
       if (selectedCourse?.id === Number(courseId)) {
         setCourse({ id: selectedCourse.id, title: selectedCourse.title });
       }
@@ -289,10 +285,8 @@ const Community = () => {
     });
   };
 
-  // 过滤帖子
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
-      // 搜索过滤
       const matchesSearch =
         !searchQuery ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -307,7 +301,6 @@ const Community = () => {
     parentId: number | null = null,
     level = 0,
   ): React.ReactNode => {
-    // postId 可能尚未拉取评论，需兜底
     const postComments = comments[postId] ?? [];
     const filteredComments = postComments.filter(
       (c) => c.parentId === parentId,
@@ -318,52 +311,32 @@ const Community = () => {
     }
 
     return (
-      <Space
-        orientation="vertical"
-        size="small"
+      <div
+        className="flex w-full flex-col gap-2"
         style={{
-          width: "100%",
           marginLeft: level > 0 ? "2rem" : "0",
-          borderLeft: level > 0 ? "2px solid #f0f0f0" : "none",
+          borderLeft: level > 0 ? "2px solid var(--border)" : "none",
           paddingLeft: level > 0 ? "1rem" : "0",
         }}
       >
         {filteredComments.map((comment) => (
-          <Card
-            key={comment.id}
-            size="small"
-            style={{
-              backgroundColor: "#fafafa",
-              border: "1px solid #f0f0f0",
-            }}
-          >
-            <Space
-              orientation="vertical"
-              size="small"
-              style={{ width: "100%" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Space>
-                  <Text strong style={{ fontSize: "0.875rem" }}>
+          <Card key={comment.id} className="border bg-muted/30 py-3">
+            <CardContent className="flex flex-col gap-2 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
                     {comment.authorUsername ??
                       `用户 ${String(comment.authorId)}`}
-                  </Text>
-                  <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
+                  </span>
+                  <span className="text-xs text-muted-foreground">
                     {formatDate(comment.createdAt)}
-                  </Text>
-                </Space>
+                  </span>
+                </div>
                 {isAdmin || user?.id === comment.authorId ? (
                   <Button
-                    type="text"
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-destructive hover:text-destructive"
                     onClick={() => {
                       setDeleteConfirm({
                         type: "comment",
@@ -372,39 +345,31 @@ const Community = () => {
                       });
                     }}
                     title="删除评论"
-                  />
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
                 ) : null}
               </div>
               <div>
                 <MarkdownRenderer content={comment.content} />
               </div>
               <Button
-                type="link"
-                size="small"
-                icon={<MessageOutlined />}
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-sm"
                 onClick={() => {
                   setShowReplyForm({ postId, parentId: comment.id });
                   setTimeout(() => commentInputRef.current?.focus(), 100);
                 }}
               >
+                <MessageCircle className="mr-1 size-3.5" />
                 回复
               </Button>
               {showReplyForm?.postId === postId &&
                 showReplyForm.parentId === comment.id && (
-                  <Card
-                    size="small"
-                    style={{
-                      marginTop: "0.75rem",
-                      backgroundColor: "#fff",
-                      border: "1px solid #d9d9d9",
-                    }}
-                  >
-                    <Space
-                      orientation="vertical"
-                      size="small"
-                      style={{ width: "100%" }}
-                    >
-                      <TextArea
+                  <Card className="mt-3 border bg-background">
+                    <CardContent className="flex flex-col gap-2 p-4">
+                      <Textarea
                         ref={commentInputRef}
                         value={getReplyContent(postId, comment.id)}
                         onChange={(e) => {
@@ -412,20 +377,21 @@ const Community = () => {
                         }}
                         placeholder="输入回复..."
                         rows={3}
+                        className="resize-none"
                       />
-                      <Space>
+                      <div className="flex gap-2">
                         <Button
-                          type="primary"
-                          size="small"
-                          icon={<SendOutlined />}
+                          size="sm"
                           onClick={() => {
                             void handleCreateComment(postId, comment.id);
                           }}
                         >
+                          <Send className="size-4" />
                           发送
                         </Button>
                         <Button
-                          size="small"
+                          variant="outline"
+                          size="sm"
                           onClick={() => {
                             setShowReplyForm(null);
                             clearReplyContent(postId, comment.id);
@@ -433,39 +399,34 @@ const Community = () => {
                         >
                           取消
                         </Button>
-                      </Space>
-                    </Space>
+                      </div>
+                    </CardContent>
                   </Card>
                 )}
               {renderComments(postId, comment.id, level + 1)}
-            </Space>
+            </CardContent>
           </Card>
         ))}
-      </Space>
+      </div>
     );
   };
 
   if (!courseId) {
     return (
-      <Alert
-        title="课程ID无效"
-        type="error"
-        showIcon
-        style={{ margin: "2rem" }}
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Text>加载中...</Text>
+      <div className="mx-auto max-w-[1000px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>课程ID无效</AlertTitle>
+        </Alert>
       </div>
     );
   }
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1000px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm !== null}
         title={deleteConfirm?.type === "post" ? "删除帖子" : "删除评论"}
@@ -486,55 +447,41 @@ const Community = () => {
       />
 
       {error ? (
-        <Alert
-          title={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: "1.5rem" }}
-        />
+        <Alert variant="destructive" className="mb-6">
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
       ) : null}
 
-      {/* 搜索栏 */}
-      <Space
-        style={{ width: "100%", marginBottom: "1.5rem" }}
-        orientation="vertical"
-        size="middle"
-      >
-        <Space.Compact style={{ width: "100%" }}>
-          <SearchBox
-            placeholder="搜索帖子标题、内容或作者..."
-            value={searchQuery}
-            onChange={setSearchQuery}
-            maxWidth={undefined}
-            style={{ flex: 1 }}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setShowCreatePost(!showCreatePost);
-            }}
-          >
-            {showCreatePost ? "取消发布" : "发布新帖"}
-          </Button>
-        </Space.Compact>
-      </Space>
+      <div className="mb-6 flex w-full flex-col gap-4 sm:flex-row sm:items-center">
+        <SearchBox
+          placeholder="搜索帖子标题、内容或作者..."
+          value={searchQuery}
+          onChange={setSearchQuery}
+          maxWidth={undefined}
+          style={{ flex: 1 }}
+        />
+        <Button
+          className="w-full sm:w-auto"
+          onClick={() => {
+            setShowCreatePost(!showCreatePost);
+          }}
+        >
+          <Plus className="size-4" />
+          {showCreatePost ? "取消发布" : "发布新帖"}
+        </Button>
+      </div>
 
       {showCreatePost ? (
-        <Card style={{ marginBottom: "2rem" }}>
+        <Card className="mb-8">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               void handleCreatePost();
             }}
           >
-            <Space
-              orientation="vertical"
-              size="middle"
-              style={{ width: "100%" }}
-            >
-              <div>
-                <Text strong>标题:</Text>
+            <CardContent className="flex flex-col gap-4 pt-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">标题</label>
                 <Input
                   value={newPost.title}
                   onChange={(e) => {
@@ -542,13 +489,11 @@ const Community = () => {
                   }}
                   required
                   placeholder="输入帖子标题"
-                  style={{ marginTop: "0.5rem" }}
                 />
               </div>
-
-              <div>
-                <Text strong>内容:</Text>
-                <TextArea
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">内容</label>
+                <Textarea
                   value={newPost.content}
                   onChange={(e) => {
                     setNewPost({ ...newPost, content: e.target.value });
@@ -556,58 +501,60 @@ const Community = () => {
                   rows={15}
                   required
                   placeholder="输入帖子内容，支持 Markdown 格式"
-                  style={{ marginTop: "0.5rem" }}
+                  className="resize-none"
                 />
               </div>
-
-              <Space>
+              <div className="flex gap-2">
                 <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     setShowCreatePost(false);
                     setNewPost({ title: "", content: "" });
                   }}
                 >
-                  <CloseOutlined />
+                  <X className="size-4" />
                   取消
                 </Button>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<SendOutlined />}
-                >
+                <Button type="submit">
+                  <Send className="size-4" />
                   发布
                 </Button>
-              </Space>
-            </Space>
+              </div>
+            </CardContent>
           </form>
         </Card>
       ) : null}
 
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+      <div className="flex w-full flex-col gap-6">
         {posts.length === 0 && !showCreatePost ? (
           <ListEmptyState
             variant="empty"
             icon={
-              <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+              <MessageCircle className="size-16 text-muted-foreground/50" />
             }
             description={
-              <Space orientation="vertical" size="small">
-                <Title level={4}>还没有帖子</Title>
-                <Text type="secondary">成为第一个发布帖子的人吧！</Text>
-              </Space>
+              <div className="flex flex-col gap-1 text-center">
+                <h3 className="text-lg font-semibold">还没有帖子</h3>
+                <span className="text-sm text-muted-foreground">
+                  成为第一个发布帖子的人吧！
+                </span>
+              </div>
             }
           />
         ) : filteredPosts.length === 0 && searchQuery ? (
           <ListEmptyState
             variant="noResults"
             icon={
-              <MessageOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
+              <MessageCircle className="size-16 text-muted-foreground/50" />
             }
             description={
-              <Space orientation="vertical" size="small">
-                <Title level={4}>未找到匹配的帖子</Title>
-                <Text type="secondary">尝试调整搜索条件</Text>
-              </Space>
+              <div className="flex flex-col gap-1 text-center">
+                <h3 className="text-lg font-semibold">未找到匹配的帖子</h3>
+                <span className="text-sm text-muted-foreground">
+                  尝试调整搜索条件
+                </span>
+              </div>
             }
             onClearFilter={() => {
               setSearchQuery("");
@@ -618,74 +565,21 @@ const Community = () => {
           filteredPosts.map((post) => (
             <Card
               key={post.id}
-              hoverable
-              style={{ border: "1px solid #d9d9d9" }}
-              actions={[
-                <Space key="actions">
-                  {isAdmin || user?.id === post.authorId ? (
-                    <>
-                      <Button
-                        type="text"
-                        icon={<EditOutlined />}
-                        onClick={() => {
-                          startEditPost(post);
-                        }}
-                        title="编辑"
-                      />
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                          setDeleteConfirm({ type: "post", id: post.id });
-                        }}
-                        title="删除"
-                      />
-                    </>
-                  ) : null}
-                  <Button
-                    type="text"
-                    icon={
-                      expandedPost === post.id ? (
-                        <UpOutlined />
-                      ) : (
-                        <DownOutlined />
-                      )
-                    }
-                    onClick={() => {
-                      handleTogglePost(post.id);
-                    }}
-                    title={expandedPost === post.id ? "收起" : "展开"}
-                  />
-                </Space>,
-              ]}
+              className="border transition-shadow hover:shadow-md"
             >
-              <Space
-                orientation="vertical"
-                size="middle"
-                style={{ width: "100%" }}
-              >
-                <div>
-                  <Title
-                    level={4}
-                    style={{ margin: 0, marginBottom: "0.5rem" }}
-                  >
-                    {post.title}
-                  </Title>
-                  <Space>
-                    <Text type="secondary" strong>
+              <CardContent className="flex flex-col gap-4 pt-6">
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-lg font-semibold">{post.title}</h3>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <span className="font-medium">
                       {post.authorUsername ?? `用户 ${String(post.authorId)}`}
-                    </Text>
-                    <Text type="secondary">{formatDate(post.createdAt)}</Text>
-                  </Space>
+                    </span>
+                    <span>{formatDate(post.createdAt)}</span>
+                  </div>
                 </div>
 
                 {editingPost === post.id ? (
-                  <Space
-                    orientation="vertical"
-                    size="middle"
-                    style={{ width: "100%" }}
-                  >
+                  <div className="flex flex-col gap-4">
                     <Input
                       value={editPostData.title}
                       onChange={(e) => {
@@ -695,7 +589,7 @@ const Community = () => {
                         });
                       }}
                     />
-                    <TextArea
+                    <Textarea
                       value={editPostData.content}
                       onChange={(e) => {
                         setEditPostData({
@@ -704,22 +598,26 @@ const Community = () => {
                         });
                       }}
                       rows={6}
+                      className="resize-none"
                     />
-                    <Space>
+                    <div className="flex gap-2">
                       <Button
-                        type="primary"
-                        size="small"
+                        size="sm"
                         onClick={() => {
                           void handleUpdatePost(post.id);
                         }}
                       >
                         保存
                       </Button>
-                      <Button size="small" onClick={cancelEditPost}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={cancelEditPost}
+                      >
                         取消
                       </Button>
-                    </Space>
-                  </Space>
+                    </div>
+                  </div>
                 ) : (
                   <div>
                     <MarkdownRenderer content={post.content} />
@@ -727,75 +625,93 @@ const Community = () => {
                 )}
 
                 {expandedPost === post.id && (
-                  <div
-                    style={{
-                      marginTop: "1.5rem",
-                      paddingTop: "1.5rem",
-                      borderTop: "1px solid #f0f0f0",
-                    }}
-                  >
-                    <Space
-                      orientation="vertical"
-                      size="middle"
-                      style={{ width: "100%" }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Title level={5} style={{ margin: 0 }}>
-                          评论
-                        </Title>
+                  <div className="mt-6 border-t pt-6">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-base font-medium">评论</h4>
                         {loadingComments[post.id] ? (
-                          <Text type="secondary">加载中...</Text>
+                          <span className="text-sm text-muted-foreground">
+                            加载中...
+                          </span>
                         ) : null}
                       </div>
 
                       {showReplyForm?.postId !== post.id ||
                       showReplyForm.parentId !== null ? (
-                        <Card
-                          size="small"
-                          style={{ backgroundColor: "#fafafa" }}
-                        >
-                          <Space
-                            orientation="vertical"
-                            size="small"
-                            style={{ width: "100%" }}
-                          >
-                            <TextArea
+                        <Card className="bg-muted/30">
+                          <CardContent className="flex flex-col gap-2 p-4">
+                            <Textarea
                               value={getReplyContent(post.id, null)}
                               onChange={(e) => {
                                 setReplyContent(post.id, null, e.target.value);
                               }}
                               placeholder="输入评论..."
                               rows={3}
+                              className="resize-none"
                             />
                             <Button
-                              type="primary"
-                              size="small"
-                              icon={<SendOutlined />}
+                              size="sm"
                               onClick={() => {
                                 void handleCreateComment(post.id, null);
                               }}
                             >
+                              <Send className="size-4" />
                               发布评论
                             </Button>
-                          </Space>
+                          </CardContent>
                         </Card>
                       ) : null}
 
                       {renderComments(post.id)}
-                    </Space>
+                    </div>
                   </div>
                 )}
-              </Space>
+              </CardContent>
+              <CardFooter className="flex flex-wrap items-center gap-1 border-t bg-muted/20 px-6 py-3">
+                {isAdmin || user?.id === post.authorId ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => {
+                        startEditPost(post);
+                      }}
+                      title="编辑"
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setDeleteConfirm({ type: "post", id: post.id });
+                      }}
+                      title="删除"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </>
+                ) : null}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => {
+                    handleTogglePost(post.id);
+                  }}
+                  title={expandedPost === post.id ? "收起" : "展开"}
+                >
+                  {expandedPost === post.id ? (
+                    <ChevronUp className="size-4" />
+                  ) : (
+                    <ChevronDown className="size-4" />
+                  )}
+                </Button>
+              </CardFooter>
             </Card>
           ))
         ) : null}
-      </Space>
+      </div>
     </div>
   );
 };

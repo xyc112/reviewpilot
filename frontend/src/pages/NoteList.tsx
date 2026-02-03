@@ -1,11 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Space, Typography, List, Alert, Tag, Spin } from "antd";
-import {
-  PlusOutlined,
-  FileTextOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { Plus, FileText, Trash2 } from "lucide-react";
 import type { Note } from "../types";
 import { noteAPI } from "../services";
 import { useCourseStore } from "../stores";
@@ -15,10 +10,12 @@ import {
   SearchBox,
   ListEmptyState,
   ListItemCard,
+  LoadingSpinner,
 } from "../components";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text, Paragraph } = Typography;
 
 const NoteList = () => {
   const navigate = useNavigate();
@@ -95,65 +92,50 @@ const NoteList = () => {
     });
   };
 
-  // 过滤笔记
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
-      // 搜索过滤
       const matchesSearch =
         !searchQuery ||
         note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         note.content.toLowerCase().includes(searchQuery.toLowerCase());
-
       return matchesSearch;
     });
   }, [notes, searchQuery]);
 
   if (!course) {
     return (
-      <Alert
-        title="请先选择一个课程"
-        type="warning"
-        showIcon
-        action={
-          <Button
-            type="primary"
-            onClick={() => {
-              void navigate("/courses");
-            }}
-          >
-            前往课程列表
-          </Button>
-        }
-        style={{ margin: "2rem" }}
-      />
+      <Alert className="mx-8 my-8">
+        <AlertDescription>请先选择一个课程</AlertDescription>
+        <Button
+          className="mt-4"
+          onClick={() => {
+            void navigate("/courses");
+          }}
+        >
+          前往课程列表
+        </Button>
+      </Alert>
     );
   }
 
-  if (loading)
+  if (loading) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
+      <div className="flex justify-center p-8">
+        <LoadingSpinner size="lg" />
       </div>
     );
+  }
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1200px] px-4">
       {error ? (
-        <Alert
-          title={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: "1.5rem" }}
-        />
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
-      {/* 搜索和操作栏 */}
-      <Space
-        orientation="vertical"
-        size="middle"
-        style={{ width: "100%", marginBottom: "1.5rem" }}
-      >
-        <Space.Compact style={{ width: "100%" }}>
+      <div className="mb-6 flex w-full flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="flex flex-1">
           <SearchBox
             placeholder="搜索笔记标题或内容..."
             value={searchQuery}
@@ -161,15 +143,15 @@ const NoteList = () => {
             maxWidth={undefined}
             style={{ flex: 1 }}
           />
-          <Link to="/notes/new">
-            <Button type="primary" icon={<PlusOutlined />}>
-              创建笔记
-            </Button>
-          </Link>
-        </Space.Compact>
-      </Space>
+        </div>
+        <Link to="/notes/new" className="shrink-0">
+          <Button>
+            <Plus className="size-4" />
+            创建笔记
+          </Button>
+        </Link>
+      </div>
 
-      {/* 确认删除对话框 */}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title="删除笔记"
@@ -188,18 +170,20 @@ const NoteList = () => {
       {notes.length === 0 ? (
         <ListEmptyState
           variant="empty"
-          icon={<FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+          icon={<FileText className="size-16 text-muted-foreground" />}
           description={
-            <Space orientation="vertical" size="small">
-              <Text>暂无笔记</Text>
-              <Text type="secondary">
+            <span>
+              暂无笔记
+              <br />
+              <span className="text-muted-foreground">
                 点击「创建笔记」按钮开始记录你的学习心得
-              </Text>
-            </Space>
+              </span>
+            </span>
           }
           action={
             <Link to="/notes/new">
-              <Button type="primary" icon={<PlusOutlined />}>
+              <Button>
+                <Plus className="size-4" />
                 创建笔记
               </Button>
             </Link>
@@ -208,12 +192,12 @@ const NoteList = () => {
       ) : filteredNotes.length === 0 ? (
         <ListEmptyState
           variant="noResults"
-          icon={<FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
           description={
-            <Space orientation="vertical" size="small">
-              <Text>未找到匹配的笔记</Text>
-              <Text type="secondary">尝试调整搜索条件</Text>
-            </Space>
+            <span>
+              未找到匹配的笔记
+              <br />
+              <span className="text-muted-foreground">尝试调整搜索条件</span>
+            </span>
           }
           onClearFilter={() => {
             setSearchQuery("");
@@ -221,73 +205,56 @@ const NoteList = () => {
           clearFilterLabel="清除搜索"
         />
       ) : (
-        <List
-          dataSource={filteredNotes}
-          renderItem={(note) => (
-            <ListItemCard>
-              <Space style={{ width: "100%" }} align="start">
+        <div className="space-y-0">
+          {filteredNotes.map((note) => (
+            <ListItemCard key={note.id}>
+              <div className="flex w-full items-start gap-4">
                 <Link
                   to={`/notes/${note.id}`}
-                  style={{
-                    flex: 1,
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
+                  className="min-w-0 flex-1 no-underline text-foreground hover:text-foreground"
                 >
-                  <Space
-                    orientation="vertical"
-                    size="small"
-                    style={{ width: "100%" }}
-                  >
-                    <Space wrap>
-                      <Title
-                        level={4}
-                        style={{ margin: 0, fontSize: "1.125rem" }}
-                      >
+                  <div className="flex w-full flex-col gap-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="m-0 text-lg font-semibold text-foreground">
                         {note.title}
-                      </Title>
-                      <Tag
-                        color={
-                          note.visibility === "public" ? "blue" : "default"
+                      </h4>
+                      <Badge
+                        variant={
+                          note.visibility === "public" ? "default" : "secondary"
                         }
                       >
                         {note.visibility === "public" ? "公开" : "私有"}
-                      </Tag>
-                    </Space>
-                    <Paragraph
-                      ellipsis={{ rows: 2, expandable: false }}
-                      style={{
-                        margin: 0,
-                        fontSize: "0.875rem",
-                        color: "#78716c",
-                      }}
-                    >
+                      </Badge>
+                    </div>
+                    <p className="m-0 line-clamp-2 text-sm text-muted-foreground">
                       {note.summary ??
                         (note.content.length > 150
                           ? note.content.substring(0, 150) + "..."
                           : note.content
-                        ).replace(/\\n/g, " ")}
-                    </Paragraph>
-                    <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
+                        ).replace(/\n/g, " ")}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
                       {formatDate(note.createdAt)}
-                    </Text>
-                  </Space>
+                    </span>
+                  </div>
                 </Link>
                 <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 text-destructive hover:text-destructive"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleDeleteNote(note.id);
                   }}
                   aria-label="删除笔记"
-                />
-              </Space>
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
             </ListItemCard>
-          )}
-        />
+          ))}
+        </div>
       )}
     </div>
   );

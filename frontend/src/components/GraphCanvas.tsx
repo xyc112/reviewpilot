@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { theme } from "antd";
 import type { Node, Relation } from "../types";
 
 interface GraphCanvasProps {
@@ -63,8 +62,28 @@ const GraphCanvas = ({
   onRelationDirectedChange,
   onRelationWeightChange,
 }: GraphCanvasProps) => {
-  const { token } = theme.useToken();
-  const isDark = token.colorBgLayout === "#000000";
+  const isDark =
+    typeof document !== "undefined" &&
+    document.documentElement.getAttribute("data-theme") === "dark";
+
+  // 设计 token（替代原 antd theme，与 Tailwind 间距一致）
+  const token = {
+    padding: 16,
+    paddingSM: 12,
+    paddingXS: 8,
+    paddingXXS: 4,
+    paddingLG: 24,
+    marginXXS: 4,
+    marginXS: 8,
+    borderRadiusLG: 8,
+    borderRadiusSM: 4,
+    fontSizeSM: 14,
+    colorText: isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.88)",
+    colorTextSecondary: isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.65)",
+    colorBorder: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)",
+    colorBgContainer: isDark ? "#1f1f1f" : "#ffffff",
+  } as const;
+
   const svgRef = useRef<SVGSVGElement>(null);
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
   const draggingFromRef = useRef<string | null>(null);

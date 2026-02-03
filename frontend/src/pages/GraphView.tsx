@@ -1,25 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Alert,
-  Spin,
-  Button,
-  Card,
-  Space,
-  Typography,
-  Input,
-  Select,
-  Form,
-} from "antd";
-import { EditOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Pencil, Trash2, X } from "lucide-react";
 import type { Node, Relation } from "../types";
 import { graphAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { GraphCanvas, ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { TextArea } = Input;
-const { Title, Text, Paragraph } = Typography;
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const GraphView = () => {
   const navigate = useNavigate();
@@ -343,40 +344,32 @@ const GraphView = () => {
 
   if (!course) {
     return (
-      <Alert
-        title="请先选择一个课程"
-        type="warning"
-        showIcon
-        action={
-          <Button
-            type="primary"
-            onClick={() => {
-              void navigate("/courses");
-            }}
-          >
-            前往课程列表
-          </Button>
-        }
-        style={{ margin: "2rem" }}
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
+      <div className="mx-auto max-w-[900px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>请先选择一个课程</AlertTitle>
+          <div className="mt-2">
+            <Button onClick={() => void navigate("/courses")}>
+              前往课程列表
+            </Button>
+          </div>
+        </Alert>
       </div>
     );
   }
+
+  if (loading) return <LoadingSpinner />;
   if (error) {
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <div className="mx-auto max-w-[900px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      </div>
     );
   }
 
   return (
-    <div style={{ width: "100%", height: "100vh", padding: 0 }}>
+    <div className="h-screen w-full p-0">
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={deleteConfirm.type === "node" ? "删除节点" : "删除关系"}
@@ -396,8 +389,8 @@ const GraphView = () => {
         }}
       />
 
-      <div style={{ width: "100%", height: "100%" }}>
-        <div style={{ width: "100%", height: "100%" }}>
+      <div className="h-full w-full">
+        <div className="h-full w-full">
           <GraphCanvas
             nodes={nodes}
             relations={relations}
@@ -459,337 +452,318 @@ const GraphView = () => {
 
         {/* 节点 / 关系详情浮动面板 */}
         {selectedNode || selectedRelation ? (
-          <Card
-            style={{
-              position: "absolute",
-              top: "1rem",
-              right: "1rem",
-              width: 320,
-              zIndex: 1000,
-            }}
-            title={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Title level={4} style={{ margin: 0 }}>
+          <Card className="absolute right-4 top-4 z-[1000] w-80">
+            <CardContent className="flex flex-col gap-4 pt-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-semibold">
                   {selectedNode ? "节点详情" : "关系详情"}
-                </Title>
+                </h3>
                 <Button
-                  type="text"
-                  icon={<CloseOutlined />}
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => {
                     setSelectedNode(null);
                     setEditingNode(null);
                     setSelectedRelation(null);
                   }}
-                />
+                >
+                  <X className="size-4" />
+                </Button>
               </div>
-            }
-          >
-            {selectedNode ? (
-              editingNode && editingNode.id === selectedNode.id ? (
-                <Form layout="vertical">
-                  <Form.Item label="节点标签" required>
-                    <Input
-                      value={editNodeForm.label}
-                      onChange={(e) => {
-                        setEditNodeForm({
-                          ...editNodeForm,
-                          label: e.target.value,
-                        });
-                      }}
-                      placeholder="输入节点名称"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item label="节点类型">
-                    <Input
-                      value={editNodeForm.type}
-                      onChange={(e) => {
-                        setEditNodeForm({
-                          ...editNodeForm,
-                          type: e.target.value,
-                        });
-                      }}
-                      placeholder="例如: concept, topic"
-                    />
-                  </Form.Item>
-                  <Form.Item label="描述">
-                    <TextArea
-                      value={editNodeForm.description}
-                      onChange={(e) => {
-                        setEditNodeForm({
-                          ...editNodeForm,
-                          description: e.target.value,
-                        });
-                      }}
-                      rows={3}
-                      placeholder="输入节点描述（可选）"
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <Space>
+              {selectedNode ? (
+                editingNode && editingNode.id === selectedNode.id ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="node-label">节点标签</Label>
+                      <Input
+                        id="node-label"
+                        value={editNodeForm.label}
+                        onChange={(e) => {
+                          setEditNodeForm({
+                            ...editNodeForm,
+                            label: e.target.value,
+                          });
+                        }}
+                        placeholder="输入节点名称"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="node-type">节点类型</Label>
+                      <Input
+                        id="node-type"
+                        value={editNodeForm.type}
+                        onChange={(e) => {
+                          setEditNodeForm({
+                            ...editNodeForm,
+                            type: e.target.value,
+                          });
+                        }}
+                        placeholder="例如: concept, topic"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="node-desc">描述</Label>
+                      <Textarea
+                        id="node-desc"
+                        value={editNodeForm.description}
+                        onChange={(e) => {
+                          setEditNodeForm({
+                            ...editNodeForm,
+                            description: e.target.value,
+                          });
+                        }}
+                        rows={3}
+                        placeholder="输入节点描述（可选）"
+                        className="resize-none"
+                      />
+                    </div>
+                    <div className="flex gap-2">
                       <Button
-                        type="primary"
-                        size="small"
+                        size="sm"
                         onClick={() => {
                           void handleSaveEditNode();
                         }}
                       >
                         保存
                       </Button>
-                      <Button size="small" onClick={handleCancelEditNode}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleCancelEditNode}
+                      >
                         取消
                       </Button>
-                    </Space>
-                  </Form.Item>
-                </Form>
-              ) : (
-                <Space
-                  orientation="vertical"
-                  size="middle"
-                  style={{ width: "100%" }}
-                >
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      标签:
-                    </Text>
-                    <div>
-                      <Text strong>{selectedNode.label || "未命名节点"}</Text>
                     </div>
                   </div>
-                  {selectedNode.type !== undefined &&
-                  selectedNode.type !== "" ? (
+                ) : (
+                  <div className="flex flex-col gap-4">
                     <div>
-                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        类型:
-                      </Text>
-                      <div>
-                        <Text strong>{selectedNode.type}</Text>
+                      <span className="text-sm text-muted-foreground">
+                        标签:
+                      </span>
+                      <div className="font-medium">
+                        {selectedNode.label || "未命名节点"}
                       </div>
                     </div>
-                  ) : null}
-                  {selectedNode.description ? (
-                    <div>
-                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        描述:
-                      </Text>
-                      <Paragraph style={{ margin: "0.25rem 0 0 0" }}>
-                        {selectedNode.description}
-                      </Paragraph>
+                    {selectedNode.type !== undefined &&
+                    selectedNode.type !== "" ? (
+                      <div>
+                        <span className="text-sm text-muted-foreground">
+                          类型:
+                        </span>
+                        <div className="font-medium">{selectedNode.type}</div>
+                      </div>
+                    ) : null}
+                    {selectedNode.description ? (
+                      <div>
+                        <span className="text-sm text-muted-foreground">
+                          描述:
+                        </span>
+                        <p className="mt-1 text-sm">
+                          {selectedNode.description}
+                        </p>
+                      </div>
+                    ) : null}
+                    {isAdmin ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            handleStartEditNode(selectedNode);
+                          }}
+                        >
+                          <Pencil className="size-4" />
+                          编辑
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            handleDeleteNode(selectedNode.id ?? "");
+                          }}
+                        >
+                          <Trash2 className="size-4" />
+                          删除
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              ) : selectedRelation ? (
+                editingRelation &&
+                editingRelation.id === selectedRelation.id ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label>关系类型</Label>
+                      <Select
+                        value={editRelationForm.type}
+                        onValueChange={(
+                          value: "prerequisite" | "related" | "part_of",
+                        ) => {
+                          setEditRelationForm({
+                            ...editRelationForm,
+                            type: value,
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="prerequisite">
+                            前置 (prerequisite)
+                          </SelectItem>
+                          <SelectItem value="related">
+                            相关 (related)
+                          </SelectItem>
+                          <SelectItem value="part_of">
+                            包含 (part_of)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ) : null}
-                  {isAdmin ? (
-                    <Space>
-                      <Button
-                        size="small"
-                        type="primary"
-                        icon={<EditOutlined />}
-                        onClick={() => {
-                          handleStartEditNode(selectedNode);
-                        }}
-                      >
-                        编辑
-                      </Button>
-                      <Button
-                        size="small"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                          handleDeleteNode(selectedNode.id ?? "");
-                        }}
-                      >
-                        删除
-                      </Button>
-                    </Space>
-                  ) : null}
-                </Space>
-              )
-            ) : selectedRelation ? (
-              editingRelation && editingRelation.id === selectedRelation.id ? (
-                <Form layout="vertical">
-                  <Form.Item label="关系类型">
-                    <Select
-                      value={editRelationForm.type}
-                      onChange={(value) => {
-                        setEditRelationForm({
-                          ...editRelationForm,
-                          type: value,
-                        });
-                      }}
-                      options={[
-                        { value: "prerequisite", label: "前置 (prerequisite)" },
-                        { value: "related", label: "相关 (related)" },
-                        { value: "part_of", label: "包含 (part_of)" },
-                      ]}
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <Space>
-                      <input
-                        type="checkbox"
+                    <div className="flex items-center gap-2">
+                      <Checkbox
                         id="relation-directed"
                         checked={editRelationForm.directed}
+                        onCheckedChange={(checked) => {
+                          setEditRelationForm({
+                            ...editRelationForm,
+                            directed: checked === true,
+                          });
+                        }}
+                      />
+                      <Label
+                        htmlFor="relation-directed"
+                        className="cursor-pointer text-sm font-normal"
+                      >
+                        有向关系
+                      </Label>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="relation-weight">权重</Label>
+                      <Input
+                        id="relation-weight"
+                        type="number"
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={editRelationForm.weight}
                         onChange={(e) => {
                           setEditRelationForm({
                             ...editRelationForm,
-                            directed: e.target.checked,
+                            weight: Math.max(
+                              0,
+                              Math.min(1, Number(e.target.value) || 0),
+                            ),
                           });
                         }}
-                        style={{ margin: 0, cursor: "pointer", width: "auto" }}
                       />
-                      <label
-                        htmlFor="relation-directed"
-                        style={{
-                          margin: 0,
-                          cursor: "pointer",
-                          fontWeight: 600,
-                          color: "#475569",
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        有向关系
-                      </label>
-                    </Space>
-                  </Form.Item>
-                  <Form.Item label="权重">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={1}
-                      step={0.1}
-                      value={editRelationForm.weight}
-                      onChange={(e) => {
-                        setEditRelationForm({
-                          ...editRelationForm,
-                          weight: Math.max(
-                            0,
-                            Math.min(1, Number(e.target.value) || 0),
-                          ),
-                        });
-                      }}
-                    />
-                  </Form.Item>
-                  <Form.Item label="从">
-                    <Text>
-                      {nodes.find((n) => n.id === selectedRelation.from)
-                        ?.label ?? selectedRelation.from}
-                    </Text>
-                  </Form.Item>
-                  <Form.Item label="到">
-                    <Text>
-                      {nodes.find((n) => n.id === selectedRelation.to)?.label ??
-                        selectedRelation.to}
-                    </Text>
-                  </Form.Item>
-                  <Form.Item>
-                    <Space>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">从:</span>
+                      <div className="font-medium">
+                        {nodes.find((n) => n.id === selectedRelation.from)
+                          ?.label ?? selectedRelation.from}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">到:</span>
+                      <div className="font-medium">
+                        {nodes.find((n) => n.id === selectedRelation.to)
+                          ?.label ?? selectedRelation.to}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
                       <Button
-                        type="primary"
-                        size="small"
+                        size="sm"
                         onClick={() => {
                           void handleSaveEditRelation();
                         }}
                       >
                         保存
                       </Button>
-                      <Button size="small" onClick={handleCancelEditRelation}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleCancelEditRelation}
+                      >
                         取消
                       </Button>
-                    </Space>
-                  </Form.Item>
-                </Form>
-              ) : (
-                <Space
-                  orientation="vertical"
-                  size="middle"
-                  style={{ width: "100%" }}
-                >
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      类型:
-                    </Text>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
                     <div>
-                      <Text strong>
+                      <span className="text-sm text-muted-foreground">
+                        类型:
+                      </span>
+                      <div className="font-medium">
                         {{
                           prerequisite: "前置 (prerequisite)",
                           related: "相关 (related)",
                           part_of: "包含 (part_of)",
                         }[selectedRelation.type] ?? selectedRelation.type}
-                      </Text>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      方向:
-                    </Text>
                     <div>
-                      <Text strong>
+                      <span className="text-sm text-muted-foreground">
+                        方向:
+                      </span>
+                      <div className="font-medium">
                         {selectedRelation.directed ? "有向" : "无向"}
-                      </Text>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      权重:
-                    </Text>
                     <div>
-                      <Text strong>{selectedRelation.weight ?? 0}</Text>
+                      <span className="text-sm text-muted-foreground">
+                        权重:
+                      </span>
+                      <div className="font-medium">
+                        {selectedRelation.weight ?? 0}
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      从:
-                    </Text>
                     <div>
-                      <Text strong>
+                      <span className="text-sm text-muted-foreground">从:</span>
+                      <div className="font-medium">
                         {nodes.find((n) => n.id === selectedRelation.from)
                           ?.label ?? selectedRelation.from}
-                      </Text>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      到:
-                    </Text>
                     <div>
-                      <Text strong>
+                      <span className="text-sm text-muted-foreground">到:</span>
+                      <div className="font-medium">
                         {nodes.find((n) => n.id === selectedRelation.to)
                           ?.label ?? selectedRelation.to}
-                      </Text>
+                      </div>
                     </div>
+                    {isAdmin ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            handleStartEditRelation(selectedRelation);
+                          }}
+                        >
+                          <Pencil className="size-4" />
+                          编辑
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            handleDeleteRelation(selectedRelation.id ?? "");
+                          }}
+                        >
+                          <Trash2 className="size-4" />
+                          删除
+                        </Button>
+                      </div>
+                    ) : null}
                   </div>
-                  {isAdmin ? (
-                    <Space>
-                      <Button
-                        size="small"
-                        type="primary"
-                        icon={<EditOutlined />}
-                        onClick={() => {
-                          handleStartEditRelation(selectedRelation);
-                        }}
-                      >
-                        编辑
-                      </Button>
-                      <Button
-                        size="small"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                          handleDeleteRelation(selectedRelation.id ?? "");
-                        }}
-                      >
-                        删除
-                      </Button>
-                    </Space>
-                  ) : null}
-                </Space>
-              )
-            ) : null}
+                )
+              ) : null}
+            </CardContent>
           </Card>
         ) : null}
       </div>

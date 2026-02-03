@@ -1,27 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Alert,
-  Spin,
-  Card,
-  Button,
-  Space,
-  Typography,
-  Tag,
-  Statistic,
-  Row,
-  Col,
-  Radio,
-  Checkbox,
-  Divider,
-} from "antd";
-import {
-  BookOutlined,
-  CheckCircleOutlined,
-  ReloadOutlined,
-  DeleteOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { BookOpen, CheckCircle, RotateCw, Trash2, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "../components";
 import type { WrongQuestion } from "../types";
 import { wrongQuestionAPI } from "../services";
 import { useCourseStore } from "../stores";
@@ -32,8 +21,6 @@ import {
   ListEmptyState,
 } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text, Paragraph } = Typography;
 
 const WrongQuestionBook = () => {
   const navigate = useNavigate();
@@ -225,25 +212,22 @@ const WrongQuestionBook = () => {
 
   if (!course) {
     return (
-      <Alert
-        title="请先选择一个课程"
-        type="warning"
-        showIcon
-        style={{ margin: "2rem" }}
-      />
+      <Alert className="mx-8 my-8">
+        <AlertDescription>请先选择一个课程</AlertDescription>
+      </Alert>
     );
   }
 
   if (loading) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
+      <div className="flex justify-center p-8">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1200px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm !== null}
         title="移除错题"
@@ -260,40 +244,48 @@ const WrongQuestionBook = () => {
       />
 
       {stats ? (
-        <Row gutter={16} style={{ marginBottom: "2rem" }}>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title="总错题数"
-                value={stats.total}
-                styles={{ content: { fontSize: "1.5rem" } }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title="未掌握"
-                value={stats.notMastered}
-                styles={{ content: { color: "#ff4d4f", fontSize: "1.5rem" } }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title="已掌握"
-                value={stats.mastered}
-                styles={{ content: { color: "#52c41a", fontSize: "1.5rem" } }}
-              />
-            </Card>
-          </Col>
-        </Row>
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                总错题数
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-semibold">{stats.total}</span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                未掌握
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-semibold text-destructive">
+                {stats.notMastered}
+              </span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                已掌握
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-2xl font-semibold text-green-600 dark:text-green-500">
+                {stats.mastered}
+              </span>
+            </CardContent>
+          </Card>
+        </div>
       ) : null}
 
-      <Space wrap style={{ marginBottom: "1.5rem" }}>
+      <div className="mb-6 flex flex-wrap gap-2">
         <Button
-          type={filter === "all" ? "primary" : "default"}
+          variant={filter === "all" ? "default" : "outline"}
+          size="sm"
           onClick={() => {
             setFilter("all");
           }}
@@ -301,7 +293,8 @@ const WrongQuestionBook = () => {
           全部
         </Button>
         <Button
-          type={filter === "notMastered" ? "primary" : "default"}
+          variant={filter === "notMastered" ? "default" : "outline"}
+          size="sm"
           onClick={() => {
             setFilter("notMastered");
           }}
@@ -309,14 +302,15 @@ const WrongQuestionBook = () => {
           未掌握
         </Button>
         <Button
-          type={filter === "mastered" ? "primary" : "default"}
+          variant={filter === "mastered" ? "default" : "outline"}
+          size="sm"
           onClick={() => {
             setFilter("mastered");
           }}
         >
           已掌握
         </Button>
-      </Space>
+      </div>
 
       {/* 搜索栏 */}
       <SearchBox
@@ -327,64 +321,56 @@ const WrongQuestionBook = () => {
       />
 
       {error ? (
-        <Alert
-          title={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: "1.5rem" }}
-        />
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
       {practicingQuestion?.question ? (
-        <Card
-          style={{ marginBottom: "2rem" }}
-          title={
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+        <Card className="mb-8">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg">练习错题</CardTitle>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleClosePractice}
             >
-              <Title level={4} style={{ margin: 0 }}>
-                练习错题
-              </Title>
-              <Button
-                type="text"
-                icon={<CloseOutlined />}
-                onClick={handleClosePractice}
-              />
-            </div>
-          }
-        >
-          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+              <X className="size-4" />
+            </Button>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
             <div>
-              <Title level={5} style={{ margin: "0 0 1rem 0" }}>
+              <h3 className="mb-2 text-base font-medium">
                 {practicingQuestion.question.question}
                 {practicingQuestion.question.type === "multiple" && (
-                  <Tag color="blue" style={{ marginLeft: "0.5rem" }}>
+                  <Badge variant="secondary" className="ml-2">
                     多选
-                  </Tag>
+                  </Badge>
                 )}
                 {practicingQuestion.question.type === "truefalse" && (
-                  <Tag color="orange" style={{ marginLeft: "0.5rem" }}>
+                  <Badge variant="outline" className="ml-2">
                     判断
-                  </Tag>
+                  </Badge>
                 )}
-              </Title>
+              </h3>
             </div>
 
             {practicingQuestion.question.type === "single" ||
             practicingQuestion.question.type === "truefalse" ? (
-              <Radio.Group
+              <RadioGroup
                 value={
-                  (practiceAnswers[practicingQuestion.questionId] ?? [])[0]
+                  (practiceAnswers[practicingQuestion.questionId] ?? [])[0] !==
+                  undefined
+                    ? String(
+                        (practiceAnswers[practicingQuestion.questionId] ??
+                          [])[0],
+                      )
+                    : ""
                 }
-                onChange={(e) => {
+                onValueChange={(v) => {
                   if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const rawVal = e.target.value as unknown;
-                    const val =
-                      typeof rawVal === "number" ? rawVal : Number(rawVal);
+                    const val = Number(v);
                     handlePracticeOptionSelect(
                       practicingQuestion.questionId,
                       val,
@@ -395,200 +381,186 @@ const WrongQuestionBook = () => {
                 disabled={
                   showPracticeResult[practicingQuestion.questionId] ?? false
                 }
+                className="flex flex-col gap-2"
               >
-                <Space orientation="vertical" size="middle">
-                  {practicingQuestion.question.options.map(
-                    (option, optIndex) => {
-                      const answers =
-                        practiceAnswers[practicingQuestion.questionId] ?? [];
-                      const isSelected = answers.includes(optIndex);
-                      const showResult =
-                        showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect =
-                        practicingQuestion.question.answer.includes(optIndex);
-                      const isCorrectlySelected = isSelected && isCorrect;
-                      const isIncorrectlySelected = isSelected && !isCorrect;
+                {practicingQuestion.question.options.map((option, optIndex) => {
+                  const answers =
+                    practiceAnswers[practicingQuestion.questionId] ?? [];
+                  const isSelected = answers.includes(optIndex);
+                  const showResult =
+                    showPracticeResult[practicingQuestion.questionId];
+                  const isCorrect =
+                    practicingQuestion.question.answer.includes(optIndex);
+                  const isCorrectlySelected = isSelected && isCorrect;
+                  const isIncorrectlySelected = isSelected && !isCorrect;
 
-                      return (
-                        <Radio
-                          key={optIndex}
-                          value={optIndex}
-                          style={{
-                            border:
-                              showResult && isCorrectlySelected
-                                ? "2px solid #52c41a"
-                                : showResult && isIncorrectlySelected
-                                  ? "2px solid #ff4d4f"
-                                  : showResult && !isSelected && isCorrect
-                                    ? "2px dashed #52c41a"
-                                    : "none",
-                            padding: "0.5rem",
-                            borderRadius: "0.5rem",
-                            backgroundColor:
-                              showResult && isCorrectlySelected
-                                ? "#f6ffed"
-                                : showResult && isIncorrectlySelected
-                                  ? "#fff2f0"
-                                  : showResult && !isSelected && isCorrect
-                                    ? "#f6ffed"
-                                    : "transparent",
-                          }}
-                        >
-                          <Text strong style={{ marginRight: "0.5rem" }}>
-                            {String.fromCharCode(65 + optIndex)}.
-                          </Text>
-                          {option}
-                          {showResult ? (
-                            <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected ? (
-                                <Tag color="success">你的答案（正确）</Tag>
-                              ) : null}
-                              {isIncorrectlySelected ? (
-                                <Tag color="error">你的答案</Tag>
-                              ) : null}
-                              {!isSelected && isCorrect ? (
-                                <Tag color="success">正确答案</Tag>
-                              ) : null}
-                            </Space>
-                          ) : null}
-                        </Radio>
-                      );
-                    },
-                  )}
-                </Space>
-              </Radio.Group>
+                  return (
+                    <div
+                      key={optIndex}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg border-2 p-3",
+                        showResult &&
+                          isCorrectlySelected &&
+                          "border-green-500 bg-green-50 dark:bg-green-950/20",
+                        showResult &&
+                          isIncorrectlySelected &&
+                          "border-red-500 bg-red-50 dark:bg-red-950/20",
+                        showResult &&
+                          !isSelected &&
+                          isCorrect &&
+                          "border-dashed border-green-500 bg-green-50 dark:bg-green-950/20",
+                      )}
+                    >
+                      <RadioGroupItem
+                        value={String(optIndex)}
+                        id={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                      />
+                      <Label
+                        htmlFor={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                        className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
+                      >
+                        {String.fromCharCode(65 + optIndex)}. {option}
+                        {showResult ? (
+                          <span className="ml-2 flex gap-1">
+                            {isCorrectlySelected ? (
+                              <Badge variant="default" className="bg-green-600">
+                                你的答案（正确）
+                              </Badge>
+                            ) : null}
+                            {isIncorrectlySelected ? (
+                              <Badge variant="destructive">你的答案</Badge>
+                            ) : null}
+                            {!isSelected && isCorrect ? (
+                              <Badge variant="default" className="bg-green-600">
+                                正确答案
+                              </Badge>
+                            ) : null}
+                          </span>
+                        ) : null}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </RadioGroup>
             ) : (
-              <Checkbox.Group
-                value={practiceAnswers[practicingQuestion.questionId] ?? []}
-                onChange={(values: unknown) => {
-                  if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const newAnswers: number[] = Array.isArray(values)
-                      ? values.filter((v): v is number => typeof v === "number")
-                      : [];
-                    setPracticeAnswers((prev) => ({
-                      ...prev,
-                      [practicingQuestion.questionId]: newAnswers,
-                    }));
-                  }
-                }}
-                disabled={
-                  showPracticeResult[practicingQuestion.questionId] ?? false
-                }
-              >
-                <Space orientation="vertical" size="middle">
-                  {practicingQuestion.question.options.map(
-                    (option, optIndex) => {
-                      const answers =
-                        practiceAnswers[practicingQuestion.questionId] ?? [];
-                      const isSelected = answers.includes(optIndex);
-                      const showResult =
-                        showPracticeResult[practicingQuestion.questionId];
-                      const isCorrect =
-                        practicingQuestion.question.answer.includes(optIndex);
-                      const isCorrectlySelected = isSelected && isCorrect;
-                      const isIncorrectlySelected = isSelected && !isCorrect;
+              <div className="flex flex-col gap-2">
+                {practicingQuestion.question.options.map((option, optIndex) => {
+                  const answers =
+                    practiceAnswers[practicingQuestion.questionId] ?? [];
+                  const isSelected = answers.includes(optIndex);
+                  const showResult =
+                    showPracticeResult[practicingQuestion.questionId];
+                  const isCorrect =
+                    practicingQuestion.question.answer.includes(optIndex);
+                  const isCorrectlySelected = isSelected && isCorrect;
+                  const isIncorrectlySelected = isSelected && !isCorrect;
 
-                      return (
-                        <Checkbox
-                          key={optIndex}
-                          value={optIndex}
-                          style={{
-                            border:
-                              showResult && isCorrectlySelected
-                                ? "2px solid #52c41a"
-                                : showResult && isIncorrectlySelected
-                                  ? "2px solid #ff4d4f"
-                                  : showResult && !isSelected && isCorrect
-                                    ? "2px dashed #52c41a"
-                                    : "none",
-                            padding: "0.5rem",
-                            borderRadius: "0.5rem",
-                            backgroundColor:
-                              showResult && isCorrectlySelected
-                                ? "#f6ffed"
-                                : showResult && isIncorrectlySelected
-                                  ? "#fff2f0"
-                                  : showResult && !isSelected && isCorrect
-                                    ? "#f6ffed"
-                                    : "transparent",
-                          }}
-                        >
-                          <Text strong style={{ marginRight: "0.5rem" }}>
-                            {String.fromCharCode(65 + optIndex)}.
-                          </Text>
-                          {option}
-                          {showResult ? (
-                            <Space style={{ marginLeft: "0.5rem" }}>
-                              {isCorrectlySelected ? (
-                                <Tag color="success">你的答案（正确）</Tag>
-                              ) : null}
-                              {isIncorrectlySelected ? (
-                                <Tag color="error">你的答案</Tag>
-                              ) : null}
-                              {!isSelected && isCorrect ? (
-                                <Tag color="success">正确答案</Tag>
-                              ) : null}
-                            </Space>
-                          ) : null}
-                        </Checkbox>
-                      );
-                    },
-                  )}
-                </Space>
-              </Checkbox.Group>
+                  return (
+                    <div
+                      key={optIndex}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg border-2 p-3",
+                        showResult &&
+                          isCorrectlySelected &&
+                          "border-green-500 bg-green-50 dark:bg-green-950/20",
+                        showResult &&
+                          isIncorrectlySelected &&
+                          "border-red-500 bg-red-50 dark:bg-red-950/20",
+                        showResult &&
+                          !isSelected &&
+                          isCorrect &&
+                          "border-dashed border-green-500 bg-green-50 dark:bg-green-950/20",
+                      )}
+                    >
+                      <Checkbox
+                        id={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                        checked={isSelected}
+                        disabled={
+                          showPracticeResult[practicingQuestion.questionId] ??
+                          false
+                        }
+                        onCheckedChange={(checked) => {
+                          if (
+                            !showPracticeResult[practicingQuestion.questionId]
+                          ) {
+                            const current =
+                              practiceAnswers[practicingQuestion.questionId] ??
+                              [];
+                            const newAnswers: number[] =
+                              checked === true
+                                ? [...current, optIndex].sort((a, b) => a - b)
+                                : current.filter((i) => i !== optIndex);
+                            setPracticeAnswers((prev) => ({
+                              ...prev,
+                              [practicingQuestion.questionId]: newAnswers,
+                            }));
+                          }
+                        }}
+                      />
+                      <Label
+                        htmlFor={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                        className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
+                      >
+                        {String.fromCharCode(65 + optIndex)}. {option}
+                        {showResult ? (
+                          <span className="ml-2 flex gap-1">
+                            {isCorrectlySelected ? (
+                              <Badge variant="default" className="bg-green-600">
+                                你的答案（正确）
+                              </Badge>
+                            ) : null}
+                            {isIncorrectlySelected ? (
+                              <Badge variant="destructive">你的答案</Badge>
+                            ) : null}
+                            {!isSelected && isCorrect ? (
+                              <Badge variant="default" className="bg-green-600">
+                                正确答案
+                              </Badge>
+                            ) : null}
+                          </span>
+                        ) : null}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
             )}
 
             {showPracticeResult[practicingQuestion.questionId] ? (
-              <Card
-                size="small"
-                style={{
-                  backgroundColor: "#e6f7ff",
-                  borderLeft: "4px solid #1890ff",
-                }}
-              >
-                <Space
-                  orientation="vertical"
-                  size="small"
-                  style={{ width: "100%" }}
-                >
-                  <div>
-                    <Text
-                      strong
-                      type="secondary"
-                      style={{ fontSize: "0.875rem" }}
-                    >
-                      正确答案：
-                    </Text>
-                    <Text strong style={{ marginLeft: "0.5rem" }}>
-                      {practicingQuestion.question.answer
-                        ?.map((idx) => String.fromCharCode(65 + idx))
-                        .join(", ")}
-                    </Text>
+              <Card className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/20">
+                <CardContent className="pt-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        正确答案：
+                      </span>
+                      <span className="font-medium">
+                        {practicingQuestion.question.answer
+                          ?.map((idx) => String.fromCharCode(65 + idx))
+                          .join(", ")}
+                      </span>
+                    </div>
+                    {practicingQuestion.question.explanation ? (
+                      <>
+                        <Separator className="my-2" />
+                        <div>
+                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                            解析：
+                          </span>
+                          <p className="mt-1 text-sm">
+                            {practicingQuestion.question.explanation}
+                          </p>
+                        </div>
+                      </>
+                    ) : null}
                   </div>
-                  {practicingQuestion.question.explanation ? (
-                    <>
-                      <Divider style={{ margin: "0.5rem 0" }} />
-                      <div>
-                        <Text
-                          strong
-                          style={{ fontSize: "0.875rem", color: "#1890ff" }}
-                        >
-                          解析：
-                        </Text>
-                        <Paragraph style={{ margin: "0.5rem 0 0 0" }}>
-                          {practicingQuestion.question.explanation}
-                        </Paragraph>
-                      </div>
-                    </>
-                  ) : null}
-                </Space>
+                </CardContent>
               </Card>
             ) : null}
 
-            <Space>
+            <div className="flex gap-2">
               {!showPracticeResult[practicingQuestion.questionId] ? (
                 <Button
-                  type="primary"
                   onClick={() => {
                     void handleSubmitPractice();
                   }}
@@ -596,44 +568,44 @@ const WrongQuestionBook = () => {
                   提交答案
                 </Button>
               ) : (
-                <Button onClick={handleClosePractice}>关闭</Button>
+                <Button variant="outline" onClick={handleClosePractice}>
+                  关闭
+                </Button>
               )}
-            </Space>
-          </Space>
+            </div>
+          </CardContent>
         </Card>
       ) : null}
 
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+      <div className="flex flex-col gap-4">
         {wrongQuestions.length === 0 ? (
           <ListEmptyState
             variant="empty"
-            icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+            icon={<BookOpen className="size-16 text-muted-foreground" />}
             description={
-              <Space orientation="vertical" size="small">
-                <Title level={4} style={{ margin: 0 }}>
-                  暂无错题
-                </Title>
-                <Text type="secondary">
+              <div className="flex flex-col gap-1 text-center">
+                <h3 className="text-lg font-semibold">暂无错题</h3>
+                <span className="text-sm text-muted-foreground">
                   {filter === "mastered"
                     ? "暂无已掌握的错题"
                     : filter === "notMastered"
                       ? "暂无未掌握的错题"
                       : "完成测验后，错题会自动添加到错题本"}
-                </Text>
-              </Space>
+                </span>
+              </div>
             }
           />
         ) : filteredWrongQuestions.length === 0 && searchQuery ? (
           <ListEmptyState
             variant="noResults"
-            icon={<BookOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />}
+            icon={<BookOpen className="size-16 text-muted-foreground" />}
             description={
-              <Space orientation="vertical" size="small">
-                <Title level={4} style={{ margin: 0 }}>
-                  未找到匹配的错题
-                </Title>
-                <Text type="secondary">尝试调整搜索条件</Text>
-              </Space>
+              <div className="flex flex-col gap-1 text-center">
+                <h3 className="text-lg font-semibold">未找到匹配的错题</h3>
+                <span className="text-sm text-muted-foreground">
+                  尝试调整搜索条件
+                </span>
+              </div>
             }
             onClearFilter={() => {
               setSearchQuery("");
@@ -642,83 +614,71 @@ const WrongQuestionBook = () => {
           />
         ) : filteredWrongQuestions.length > 0 ? (
           filteredWrongQuestions.map((wq) => (
-            <Card
-              key={wq.id}
-              style={{ marginBottom: "1rem" }}
-              actions={[
-                <Space key="actions">
-                  <Button
-                    size="small"
-                    type="primary"
-                    icon={<ReloadOutlined />}
-                    onClick={() => {
-                      handleStartPractice(wq);
-                    }}
-                  >
-                    重新练习
-                  </Button>
-                  {!wq.mastered && (
+            <Card key={wq.id} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="mb-2 font-medium">
+                        {wq.question?.question ?? "题目加载中..."}
+                      </h3>
+                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                        <span>来自测验: {wq.quizId}</span>
+                        <span>练习次数: {String(wq.practiceCount)}</span>
+                        <span>
+                          添加时间:{" "}
+                          {new Date(wq.addedAt).toLocaleDateString("zh-CN")}
+                        </span>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={wq.mastered ? "default" : "secondary"}
+                      className={
+                        wq.mastered ? "bg-green-600" : "bg-amber-500 text-white"
+                      }
+                    >
+                      {wq.mastered ? "已掌握" : "未掌握"}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
                     <Button
-                      size="small"
-                      icon={<CheckCircleOutlined />}
+                      size="sm"
                       onClick={() => {
-                        void handleMarkAsMastered(wq.id);
+                        handleStartPractice(wq);
                       }}
                     >
-                      标记为已掌握
+                      <RotateCw className="mr-1 size-4" />
+                      重新练习
                     </Button>
-                  )}
-                  <Button
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      setDeleteConfirm(wq.id);
-                    }}
-                  >
-                    移除
-                  </Button>
-                </Space>,
-              ]}
-            >
-              <Space
-                orientation="vertical"
-                size="small"
-                style={{ width: "100%" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <Title level={5} style={{ margin: "0 0 0.5rem 0" }}>
-                      {wq.question?.question ?? "题目加载中..."}
-                    </Title>
-                    <Space wrap>
-                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        来自测验: {wq.quizId}
-                      </Text>
-                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        练习次数: {String(wq.practiceCount)}
-                      </Text>
-                      <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                        添加时间:{" "}
-                        {new Date(wq.addedAt).toLocaleDateString("zh-CN")}
-                      </Text>
-                    </Space>
+                    {!wq.mastered && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          void handleMarkAsMastered(wq.id);
+                        }}
+                      >
+                        <CheckCircle className="mr-1 size-4" />
+                        标记为已掌握
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        setDeleteConfirm(wq.id);
+                      }}
+                    >
+                      <Trash2 className="mr-1 size-4" />
+                      移除
+                    </Button>
                   </div>
-                  <Tag color={wq.mastered ? "success" : "warning"}>
-                    {wq.mastered ? "已掌握" : "未掌握"}
-                  </Tag>
                 </div>
-              </Space>
+              </CardContent>
             </Card>
           ))
         ) : null}
-      </Space>
+      </div>
     </div>
   );
 };

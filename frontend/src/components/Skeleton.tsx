@@ -1,4 +1,5 @@
-import { Skeleton as AntSkeleton, Card } from "antd";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton as SkeletonPrimitive } from "@/components/ui/skeleton";
 
 interface SkeletonProps {
   width?: string | number;
@@ -14,10 +15,10 @@ const Skeleton = ({
   active = true,
 }: SkeletonProps) => {
   return (
-    <AntSkeleton.Button
-      active={active}
-      style={{ width, height }}
+    <SkeletonPrimitive
+      data-active={active}
       className={`rounded-lg ${className}`.trim()}
+      style={{ width, height }}
     />
   );
 };
@@ -30,27 +31,18 @@ const SkeletonGrid = ({ count = 3 }: SkeletonGridProps) => {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, index) => (
-        <Card
-          key={index}
-          className="rounded-xl border border-stone-200/80 shadow-sm dark:border-neutral-700/80 dark:bg-neutral-900 [&_.ant-card-body]:p-6"
-        >
-          <AntSkeleton
-            active
-            paragraph={{ rows: 3 }}
-            title={{ width: "60%" }}
-            className="[&_.ant-skeleton-content]:space-y-3 [&_.ant-skeleton-title]:rounded [&_.ant-skeleton-paragraph>li]:rounded"
-          />
-          <div className="mt-5 flex gap-2">
-            <AntSkeleton.Button
-              active
-              size="small"
-              className="min-w-20 w-20 rounded-xl"
-            />
-            <AntSkeleton.Button
-              active
-              size="small"
-              className="min-w-20 w-20 rounded-xl"
-            />
+        <Card key={index} className="rounded-xl border border-border shadow-sm">
+          <CardHeader>
+            <SkeletonPrimitive className="h-5 w-[60%] rounded" />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <SkeletonPrimitive className="h-4 w-full rounded" />
+            <SkeletonPrimitive className="h-4 w-full rounded" />
+            <SkeletonPrimitive className="h-4 w-4/5 rounded" />
+          </CardContent>
+          <div className="mt-5 flex gap-2 px-6 pb-6">
+            <SkeletonPrimitive className="h-8 w-20 rounded-xl" />
+            <SkeletonPrimitive className="h-8 w-20 rounded-xl" />
           </div>
         </Card>
       ))}

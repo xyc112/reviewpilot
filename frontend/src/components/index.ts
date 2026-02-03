@@ -10,7 +10,7 @@ export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as ConfirmDialog } from "./ConfirmDialog";
 export { SearchHighlight } from "./SearchHighlight";
 
-// 可复用界面组件（antd 封装，统一列表页样式）
+// 可复用界面组件（shadcn + Tailwind，统一列表页样式）
 export { default as SearchBox } from "./SearchBox";
 export { default as ListEmptyState } from "./ListEmptyState";
 export { default as FilterBar } from "./FilterBar";

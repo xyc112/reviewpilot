@@ -1,27 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Card,
-  Button,
-  Space,
-  Typography,
-  Tag,
-  Alert,
-  Spin,
-  Divider,
-} from "antd";
-import {
-  ArrowLeftOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import type { Note } from "../types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { MarkdownRenderer, ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text } = Typography;
 
 const NoteDetail = () => {
   const { noteId } = useParams<{ noteId: string }>();
@@ -67,8 +57,7 @@ const NoteDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (!note) return;
-    if (!course) return;
+    if (!note || !course) return;
     try {
       await noteAPI.deleteNote(course.id, note.id);
       success("笔记删除成功");
@@ -98,52 +87,43 @@ const NoteDetail = () => {
 
   if (!course) {
     return (
-      <Alert
-        title="请先选择一个课程"
-        type="warning"
-        showIcon
-        action={
-          <Button
-            type="primary"
-            onClick={() => {
-              void navigate("/courses");
-            }}
-          >
-            前往课程列表
-          </Button>
-        }
-        style={{ margin: "2rem" }}
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
+      <div className="mx-auto max-w-[900px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>请先选择一个课程</AlertTitle>
+          <div className="mt-2">
+            <Button onClick={() => void navigate("/courses")}>
+              前往课程列表
+            </Button>
+          </div>
+        </Alert>
       </div>
     );
   }
 
+  if (loading) return <LoadingSpinner />;
+
   if (error) {
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <div className="mx-auto max-w-[900px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      </div>
     );
   }
 
   if (!note) {
     return (
-      <Alert
-        title="笔记不存在"
-        type="error"
-        showIcon
-        style={{ margin: "2rem" }}
-      />
+      <div className="mx-auto max-w-[900px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>笔记不存在</AlertTitle>
+        </Alert>
+      </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[900px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除笔记"
@@ -159,71 +139,62 @@ const NoteDetail = () => {
         }}
       />
 
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
-        >
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => {
-              void navigate("/notes");
-            }}
+            variant="outline"
+            className="w-fit"
+            onClick={() => void navigate("/notes")}
           >
+            <ArrowLeft className="size-4" />
             返回笔记列表
           </Button>
           {canEdit() && (
-            <Space>
+            <div className="flex gap-2">
               <Button
-                type="primary"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  void navigate(`/notes/${noteId ?? ""}/edit`);
-                }}
+                onClick={() => void navigate(`/notes/${noteId ?? ""}/edit`)}
               >
+                <Pencil className="size-4" />
                 编辑笔记
               </Button>
               <Button
-                danger
-                icon={<DeleteOutlined />}
+                variant="destructive"
                 onClick={() => {
                   setDeleteConfirm(true);
                 }}
               >
+                <Trash2 className="size-4" />
                 删除笔记
               </Button>
-            </Space>
+            </div>
           )}
         </div>
 
         <Card>
-          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-            <Title level={1} style={{ margin: 0 }}>
-              {note.title}
-            </Title>
-            <Space wrap>
-              <Tag color={note.visibility === "public" ? "blue" : "default"}>
+          <CardContent className="flex flex-col gap-4 pt-6">
+            <h1 className="text-2xl font-bold">{note.title}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant={note.visibility === "public" ? "default" : "secondary"}
+              >
                 {note.visibility === "public" ? "公开" : "私有"}
-              </Tag>
-              <Text type="secondary">创建于: {formatDate(note.createdAt)}</Text>
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                创建于: {formatDate(note.createdAt)}
+              </span>
               {note.updatedAt ? (
-                <Text type="secondary">
+                <span className="text-sm text-muted-foreground">
                   更新于: {formatDate(note.updatedAt)}
-                </Text>
+                </span>
               ) : null}
-            </Space>
-            <Divider />
-            <div style={{ minHeight: "400px" }}>
+            </div>
+            <Separator />
+            <div className="min-h-[400px]">
               <MarkdownRenderer content={note.content} />
             </div>
-          </Space>
+          </CardContent>
         </Card>
-      </Space>
+      </div>
     </div>
   );
 };

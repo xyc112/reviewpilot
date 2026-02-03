@@ -1,5 +1,16 @@
-import { Modal } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { useRef } from "react";
+import { AlertCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -13,9 +24,9 @@ interface ConfirmDialogProps {
 }
 
 const iconColorClass = {
-  danger: "text-red-500",
+  danger: "text-destructive",
   warning: "text-amber-500",
-  info: "text-blue-500",
+  info: "text-primary",
 } as const;
 
 const ConfirmDialog = ({
@@ -28,36 +39,52 @@ const ConfirmDialog = ({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) => {
+  const confirmedRef = useRef(false);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      if (!confirmedRef.current) onCancel();
+      confirmedRef.current = false;
+    }
+  };
+
+  const handleConfirm = () => {
+    confirmedRef.current = true;
+    onConfirm();
+  };
+
   return (
-    <Modal
-      open={isOpen}
-      title={
-        <div className="flex items-center gap-3">
-          <ExclamationCircleOutlined
-            className={`text-xl ${iconColorClass[type]}`}
-          />
-          <span className="text-base font-semibold text-stone-900 dark:text-stone-100">
-            {title}
-          </span>
-        </div>
-      }
-      onOk={onConfirm}
-      onCancel={onCancel}
-      okText={confirmText}
-      cancelText={cancelText}
-      okButtonProps={{
-        danger: type === "danger",
-        className: "rounded-xl font-medium",
-      }}
-      cancelButtonProps={{
-        className: "rounded-xl",
-      }}
-      className="[&_.ant-modal-content]:rounded-2xl [&_.ant-modal-header]:border-b [&_.ant-modal-header]:border-stone-200 [&_.ant-modal-header]:pb-4 dark:[&_.ant-modal-header]:border-neutral-700"
-    >
-      <p className="m-0 leading-relaxed text-stone-700 dark:text-stone-300">
-        {message}
-      </p>
-    </Modal>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+      <AlertDialogContent className="sm:max-w-lg">
+        <AlertDialogHeader>
+          <div className="flex items-center gap-3">
+            <AlertCircle
+              className={`size-6 shrink-0 ${iconColorClass[type]}`}
+              aria-hidden
+            />
+            <AlertDialogTitle className="text-base">{title}</AlertDialogTitle>
+          </div>
+          <AlertDialogDescription className="text-left">
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel asChild>
+            <Button variant="outline" onClick={onCancel}>
+              {cancelText}
+            </Button>
+          </AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <Button
+              variant={type === "danger" ? "destructive" : "default"}
+              onClick={handleConfirm}
+            >
+              {confirmText}
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

@@ -1,12 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Space, Typography, List, Alert, Tag, Spin } from "antd";
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
+import { Plus, Pencil, Trash2, FileText } from "lucide-react";
 import type { Quiz } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
@@ -16,10 +10,12 @@ import {
   SearchBox,
   ListEmptyState,
   ListItemCard,
+  LoadingSpinner,
 } from "../components";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text } = Typography;
 
 const QuizList = () => {
   const navigate = useNavigate();
@@ -85,10 +81,8 @@ const QuizList = () => {
     }
   };
 
-  // 过滤测验
   const filteredQuizzes = useMemo(() => {
     return quizzes.filter((quiz) => {
-      // 搜索过滤
       const matchesSearch =
         !searchQuery ||
         quiz.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -98,178 +92,156 @@ const QuizList = () => {
 
   if (!course) {
     return (
-      <Alert
-        title="请先选择一个课程"
-        type="warning"
-        showIcon
-        action={
-          <Button
-            type="primary"
-            onClick={() => {
-              void navigate("/courses");
-            }}
-          >
-            前往课程列表
-          </Button>
-        }
-        style={{ margin: "2rem" }}
-      />
+      <Alert className="mx-8 my-8">
+        <AlertDescription>请先选择一个课程</AlertDescription>
+        <Button className="mt-4" onClick={() => void navigate("/courses")}>
+          前往课程列表
+        </Button>
+      </Alert>
     );
   }
 
   if (loading) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
+      <div className="flex justify-center p-8">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert variant="destructive" className="mx-8 my-8">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+    <div className="mx-auto max-w-[1200px] px-4">
+      <div className="mb-6 flex w-full flex-col gap-4">
         {isAdmin ? (
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div className="flex justify-end">
             <Link to="/quizzes/new">
-              <Button type="primary" icon={<PlusOutlined />}>
+              <Button>
+                <Plus className="size-4" />
                 创建测验
               </Button>
             </Link>
           </div>
         ) : null}
-
         <SearchBox
           placeholder="搜索测验标题..."
           value={searchQuery}
           onChange={setSearchQuery}
         />
+      </div>
 
-        <ConfirmDialog
-          isOpen={deleteConfirm.isOpen}
-          title="删除测验"
-          message="确定要删除这个测验吗？此操作无法撤销，将删除测验及其所有相关数据。"
-          confirmText="删除"
-          cancelText="取消"
-          type="danger"
-          onConfirm={() => {
-            void confirmDelete();
-          }}
-          onCancel={() => {
-            setDeleteConfirm({ isOpen: false, quizId: null });
-          }}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="删除测验"
+        message="确定要删除这个测验吗？此操作无法撤销，将删除测验及其所有相关数据。"
+        confirmText="删除"
+        cancelText="取消"
+        type="danger"
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => {
+          setDeleteConfirm({ isOpen: false, quizId: null });
+        }}
+      />
+
+      {quizzes.length === 0 ? (
+        <ListEmptyState
+          variant="empty"
+          icon={<FileText className="size-16 text-muted-foreground" />}
+          description={
+            <span>
+              暂无测验
+              <br />
+              <span className="text-muted-foreground">
+                {isAdmin ? "立即创建第一个测验吧！" : "请等待管理员创建测验。"}
+              </span>
+            </span>
+          }
+          action={
+            isAdmin ? (
+              <Link to="/quizzes/new">
+                <Button>
+                  <Plus className="size-4" />
+                  创建新测验
+                </Button>
+              </Link>
+            ) : undefined
+          }
         />
-
-        {quizzes.length === 0 ? (
-          <ListEmptyState
-            variant="empty"
-            icon={
-              <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
-            }
-            description={
-              <Space orientation="vertical" size="small">
-                <Title level={4} style={{ margin: 0 }}>
-                  暂无测验
-                </Title>
-                <Text type="secondary">
-                  {isAdmin
-                    ? "立即创建第一个测验吧！"
-                    : "请等待管理员创建测验。"}
-                </Text>
-              </Space>
-            }
-            action={
-              isAdmin ? (
-                <Link to="/quizzes/new">
-                  <Button type="primary" icon={<PlusOutlined />}>
-                    创建新测验
-                  </Button>
-                </Link>
-              ) : undefined
-            }
-          />
-        ) : filteredQuizzes.length === 0 ? (
-          <ListEmptyState
-            variant="noResults"
-            icon={
-              <FileTextOutlined style={{ fontSize: 64, color: "#d9d9d9" }} />
-            }
-            description={
-              <Space orientation="vertical" size="small">
-                <Title level={4} style={{ margin: 0 }}>
-                  未找到匹配的测验
-                </Title>
-                <Text type="secondary">尝试调整搜索条件</Text>
-              </Space>
-            }
-            onClearFilter={() => {
-              setSearchQuery("");
-            }}
-            clearFilterLabel="清除搜索"
-          />
-        ) : (
-          <List
-            dataSource={filteredQuizzes}
-            renderItem={(quiz) => (
-              <ListItemCard>
-                <Space
-                  style={{ width: "100%", justifyContent: "space-between" }}
-                >
-                  <Space
-                    orientation="vertical"
-                    size="small"
-                    style={{ flex: 1 }}
-                  >
-                    <Space wrap>
-                      <Title
-                        level={4}
-                        style={{ margin: 0, fontSize: "1.125rem" }}
+      ) : filteredQuizzes.length === 0 ? (
+        <ListEmptyState
+          variant="noResults"
+          description={
+            <span>
+              未找到匹配的测验
+              <br />
+              <span className="text-muted-foreground">尝试调整搜索条件</span>
+            </span>
+          }
+          onClearFilter={() => {
+            setSearchQuery("");
+          }}
+          clearFilterLabel="清除搜索"
+        />
+      ) : (
+        <div className="space-y-0">
+          {filteredQuizzes.map((quiz) => (
+            <ListItemCard key={quiz.id}>
+              <div className="flex w-full flex-wrap items-center justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="m-0 text-lg font-semibold text-foreground">
+                      {quiz.title}
+                    </h4>
+                    <Badge variant="secondary">
+                      {quiz.questions.length} 题
+                    </Badge>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    包含 {quiz.questions.length}{" "}
+                    道题目，测试您对课程知识的掌握程度
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Link to={`/quizzes/${quiz.id}`}>
+                    <Button size="sm">开始测验</Button>
+                  </Link>
+                  {isAdmin ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          void navigate(`/quizzes/edit/${quiz.id}`)
+                        }
+                        title="编辑测验"
                       >
-                        {quiz.title}
-                      </Title>
-                      <Tag color="blue">{quiz.questions.length} 题</Tag>
-                    </Space>
-                    <Text type="secondary" style={{ fontSize: "0.875rem" }}>
-                      包含 {quiz.questions.length}{" "}
-                      道题目，测试您对课程知识的掌握程度
-                    </Text>
-                  </Space>
-                  <Space>
-                    <Link to={`/quizzes/${quiz.id}`}>
-                      <Button type="primary">开始测验</Button>
-                    </Link>
-                    {isAdmin ? (
-                      <>
-                        <Button
-                          icon={<EditOutlined />}
-                          onClick={() => {
-                            void navigate(`/quizzes/edit/${quiz.id}`);
-                          }}
-                          title="编辑测验"
-                        />
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() => {
-                            handleDelete(quiz.id);
-                          }}
-                          title="删除测验"
-                          type="button"
-                        />
-                      </>
-                    ) : null}
-                  </Space>
-                </Space>
-              </ListItemCard>
-            )}
-          />
-        )}
-      </Space>
+                        <Pencil className="size-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          handleDelete(quiz.id);
+                        }}
+                        title="删除测验"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </ListItemCard>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

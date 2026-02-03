@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from "react";
-import { message } from "antd";
+import { toast as sonnerToast } from "sonner";
 
 interface ToastContextType {
   success: (message: string) => void;
@@ -12,19 +12,19 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const success = (msg: string) => {
-    message.success(msg);
+    sonnerToast.success(msg);
   };
 
   const error = (msg: string) => {
-    message.error(msg);
+    sonnerToast.error(msg);
   };
 
   const info = (msg: string) => {
-    message.info(msg);
+    sonnerToast.info(msg);
   };
 
   const warning = (msg: string) => {
-    message.warning(msg);
+    sonnerToast.warning(msg);
   };
 
   return (

@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { ReloadOutlined, HomeOutlined } from "@ant-design/icons";
+import { RotateCw, Home } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -94,7 +94,7 @@ const ErrorFallback = ({
             onClick={handleReload}
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
-            <ReloadOutlined />
+            <RotateCw className="size-4" />
             刷新页面
           </button>
           <button
@@ -102,7 +102,7 @@ const ErrorFallback = ({
             onClick={handleGoHome}
             className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
           >
-            <HomeOutlined />
+            <Home className="size-4" />
             返回首页
           </button>
         </div>

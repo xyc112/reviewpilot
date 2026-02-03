@@ -1,34 +1,32 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Card,
-  Button,
-  Space,
-  Typography,
-  Spin,
-  Tag,
-  Input,
-  Select,
-  DatePicker,
-  Form,
-} from "antd";
-import dayjs from "dayjs";
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  ClockCircleOutlined,
-  LeftOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import type { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services";
 import { useToast, useTheme, ConfirmDialog } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text } = Typography;
-const { TextArea } = Input;
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const ReviewPlanPage = () => {
   const { theme } = useTheme();
@@ -285,16 +283,10 @@ const ReviewPlanPage = () => {
   ];
   const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
 
-  if (loading) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1400px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title="删除复习计划"
@@ -311,61 +303,30 @@ const ReviewPlanPage = () => {
       />
 
       {/* 日历和计划列表 */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 400px",
-          gap: "1.5rem",
-          alignItems: "start",
-        }}
-      >
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_400px] items-start">
         {/* 日历 */}
         <Card>
-          <div style={{ padding: "1rem" }}>
+          <CardContent className="p-4">
             {/* 月份导航 */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <Button
-                size="small"
-                icon={<LeftOutlined />}
-                onClick={handlePrevMonth}
-              />
-              <Title level={4} style={{ margin: 0 }}>
+            <div className="mb-4 flex items-center justify-between">
+              <Button variant="outline" size="icon" onClick={handlePrevMonth}>
+                <ChevronLeft className="size-4" />
+              </Button>
+              <h3 className="text-lg font-semibold">
                 {currentDate.getFullYear()}年{" "}
                 {monthNames[currentDate.getMonth()]}
-              </Title>
-              <Button
-                size="small"
-                icon={<RightOutlined />}
-                onClick={handleNextMonth}
-              />
+              </h3>
+              <Button variant="outline" size="icon" onClick={handleNextMonth}>
+                <ChevronRight className="size-4" />
+              </Button>
             </div>
 
             {/* 星期标题 */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "0.5rem",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <div className="mb-2 grid grid-cols-7 gap-2">
               {weekDays.map((day) => (
                 <div
                   key={day}
-                  style={{
-                    textAlign: "center",
-                    fontWeight: 600,
-                    fontSize: "0.875rem",
-                    color: "#78716c",
-                    padding: "0.5rem",
-                  }}
+                  className="p-2 text-center text-sm font-semibold text-muted-foreground"
                 >
                   {day}
                 </div>
@@ -373,21 +334,10 @@ const ReviewPlanPage = () => {
             </div>
 
             {/* 日期网格 */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "0.5rem",
-              }}
-            >
+            <div className="grid grid-cols-7 gap-2">
               {days.map((date, index) => {
                 if (!date) {
-                  return (
-                    <div
-                      key={index}
-                      style={{ aspectRatio: "1", padding: "0.5rem" }}
-                    />
-                  );
+                  return <div key={index} className="aspect-square p-2" />;
                 }
 
                 const isToday = date.toDateString() === today.toDateString();
@@ -397,97 +347,36 @@ const ReviewPlanPage = () => {
                 const planCount = getPlanCountOnDate(date);
                 const isPast = date < today;
 
-                const getButtonBg = () => {
-                  if (isSelected) return isDark ? "#374151" : "#f5f5f4";
-                  if (isToday) return isDark ? "#1e3a8a" : "#eff6ff";
-                  return isDark ? "#1f2937" : "white";
-                };
-
-                const getHoverBg = () => {
-                  if (isSelected) return isDark ? "#374151" : "#f5f5f4";
-                  if (isToday) return isDark ? "#1e3a8a" : "#eff6ff";
-                  return isDark ? "#374151" : "#fafafa";
-                };
-
                 return (
                   <button
                     key={index}
+                    type="button"
                     onClick={() => {
                       handleDateClick(date);
                     }}
-                    style={{
-                      aspectRatio: "1",
-                      border: isToday
-                        ? "2px solid #3b82f6"
+                    className={`aspect-square flex flex-col items-center justify-center rounded-lg border-2 p-2 transition-all relative ${
+                      isPast ? "opacity-60" : ""
+                    } ${
+                      isToday
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
                         : isSelected
                           ? isDark
-                            ? "2px solid #6b7280"
-                            : "2px solid #1c1917"
-                          : `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
-                      borderRadius: "0.5rem",
-                      padding: "0.5rem",
-                      background: getButtonBg(),
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      opacity: isPast ? 0.6 : 1,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = getHoverBg();
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = getButtonBg();
-                      }
-                    }}
+                            ? "border-gray-500 bg-gray-700"
+                            : "border-foreground bg-muted"
+                          : isDark
+                            ? "border-gray-700 bg-gray-800 hover:bg-gray-700"
+                            : "border-border bg-background hover:bg-muted"
+                    }`}
                   >
                     <span
-                      style={{
-                        fontSize: "0.875rem",
-                        fontWeight: isToday ? 600 : 400,
-                        color: isToday
-                          ? "#3b82f6"
-                          : isDark
-                            ? "#f9fafb"
-                            : "#1c1917",
-                      }}
+                      className={`text-sm ${isToday ? "font-semibold text-blue-600 dark:text-blue-400" : isDark ? "text-gray-100" : "text-foreground"}`}
                     >
                       {date.getDate()}
                     </span>
                     {hasPlans ? (
-                      <div
-                        style={{
-                          marginTop: "0.25rem",
-                          width: "6px",
-                          height: "6px",
-                          borderRadius: "50%",
-                          background: "#3b82f6",
-                          position: "relative",
-                        }}
-                      >
+                      <div className="relative mt-1 size-1.5 rounded-full bg-blue-500">
                         {planCount > 1 && (
-                          <span
-                            style={{
-                              position: "absolute",
-                              top: "-8px",
-                              right: "-8px",
-                              fontSize: "0.625rem",
-                              background: "#ef4444",
-                              color: "white",
-                              borderRadius: "50%",
-                              width: "16px",
-                              height: "16px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
+                          <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
                             {planCount}
                           </span>
                         )}
@@ -497,100 +386,107 @@ const ReviewPlanPage = () => {
                 );
               })}
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* 右侧：新建计划表单、选中日期的计划和即将到来的计划 */}
-        <div
-          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
-        >
+        <div className="flex flex-col gap-6">
           {/* 新建/编辑计划表单 */}
           {showPlanForm ? (
             <Card>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "1rem",
-                }}
-              >
-                <Title level={4} style={{ margin: 0 }}>
-                  {editingPlan ? "编辑计划" : "新建计划"}
-                </Title>
-                <Button
-                  size="small"
-                  icon={<CloseOutlined />}
-                  onClick={() => {
-                    setShowPlanForm(false);
-                    setEditingPlan(null);
-                    setFormData({
-                      title: "",
-                      description: "",
-                      type: "plan",
-                      planDate: "",
-                    });
-                  }}
-                />
-              </div>
-              <Form layout="vertical">
-                <Form.Item label="标题" required>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        title: e.target.value,
-                      }));
+              <CardContent className="pt-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">
+                    {editingPlan ? "编辑计划" : "新建计划"}
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setShowPlanForm(false);
+                      setEditingPlan(null);
+                      setFormData({
+                        title: "",
+                        description: "",
+                        type: "plan",
+                        planDate: "",
+                      });
                     }}
-                    placeholder="输入计划标题"
-                  />
-                </Form.Item>
-                <Form.Item label="日期" required>
-                  <DatePicker
-                    value={
-                      formData.planDate ? dayjs(formData.planDate) : undefined
-                    }
-                    onChange={(date) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        planDate: date ? date.format("YYYY-MM-DD") : "",
-                      }));
-                    }}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-                <Form.Item label="类型" required>
-                  <Select
-                    value={formData.type}
-                    onChange={(value) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        type: value,
-                      }));
-                    }}
-                    options={[
-                      { value: "plan", label: "计划" },
-                      { value: "exam", label: "考试" },
-                    ]}
-                  />
-                </Form.Item>
-                <Form.Item label="描述">
-                  <TextArea
-                    value={formData.description}
-                    onChange={(e) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }));
-                    }}
-                    rows={4}
-                    placeholder="输入计划描述（可选）"
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Space style={{ justifyContent: "flex-end", width: "100%" }}>
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="plan-title">标题</Label>
+                    <Input
+                      id="plan-title"
+                      value={formData.title}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: e.target.value,
+                        }));
+                      }}
+                      placeholder="输入计划标题"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="plan-date">日期</Label>
+                    <Input
+                      id="plan-date"
+                      type="date"
+                      value={formData.planDate}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          planDate: e.target.value,
+                        }));
+                      }}
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label>类型</Label>
+                    <Select
+                      value={formData.type}
+                      onValueChange={(value: "plan" | "exam") => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          type: value,
+                        }));
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="plan">计划</SelectItem>
+                        <SelectItem value="exam">考试</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="plan-desc">描述</Label>
+                    <Textarea
+                      id="plan-desc"
+                      value={formData.description}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }));
+                      }}
+                      rows={4}
+                      placeholder="输入计划描述（可选）"
+                      className="resize-none"
+                    />
+                  </div>
+                  <div className="flex w-full justify-end gap-2">
                     <Button
+                      variant="outline"
                       onClick={() => {
                         setShowPlanForm(false);
                         setEditingPlan(null);
@@ -605,7 +501,6 @@ const ReviewPlanPage = () => {
                       取消
                     </Button>
                     <Button
-                      type="primary"
                       onClick={() => {
                         void (editingPlan
                           ? handleUpdatePlan()
@@ -614,277 +509,183 @@ const ReviewPlanPage = () => {
                     >
                       {editingPlan ? "更新" : "创建"}
                     </Button>
-                  </Space>
-                </Form.Item>
-              </Form>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           ) : null}
 
           {/* 如果没有显示表单，显示新建计划按钮 */}
           {!showPlanForm && (
             <Card>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleStartNewPlan}
-                block
-              >
-                新建计划
-              </Button>
+              <CardContent className="p-4">
+                <Button className="w-full" onClick={handleStartNewPlan}>
+                  <Plus className="size-4" />
+                  新建计划
+                </Button>
+              </CardContent>
             </Card>
           )}
 
           {/* 选中日期的计划 */}
           {selectedDate && !showPlanForm ? (
             <Card>
-              <div style={{ padding: "1rem" }}>
-                <Title level={5} style={{ margin: "0 0 1rem 0" }}>
+              <CardContent className="p-4">
+                <h4 className="mb-4 text-base font-semibold">
                   {selectedDate.toLocaleDateString("zh-CN", {
                     month: "long",
                     day: "numeric",
                   })}{" "}
                   的计划
-                </Title>
+                </h4>
                 {selectedDatePlans.length === 0 ? (
-                  <p
-                    style={{
-                      color: isDark ? "#9ca3af" : "#78716c",
-                      fontSize: "0.875rem",
-                      margin: 0,
-                    }}
-                  >
+                  <p className="m-0 text-sm text-muted-foreground">
                     该日期暂无计划
                   </p>
                 ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.75rem",
-                    }}
-                  >
+                  <div className="flex flex-col gap-3">
                     {selectedDatePlans.map((plan) => (
                       <div
                         key={plan.id}
-                        style={{
-                          padding: "0.75rem",
-                          border: `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
-                          borderRadius: "0.5rem",
-                          background: plan.completed
-                            ? isDark
-                              ? "#374151"
-                              : "#f5f5f4"
-                            : isDark
-                              ? "#1f2937"
-                              : "white",
-                          opacity: plan.completed ? 0.7 : 1,
-                        }}
+                        className={`rounded-lg border border-border p-3 ${
+                          plan.completed ? "bg-muted opacity-70" : "bg-card"
+                        }`}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: "0.5rem",
-                            marginBottom: "0.5rem",
-                          }}
-                        >
+                        <div className="mb-2 flex items-start gap-2">
                           {plan.type === "exam" ? (
-                            <span
-                              style={{ color: "#ef4444", fontSize: "18px" }}
-                            >
-                              🎓
-                            </span>
+                            <span className="text-lg text-red-500">🎓</span>
                           ) : (
-                            <ClockCircleOutlined
-                              style={{
-                                color: "#3b82f6",
-                                fontSize: "18px",
-                              }}
-                            />
+                            <Clock className="size-5 text-blue-500" />
                           )}
-                          <div style={{ flex: 1 }}>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                marginBottom: "0.25rem",
-                              }}
-                            >
+                          <div className="flex-1">
+                            <div className="mb-1 flex items-center gap-2">
                               <h4
-                                style={{
-                                  margin: 0,
-                                  fontSize: "0.875rem",
-                                  fontWeight: 600,
-                                  textDecoration: plan.completed
-                                    ? "line-through"
-                                    : "none",
-                                  color: isDark ? "#f9fafb" : "#1c1917",
-                                }}
+                                className={`text-sm font-semibold ${
+                                  plan.completed ? "line-through" : ""
+                                }`}
                               >
                                 {plan.title}
                               </h4>
-                              <Tag
-                                color={plan.type === "exam" ? "red" : "blue"}
+                              <Badge
+                                variant={
+                                  plan.type === "exam"
+                                    ? "destructive"
+                                    : "secondary"
+                                }
                               >
                                 {plan.type === "exam" ? "考试" : "计划"}
-                              </Tag>
+                              </Badge>
                             </div>
                             {plan.description ? (
-                              <p
-                                style={{
-                                  margin: 0,
-                                  fontSize: "0.8125rem",
-                                  color: isDark ? "#9ca3af" : "#78716c",
-                                }}
-                              >
+                              <p className="m-0 text-xs text-muted-foreground">
                                 {plan.description}
                               </p>
                             ) : null}
                           </div>
                         </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "0.5rem",
-                            marginTop: "0.5rem",
-                          }}
-                        >
+                        <div className="mt-2 flex gap-2">
                           <Button
-                            size="small"
-                            icon={
-                              plan.completed ? (
-                                <CloseOutlined />
-                              ) : (
-                                <CheckOutlined />
-                              )
-                            }
+                            size="sm"
+                            variant={plan.completed ? "outline" : "default"}
+                            className="flex-1"
                             onClick={() => {
                               void handleToggleComplete(plan);
                             }}
-                            style={{ flex: 1 }}
                           >
+                            {plan.completed ? (
+                              <X className="size-4" />
+                            ) : (
+                              <Check className="size-4" />
+                            )}
                             {plan.completed ? "未完成" : "完成"}
                           </Button>
                           <Button
-                            size="small"
-                            icon={<EditOutlined />}
+                            size="sm"
+                            variant="outline"
                             onClick={() => {
                               handleEditPlan(plan);
                             }}
-                          />
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
                           <Button
-                            size="small"
-                            danger
-                            icon={<DeleteOutlined />}
+                            size="sm"
+                            variant="destructive"
                             onClick={() => {
                               handleDeletePlan(plan.id);
                             }}
-                          />
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
+              </CardContent>
             </Card>
           ) : null}
 
           {/* 即将到来的计划 */}
           {upcomingPlans.length > 0 && (
             <Card>
-              <Title level={5} style={{ margin: "0 0 1rem 0" }}>
-                即将到来
-              </Title>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.75rem",
-                }}
-              >
-                {upcomingPlans.map((plan) => {
-                  const planDate = new Date(plan.planDate);
-                  const daysUntil = Math.ceil(
-                    (planDate.getTime() - today.getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  );
-                  return (
-                    <div
-                      key={plan.id}
-                      onClick={() => {
-                        setSelectedDate(planDate);
-                        setShowPlanForm(false);
-                        setEditingPlan(null);
-                      }}
-                      style={{
-                        padding: "0.75rem",
-                        border: `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
-                        borderRadius: "0.5rem",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                        background: isDark ? "#1f2937" : "white",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = isDark
-                          ? "#374151"
-                          : "#fafafa";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = isDark
-                          ? "#1f2937"
-                          : "white";
-                      }}
-                    >
+              <CardContent className="p-4">
+                <h4 className="mb-4 text-base font-semibold">即将到来</h4>
+                <div className="flex flex-col gap-3">
+                  {upcomingPlans.map((plan) => {
+                    const planDate = new Date(plan.planDate);
+                    const daysUntil = Math.ceil(
+                      (planDate.getTime() - today.getTime()) /
+                        (1000 * 60 * 60 * 24),
+                    );
+                    return (
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                          marginBottom: "0.25rem",
+                        key={plan.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          setSelectedDate(planDate);
+                          setShowPlanForm(false);
+                          setEditingPlan(null);
                         }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSelectedDate(planDate);
+                            setShowPlanForm(false);
+                            setEditingPlan(null);
+                          }
+                        }}
+                        className="cursor-pointer rounded-lg border border-border p-3 transition-colors hover:bg-muted"
                       >
-                        {plan.type === "exam" ? (
-                          <span style={{ color: "#ef4444", fontSize: "16px" }}>
-                            🎓
+                        <div className="mb-1 flex items-center gap-2">
+                          {plan.type === "exam" ? (
+                            <span className="text-base text-red-500">🎓</span>
+                          ) : (
+                            <Clock className="size-4 text-blue-500" />
+                          )}
+                          <span className="flex-1 text-sm font-semibold">
+                            {plan.title}
                           </span>
-                        ) : (
-                          <ClockCircleOutlined
-                            style={{ color: "#3b82f6", fontSize: "16px" }}
-                          />
-                        )}
-                        <Text strong style={{ fontSize: "0.875rem", flex: 1 }}>
-                          {plan.title}
-                        </Text>
-                        <span
-                          style={{
-                            fontSize: "0.75rem",
-                            color: isDark ? "#9ca3af" : "#78716c",
-                          }}
-                        >
-                          {daysUntil === 0
-                            ? "今天"
-                            : daysUntil === 1
-                              ? "明天"
-                              : `${String(daysUntil)}天后`}
-                        </span>
+                          <span className="text-xs text-muted-foreground">
+                            {daysUntil === 0
+                              ? "今天"
+                              : daysUntil === 1
+                                ? "明天"
+                                : `${String(daysUntil)}天后`}
+                          </span>
+                        </div>
+                        <p className="m-0 text-xs text-muted-foreground">
+                          {planDate.toLocaleDateString("zh-CN", {
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </p>
                       </div>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "0.75rem",
-                          color: isDark ? "#9ca3af" : "#78716c",
-                        }}
-                      >
-                        {planDate.toLocaleDateString("zh-CN", {
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
             </Card>
           )}
         </div>

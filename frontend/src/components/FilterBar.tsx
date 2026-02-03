@@ -1,17 +1,12 @@
-import { Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { X } from "lucide-react";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 export interface FilterBarProps {
-  /** 是否有生效的筛选（搜索、标签等） */
   hasActiveFilters: boolean;
-  /** 清除所有筛选 */
   onClearFilters: () => void;
-  /** 清除按钮文案，默认「清除筛选」 */
   clearLabel?: string;
-  /** 额外内容，如标签选择、筛选结果统计等 */
   extra?: ReactNode;
-  /** 筛选结果统计，如 "找到 3 个课程（共 10 个）" */
   resultSummary?: ReactNode;
 }
 
@@ -25,21 +20,21 @@ const FilterBar = ({
   if (!hasActiveFilters && !extra) return null;
 
   return (
-    <div className="flex w-full flex-col gap-3 rounded-xl border border-stone-200/80 bg-stone-50/50 p-4 dark:border-neutral-700/80 dark:bg-neutral-900/50">
+    <div className="flex w-full flex-col gap-3 rounded-xl border border-border bg-muted/30 p-4">
       {hasActiveFilters ? (
         <Button
+          variant="outline"
+          size="sm"
           onClick={onClearFilters}
-          icon={<CloseOutlined />}
-          className="w-fit rounded-xl border-stone-300 text-stone-600 hover:!border-stone-400 hover:!text-stone-800 dark:border-neutral-600 dark:text-stone-400 dark:hover:!border-neutral-500 dark:hover:!text-stone-200"
+          className="w-fit"
         >
+          <X className="size-4" />
           {clearLabel}
         </Button>
       ) : null}
       {extra}
       {hasActiveFilters && resultSummary ? (
-        <span className="text-sm text-stone-500 dark:text-stone-400">
-          {resultSummary}
-        </span>
+        <span className="text-sm text-muted-foreground">{resultSummary}</span>
       ) : null}
     </div>
   );

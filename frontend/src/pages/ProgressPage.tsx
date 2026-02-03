@@ -1,12 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Card, Alert, Typography, Space, Empty, Button } from "antd";
-import {
-  BookOutlined,
-  CheckCircleOutlined,
-  FileTextOutlined,
-  TrophyOutlined,
-} from "@ant-design/icons";
+import { BookOpen, CheckCircle, FileText, Trophy } from "lucide-react";
 import type { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services";
 import { useCourseStore } from "../stores";
@@ -16,8 +10,9 @@ import {
   CircularProgressChart,
   ScoreDistributionChart,
 } from "../components";
-
-const { Title, Text } = Typography;
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const ProgressPage = () => {
   const currentStudyingCourse = useCourseStore(
@@ -100,7 +95,9 @@ const ProgressPage = () => {
 
   if (error) {
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <Alert variant="destructive" className="mx-8 my-8">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
@@ -131,13 +128,13 @@ const ProgressPage = () => {
         }}
       >
         {/* 顶部：标题 */}
-        <Card style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
-          <Title level={3} style={{ margin: 0 }}>
-            当前学习课程进度
-          </Title>
-          <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
-            显示您正在学习课程的详细进度
-          </Text>
+        <Card className="mb-2.5 shrink-0">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">当前学习课程进度</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              显示您正在学习课程的详细进度
+            </p>
+          </CardHeader>
         </Card>
 
         {/* 主体内容：使用 Grid 布局 */}
@@ -162,14 +159,14 @@ const ProgressPage = () => {
             }}
           >
             <CompactStatCard
-              icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
+              icon={<CheckCircle className="size-[18px]" />}
               title="完成测验"
               value={`${String(progressData.completedQuizzes)}/${String(progressData.totalQuizzes)}`}
               subtitle={`完成率 ${String(progressData.completionRate)}%`}
               color="#22c55e"
             />
             <CompactStatCard
-              icon={<TrophyOutlined style={{ fontSize: 18 }} />}
+              icon={<Trophy className="size-[18px]" />}
               title="平均分数"
               value={
                 progressData.averageScore !== null
@@ -180,7 +177,7 @@ const ProgressPage = () => {
               color="#f59e0b"
             />
             <CompactStatCard
-              icon={<FileTextOutlined style={{ fontSize: 18 }} />}
+              icon={<FileText className="size-[18px]" />}
               title="笔记数量"
               value={progressData.noteCount.toString()}
               subtitle="篇笔记"
@@ -199,93 +196,84 @@ const ProgressPage = () => {
             }}
           >
             {/* 完成度圆形图 */}
-            <Card style={{ flex: "0 0 auto" }}>
-              <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
-                课程完成度
-              </Title>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <CircularProgressChart
-                  completed={progressData.completedQuizzes}
-                  total={progressData.totalQuizzes}
-                  size={110}
-                />
-              </div>
+            <Card className="shrink-0">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">课程完成度</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <CircularProgressChart
+                    completed={progressData.completedQuizzes}
+                    total={progressData.totalQuizzes}
+                    size={110}
+                  />
+                </div>
+              </CardContent>
             </Card>
 
             {/* 分数分布图 */}
             {progressData.quizProgressList.length > 0 ? (
-              <Card
-                style={{
-                  flex: 1,
-                  minHeight: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
-                  分数分布
-                </Title>
-                <div
-                  style={{
-                    flex: 1,
-                    minHeight: 0,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  {progressData.quizProgressList.filter(
-                    (qp) => qp.score !== null,
-                  ).length > 0 ? (
-                    <ScoreDistributionChart
-                      scores={progressData.quizProgressList
-                        .filter(
-                          (qp): qp is typeof qp & { score: number } =>
-                            qp.score !== null,
-                        )
-                        .map((qp) => ({ score: qp.score, count: 1 }))}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "100%",
-                        color: isDark ? "#9ca3af" : "#78716c",
-                      }}
-                    >
-                      <p
+              <Card className="flex min-h-0 flex-1 flex-col">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">分数分布</CardTitle>
+                </CardHeader>
+                <CardContent className="flex min-h-0 flex-1 flex-col">
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: 0,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {progressData.quizProgressList.filter(
+                      (qp) => qp.score !== null,
+                    ).length > 0 ? (
+                      <ScoreDistributionChart
+                        scores={progressData.quizProgressList
+                          .filter(
+                            (qp): qp is typeof qp & { score: number } =>
+                              qp.score !== null,
+                          )
+                          .map((qp) => ({ score: qp.score, count: 1 }))}
+                      />
+                    ) : (
+                      <div
                         style={{
-                          margin: 0,
-                          fontSize: "0.8125rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "100%",
                           color: isDark ? "#9ca3af" : "#78716c",
                         }}
                       >
-                        暂无分数数据
-                      </p>
-                    </div>
-                  )}
-                </div>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.8125rem",
+                            color: isDark ? "#9ca3af" : "#78716c",
+                          }}
+                        >
+                          暂无分数数据
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
               </Card>
             ) : (
-              <Card
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 0,
-                }}
-              >
-                <Empty
-                  description={<Text type="secondary">暂无测验记录</Text>}
-                />
+              <Card className="flex min-h-0 flex-1 items-center justify-center">
+                <CardContent>
+                  <p className="text-center text-sm text-muted-foreground">
+                    暂无测验记录
+                  </p>
+                </CardContent>
               </Card>
             )}
           </div>
@@ -300,70 +288,61 @@ const ProgressPage = () => {
             }}
           >
             {progressData.quizProgressList.length > 0 ? (
-              <Card
-                style={{
-                  flex: 1,
-                  overflowY: "auto",
-                  minHeight: 0,
-                }}
-              >
-                <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
-                  测验成绩
-                </Title>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.5rem",
-                  }}
-                >
-                  {progressData.quizProgressList.map((quizProgress) => (
-                    <div
-                      key={quizProgress.quizId}
-                      style={{
-                        padding: "0.625rem",
-                        backgroundColor: isDark ? "#1f2937" : "#fafaf9",
-                        borderRadius: "0.5rem",
-                        border: `2px solid ${getScoreColor(quizProgress.score)}`,
-                      }}
-                    >
+              <Card className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">测验成绩</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {progressData.quizProgressList.map((quizProgress) => (
                       <div
+                        key={quizProgress.quizId}
                         style={{
-                          fontSize: "0.8125rem",
-                          fontWeight: 500,
-                          marginBottom: "0.25rem",
-                          color: isDark ? "#f9fafb" : "#1c1917",
+                          padding: "0.625rem",
+                          backgroundColor: isDark ? "#1f2937" : "#fafaf9",
+                          borderRadius: "0.5rem",
+                          border: `2px solid ${getScoreColor(quizProgress.score)}`,
                         }}
                       >
-                        测验 {quizProgress.quizId}
+                        <div
+                          style={{
+                            fontSize: "0.8125rem",
+                            fontWeight: 500,
+                            marginBottom: "0.25rem",
+                            color: isDark ? "#f9fafb" : "#1c1917",
+                          }}
+                        >
+                          测验 {quizProgress.quizId}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "1.125rem",
+                            fontWeight: 700,
+                            color: getScoreColor(quizProgress.score),
+                          }}
+                        >
+                          {quizProgress.score !== null
+                            ? `${String(quizProgress.score)}分`
+                            : "--"}
+                        </div>
                       </div>
-                      <div
-                        style={{
-                          fontSize: "1.125rem",
-                          fontWeight: 700,
-                          color: getScoreColor(quizProgress.score),
-                        }}
-                      >
-                        {quizProgress.score !== null
-                          ? `${String(quizProgress.score)}分`
-                          : "--"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </CardContent>
               </Card>
             ) : (
-              <Card
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Empty
-                  description={<Text type="secondary">暂无测验记录</Text>}
-                />
+              <Card className="flex min-h-0 flex-1 items-center justify-center">
+                <CardContent>
+                  <p className="text-center text-sm text-muted-foreground">
+                    暂无测验记录
+                  </p>
+                </CardContent>
               </Card>
             )}
           </div>
@@ -374,22 +353,15 @@ const ProgressPage = () => {
 
   // 没有当前学习课程时，显示整体学习列表视图
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: "0.625rem",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="flex min-h-screen flex-col p-2.5">
       {/* 顶部标题 */}
-      <Card style={{ marginBottom: "0.625rem", flexShrink: 0 }}>
-        <Title level={3} style={{ margin: 0 }}>
-          学习进度总览
-        </Title>
-        <Text type="secondary" style={{ fontSize: "0.8125rem" }}>
-          显示您在学习列表中所有课程的整体进度
-        </Text>
+      <Card className="mb-2.5 shrink-0">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">学习进度总览</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            显示您在学习列表中所有课程的整体进度
+          </p>
+        </CardHeader>
       </Card>
 
       {/* 主体内容 */}
@@ -416,7 +388,7 @@ const ProgressPage = () => {
           {overallStats ? (
             <>
               <CompactStatCard
-                icon={<BookOutlined style={{ fontSize: 24 }} />}
+                icon={<BookOpen className="size-6" />}
                 title="学习课程"
                 value={overallStats.totalCourses.toString()}
                 subtitle="门课程"
@@ -424,7 +396,7 @@ const ProgressPage = () => {
                 large
               />
               <CompactStatCard
-                icon={<CheckCircleOutlined style={{ fontSize: 24 }} />}
+                icon={<CheckCircle className="size-6" />}
                 title="完成测验"
                 value={`${String(overallStats.completedQuizzes)}/${String(overallStats.totalQuizzes)}`}
                 subtitle={`完成率 ${String(overallStats.completionRate)}%`}
@@ -432,7 +404,7 @@ const ProgressPage = () => {
                 large
               />
               <CompactStatCard
-                icon={<TrophyOutlined style={{ fontSize: 24 }} />}
+                icon={<Trophy className="size-6" />}
                 title="平均分数"
                 value={
                   overallStats.averageScore !== null
@@ -446,7 +418,7 @@ const ProgressPage = () => {
                 large
               />
               <CompactStatCard
-                icon={<FileTextOutlined style={{ fontSize: 24 }} />}
+                icon={<FileText className="size-6" />}
                 title="笔记数量"
                 value={overallStats.totalNotes.toString()}
                 subtitle="篇笔记"
@@ -468,32 +440,28 @@ const ProgressPage = () => {
           }}
         >
           {overallStats && overallStats.totalQuizzes > 0 ? (
-            <Card style={{ textAlign: "center", width: "100%" }}>
-              <Title level={5} style={{ margin: "0 0 0.75rem 0" }}>
-                整体完成度
-              </Title>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgressChart
-                  completed={overallStats.completedQuizzes}
-                  total={overallStats.totalQuizzes}
-                  size={150}
-                />
-              </div>
+            <Card className="w-full text-center">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">整体完成度</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <CircularProgressChart
+                    completed={overallStats.completedQuizzes}
+                    total={overallStats.totalQuizzes}
+                    size={150}
+                  />
+                </div>
+              </CardContent>
             </Card>
           ) : (
-            <Card style={{ textAlign: "center", width: "100%" }}>
-              <Empty
-                description={
-                  <Space orientation="vertical" size="small">
-                    <Text type="secondary">暂无学习记录</Text>
-                    <Link to="/courses">
-                      <Button type="primary" size="small">
-                        浏览课程
-                      </Button>
-                    </Link>
-                  </Space>
-                }
-              />
+            <Card className="w-full text-center">
+              <CardContent className="flex flex-col items-center gap-2">
+                <p className="text-sm text-muted-foreground">暂无学习记录</p>
+                <Link to="/courses">
+                  <Button size="sm">浏览课程</Button>
+                </Link>
+              </CardContent>
             </Card>
           )}
         </div>
@@ -508,53 +476,46 @@ const ProgressPage = () => {
           }}
         >
           {courseProgressList.length > 0 ? (
-            <Card
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                minHeight: 0,
-              }}
-            >
-              <Title level={5} style={{ margin: "0 0 0.625rem 0" }}>
-                课程进度
-              </Title>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
-                }}
-              >
-                {courseProgressList.map((progress) => {
-                  const courseInfo = courses.get(progress.courseId);
-                  if (!courseInfo) return null;
+            <Card className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">课程进度</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                  }}
+                >
+                  {courseProgressList.map((progress) => {
+                    const courseInfo = courses.get(progress.courseId);
+                    if (!courseInfo) return null;
 
-                  return (
-                    <CompactCourseCard
-                      key={progress.courseId}
-                      title={courseInfo.title}
-                      level={courseInfo.level}
-                      completed={progress.completedQuizzes}
-                      total={progress.totalQuizzes}
-                      completionRate={progress.completionRate}
-                      averageScore={progress.averageScore}
-                      getLevelText={getLevelText}
-                      getScoreColor={getScoreColor}
-                    />
-                  );
-                })}
-              </div>
+                    return (
+                      <CompactCourseCard
+                        key={progress.courseId}
+                        title={courseInfo.title}
+                        level={courseInfo.level}
+                        completed={progress.completedQuizzes}
+                        total={progress.totalQuizzes}
+                        completionRate={progress.completionRate}
+                        averageScore={progress.averageScore}
+                        getLevelText={getLevelText}
+                        getScoreColor={getScoreColor}
+                      />
+                    );
+                  })}
+                </div>
+              </CardContent>
             </Card>
           ) : (
-            <Card
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Empty description={<Text type="secondary">暂无课程进度</Text>} />
+            <Card className="flex min-h-0 flex-1 items-center justify-center">
+              <CardContent>
+                <p className="text-center text-sm text-muted-foreground">
+                  暂无课程进度
+                </p>
+              </CardContent>
             </Card>
           )}
         </div>
@@ -580,51 +541,39 @@ const CompactStatCard = ({
   large?: boolean;
 }) => {
   return (
-    <Card
-      size="small"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <Space orientation="vertical" size="small" style={{ width: "100%" }}>
-        <Space>
-          <div style={{ color, display: "flex", alignItems: "center" }}>
+    <Card className="flex flex-col justify-between">
+      <CardContent className="flex flex-col gap-1 pt-4">
+        <div className="flex items-center gap-2">
+          <div style={{ color }} className="flex items-center">
             {icon}
           </div>
-          <Text
-            type="secondary"
-            style={{
-              fontSize: large ? "0.875rem" : "0.75rem",
-            }}
+          <span
+            className={
+              large
+                ? "text-sm text-muted-foreground"
+                : "text-xs text-muted-foreground"
+            }
           >
             {title}
-          </Text>
-        </Space>
+          </span>
+        </div>
         <div>
-          <Text
-            strong
+          <span
+            className="font-semibold"
             style={{
               fontSize: large ? "1.625rem" : "1.25rem",
               lineHeight: 1.2,
             }}
           >
             {value}
-          </Text>
+          </span>
           <div>
-            <Text
-              type="secondary"
-              style={{
-                fontSize: "0.625rem",
-                marginTop: "0.25rem",
-              }}
-            >
+            <span className="mt-1 text-[0.625rem] text-muted-foreground">
               {subtitle}
-            </Text>
+            </span>
           </div>
         </div>
-      </Space>
+      </CardContent>
     </Card>
   );
 };

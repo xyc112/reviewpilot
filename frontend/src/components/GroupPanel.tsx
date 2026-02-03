@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from "react";
-import { theme } from "antd";
 
 interface GroupPanelProps {
   title: string;
@@ -16,7 +15,6 @@ const GroupPanel = ({
   showCount = false,
   count = 0,
 }: GroupPanelProps) => {
-  const { token } = theme.useToken();
   const [expanded, setExpanded] = useState(initiallyExpanded);
 
   return (
@@ -25,25 +23,15 @@ const GroupPanel = ({
         onClick={() => {
           setExpanded(!expanded);
         }}
-        style={{
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+        className="flex cursor-pointer items-center justify-between"
       >
-        <h3 style={{ margin: 0 }}>
+        <h3 className="m-0">
           {title}
-          {showCount ? (
-            <span style={{ marginLeft: token.marginXXS }}>({count})</span>
-          ) : null}
+          {showCount ? <span className="ml-1">({count})</span> : null}
         </h3>
         <span
-          style={{
-            transition: `transform ${token.motionDurationMid} ${token.motionEaseInOut}`,
-            transform: expanded ? "rotate(0deg)" : "rotate(-90deg)",
-            display: "inline-block",
-          }}
+          className="inline-block transition-transform duration-200 ease-in-out"
+          style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}
         >
           ▼
         </span>

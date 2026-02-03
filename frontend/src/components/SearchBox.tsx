@@ -1,68 +1,96 @@
-import { Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import type { InputProps } from "antd";
+import { Search as SearchIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export interface SearchBoxProps extends Omit<
-  InputProps,
-  "prefix" | "addonAfter" | "value" | "onChange" | "enterButton"
-> {
-  /** 当前搜索值，受控 */
+export interface SearchBoxProps {
   value: string;
-  /** 输入变化回调 */
   onChange: (value: string) => void;
-  /** 占位符 */
   placeholder?: string;
-  /** 是否显示搜索按钮（enter 区域）。默认 false 为仅图标 */
-  enterButton?: React.ReactNode;
-  /** 回车或点击搜索时回调 */
   onSearch?: (value: string) => void;
-  /** 最大宽度（像素），默认 600；在 Compact 布局中可传 undefined 并配合 style={{ flex: 1 }} */
   maxWidth?: number;
-  /** 尺寸，默认 large */
   size?: "large" | "middle" | "small";
+  allowClear?: boolean;
+  style?: React.CSSProperties;
+  className?: string;
 }
+
+const sizeClass = {
+  large: "h-11 text-base",
+  middle: "h-9 text-sm",
+  small: "h-8 text-sm",
+} as const;
 
 const SearchBox = ({
   value,
   onChange,
   placeholder = "搜索...",
-  enterButton = false,
   onSearch,
   maxWidth = 600,
   size = "large",
   allowClear = true,
   style,
   className,
-  ...rest
 }: SearchBoxProps) => {
   const isDefaultMaxWidth = maxWidth === 600;
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && onSearch) {
+      onSearch(value);
+    }
+  };
+
   return (
-    <Input.Search
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => {
-        onChange(e.target.value);
-      }}
-      onSearch={onSearch}
-      allowClear={allowClear}
-      enterButton={
-        enterButton === true ? (
-          <SearchOutlined />
-        ) : (
-          ((enterButton ?? false) as React.ReactNode)
-        )
-      }
-      size={size}
-      className={[
-        "w-full rounded-xl border-stone-200 shadow-sm transition-shadow focus-within:shadow-md focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-neutral-600 dark:bg-neutral-900/50",
-        isDefaultMaxWidth ? "max-w-[600px]" : "",
+    <div
+      className={cn(
+        "flex w-full items-center gap-2 rounded-xl border border-input bg-background shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-ring/20",
+        sizeClass[size],
+        isDefaultMaxWidth && "max-w-[600px]",
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       style={isDefaultMaxWidth ? style : { maxWidth, ...style }}
-      {...rest}
-    />
+    >
+      <SearchIcon className="ml-3 size-4 shrink-0 text-muted-foreground" />
+      <Input
+        type="search"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+        onKeyDown={handleKeyDown}
+        className="h-full min-w-0 flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0"
+      />
+      {allowClear && value ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="mr-1 size-8 shrink-0"
+          onClick={() => {
+            onChange("");
+            onSearch?.("");
+          }}
+          aria-label="清除"
+        >
+          <span className="text-muted-foreground">×</span>
+        </Button>
+      ) : null}
+      {onSearch ? (
+        <Button
+          type="button"
+          variant="default"
+          size="sm"
+          className="mr-2"
+          onClick={() => {
+            onSearch(value);
+          }}
+          aria-label="搜索"
+        >
+          <SearchIcon className="size-4" />
+        </Button>
+      ) : null}
+    </div>
   );
 };
 

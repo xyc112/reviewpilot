@@ -1,31 +1,24 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
-  Card,
-  Button,
-  Space,
-  Typography,
-  Tag,
-  Alert,
-  Spin,
-  Divider,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  BarChartOutlined,
-  ArrowLeftOutlined,
-  MessageOutlined,
-} from "@ant-design/icons";
+  ArrowLeft,
+  BarChart2,
+  Calendar,
+  MessageCircle,
+  Pencil,
+  Trash2,
+  User,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import type { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text, Paragraph } = Typography;
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -91,41 +84,44 @@ const CourseDetail = () => {
     });
   };
 
-  if (loading)
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
-      </div>
-    );
+  if (loading) return <LoadingSpinner />;
 
   if (error)
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <div className="mx-auto max-w-[1200px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      </div>
     );
 
   if (!course)
     return (
-      <Alert
-        title="课程不存在"
-        type="error"
-        showIcon
-        style={{ margin: "2rem" }}
-      />
+      <div className="mx-auto max-w-[1200px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>课程不存在</AlertTitle>
+        </Alert>
+      </div>
     );
 
   const canEdit = isAdmin || user?.id === course.authorId;
 
-  const getLevelColor = (level: string): string => {
-    const colors: Record<string, string> = {
-      BEGINNER: "green",
-      INTERMEDIATE: "orange",
-      ADVANCED: "red",
+  const getLevelColor = (
+    level: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const map: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      BEGINNER: "default",
+      INTERMEDIATE: "secondary",
+      ADVANCED: "destructive",
     };
-    return colors[level] ?? "default";
+    return map[level] ?? "outline";
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1200px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除课程"
@@ -141,82 +137,86 @@ const CourseDetail = () => {
         }}
       />
 
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+      <div className="flex w-full flex-col gap-6">
         <Button
-          icon={<ArrowLeftOutlined />}
+          variant="outline"
+          className="w-fit"
           onClick={() => {
             void navigate("/courses");
           }}
         >
+          <ArrowLeft className="size-4" />
           返回课程列表
         </Button>
 
-        <Card
-          style={{
-            borderRadius: 12,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-          }}
-        >
-          <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+        <Card className="rounded-xl shadow-sm">
+          <CardContent className="flex flex-col gap-6 pt-6">
             {canEdit ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "0.5rem",
-                }}
-              >
+              <div className="flex justify-end gap-2">
                 <Link to={`/courses/edit/${String(course.id)}`}>
-                  <Button icon={<EditOutlined />}>编辑课程</Button>
+                  <Button variant="outline">
+                    <Pencil className="size-4" />
+                    编辑课程
+                  </Button>
                 </Link>
-                <Button danger icon={<DeleteOutlined />} onClick={handleDelete}>
+                <Button variant="destructive" onClick={handleDelete}>
+                  <Trash2 className="size-4" />
                   删除课程
                 </Button>
               </div>
             ) : null}
 
-            <Space wrap>
-              <Space>
-                <BarChartOutlined />
-                <Tag color={getLevelColor(course.level)}>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <BarChart2 className="size-4 text-muted-foreground" />
+                <Badge variant={getLevelColor(course.level)}>
                   {getLevelText(course.level)}
-                </Tag>
-              </Space>
-              <Space>
-                <CalendarOutlined />
-                <Text type="secondary">{formatDate(course.createdAt)}</Text>
-              </Space>
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="size-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  {formatDate(course.createdAt)}
+                </span>
+              </div>
               {course.authorId ? (
-                <Space>
-                  <UserOutlined />
-                  <Text type="secondary">作者 ID: {course.authorId}</Text>
-                </Space>
+                <div className="flex items-center gap-2">
+                  <User className="size-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    作者 ID: {course.authorId}
+                  </span>
+                </div>
               ) : null}
-            </Space>
-
-            <div>
-              <Title level={4}>课程简介</Title>
-              <Paragraph>{course.description || "暂无描述"}</Paragraph>
             </div>
 
-            {course.tags.length > 0 && (
-              <Space wrap>
-                {course.tags.map((tag) => (
-                  <Tag key={tag}>{tag}</Tag>
-                ))}
-              </Space>
-            )}
+            <div>
+              <h2 className="mb-2 text-lg font-semibold">课程简介</h2>
+              <p className="text-muted-foreground">
+                {course.description || "暂无描述"}
+              </p>
+            </div>
 
-            <Divider />
+            {course.tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {course.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="h-px w-full bg-border" />
 
             <Link to={`/courses/${String(course.id)}/community`}>
-              <Button type="primary" icon={<MessageOutlined />}>
+              <Button>
+                <MessageCircle className="size-4" />
                 进入课程社区
               </Button>
             </Link>
-          </Space>
+          </CardContent>
         </Card>
-      </Space>
+      </div>
     </div>
   );
 };

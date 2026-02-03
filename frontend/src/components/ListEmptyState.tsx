@@ -1,4 +1,4 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { Search } from "lucide-react";
 import type { ReactNode } from "react";
 
 export interface ListEmptyStateProps {
@@ -19,7 +19,7 @@ export interface ListEmptyStateProps {
 }
 
 const DEFAULT_NO_RESULTS_ICON = (
-  <SearchOutlined className="text-[64px] text-stone-300 dark:text-stone-600" />
+  <Search className="size-16 text-muted-foreground" />
 );
 
 const ListEmptyState = ({

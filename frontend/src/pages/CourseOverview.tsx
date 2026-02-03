@@ -1,35 +1,26 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
-  Card,
-  Button,
-  Space,
-  Typography,
-  Tag,
-  Alert,
-  Spin,
-  Statistic,
-  Row,
-  Col,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  BarChartOutlined,
-  FileTextOutlined,
-  UnorderedListOutlined,
-  MessageOutlined,
-  BookOutlined,
-} from "@ant-design/icons";
+  BarChart2,
+  Book,
+  Calendar,
+  FileText,
+  List,
+  MessageCircle,
+  Pencil,
+  Trash2,
+  User,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import type { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
-
-const { Title, Text } = Typography;
 
 const CourseOverview = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +53,6 @@ const CourseOverview = () => {
       const courseRes = await courseAPI.getCourse(courseId);
       setCourse(courseRes.data);
 
-      // 获取统计信息
       try {
         const [notesRes, quizzesRes, postsRes] = await Promise.all([
           noteAPI.getNotes(courseId).catch(() => ({ data: [] })),
@@ -114,13 +104,18 @@ const CourseOverview = () => {
     return levels[level as keyof typeof levels] || level;
   };
 
-  const getLevelColor = (level: string): string => {
-    const colors: Record<string, string> = {
-      BEGINNER: "green",
-      INTERMEDIATE: "orange",
-      ADVANCED: "red",
+  const getLevelColor = (
+    level: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    const map: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
+      BEGINNER: "default",
+      INTERMEDIATE: "secondary",
+      ADVANCED: "destructive",
     };
-    return colors[level] ?? "default";
+    return map[level] ?? "outline";
   };
 
   const formatDate = (dateString: string) => {
@@ -131,28 +126,25 @@ const CourseOverview = () => {
     });
   };
 
-  if (loading) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   if (error) {
     return (
-      <Alert title={error} type="error" showIcon style={{ margin: "2rem" }} />
+      <div className="mx-auto max-w-[1200px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      </div>
     );
   }
 
   if (!course) {
     return (
-      <Alert
-        title="课程不存在"
-        type="error"
-        showIcon
-        style={{ margin: "2rem" }}
-      />
+      <div className="mx-auto max-w-[1200px] px-4 py-8">
+        <Alert variant="destructive">
+          <AlertTitle>课程不存在</AlertTitle>
+        </Alert>
+      </div>
     );
   }
 
@@ -160,7 +152,7 @@ const CourseOverview = () => {
   const isCurrentCourse = currentStudyingCourse?.id === course.id;
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1rem" }}>
+    <div className="mx-auto max-w-[1200px] px-4">
       <ConfirmDialog
         isOpen={deleteConfirm}
         title="删除课程"
@@ -176,108 +168,113 @@ const CourseOverview = () => {
         }}
       />
 
-      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+      <div className="flex w-full flex-col gap-6">
         <Card>
-          <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "1rem",
-              }}
-            >
+          <CardContent className="flex flex-col gap-6 pt-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               {isCurrentCourse ? (
-                <Tag color="gold" icon={<BookOutlined />}>
+                <Badge variant="secondary" className="gap-1">
+                  <Book className="size-3" />
                   当前学习课程
-                </Tag>
-              ) : null}
+                </Badge>
+              ) : (
+                <span />
+              )}
               {canEdit ? (
-                <Space>
+                <div className="flex gap-2">
                   <Link to={`/courses/edit/${String(course.id)}`}>
-                    <Button icon={<EditOutlined />}>编辑课程</Button>
+                    <Button variant="outline">
+                      <Pencil className="size-4" />
+                      编辑课程
+                    </Button>
                   </Link>
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={handleDelete}
-                  >
+                  <Button variant="destructive" onClick={handleDelete}>
+                    <Trash2 className="size-4" />
                     删除课程
                   </Button>
-                </Space>
+                </div>
               ) : null}
             </div>
 
-            <Space wrap>
-              <Space>
-                <BarChartOutlined />
-                <Tag color={getLevelColor(course.level)}>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <BarChart2 className="size-4 text-muted-foreground" />
+                <Badge variant={getLevelColor(course.level)}>
                   {getLevelText(course.level)}
-                </Tag>
-              </Space>
-              <Space>
-                <CalendarOutlined />
-                <Text type="secondary">{formatDate(course.createdAt)}</Text>
-              </Space>
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="size-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  {formatDate(course.createdAt)}
+                </span>
+              </div>
               {course.authorId ? (
-                <Space>
-                  <UserOutlined />
-                  <Text type="secondary">作者 ID: {course.authorId}</Text>
-                </Space>
+                <div className="flex items-center gap-2">
+                  <User className="size-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    作者 ID: {course.authorId}
+                  </span>
+                </div>
               ) : null}
-            </Space>
+            </div>
 
             <div>
-              <Title level={4}>课程简介</Title>
-              <Text style={{ whiteSpace: "pre-wrap" }}>
+              <h2 className="mb-2 text-lg font-semibold">课程简介</h2>
+              <p className="whitespace-pre-wrap text-muted-foreground">
                 {course.description || "暂无描述"}
-              </Text>
+              </p>
             </div>
 
-            {course.tags.length > 0 && (
-              <Space wrap>
+            {course.tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
                 {course.tags.map((tag) => (
-                  <Tag key={tag}>{tag}</Tag>
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
                 ))}
-              </Space>
-            )}
+              </div>
+            ) : null}
 
             {/* 统计信息卡片 */}
-            <Row gutter={16}>
-              <Col xs={24} sm={8}>
-                <Card>
-                  <Statistic
-                    title="笔记数量"
-                    value={stats?.noteCount ?? 0}
-                    prefix={<FileTextOutlined style={{ color: "#1890ff" }} />}
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Card>
-                  <Statistic
-                    title="测验数量"
-                    value={stats?.quizCount ?? 0}
-                    prefix={
-                      <UnorderedListOutlined style={{ color: "#52c41a" }} />
-                    }
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Card>
-                  <Statistic
-                    title="帖子数量"
-                    value={stats?.postCount ?? 0}
-                    prefix={<MessageOutlined style={{ color: "#722ed1" }} />}
-                  />
-                </Card>
-              </Col>
-            </Row>
-          </Space>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Card>
+                <CardContent className="flex items-center gap-3 pt-6">
+                  <FileText className="size-8 text-blue-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">笔记数量</p>
+                    <p className="text-2xl font-semibold">
+                      {stats?.noteCount ?? 0}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-3 pt-6">
+                  <List className="size-8 text-green-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">测验数量</p>
+                    <p className="text-2xl font-semibold">
+                      {stats?.quizCount ?? 0}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="flex items-center gap-3 pt-6">
+                  <MessageCircle className="size-8 text-violet-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">帖子数量</p>
+                    <p className="text-2xl font-semibold">
+                      {stats?.postCount ?? 0}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
         </Card>
-      </Space>
+      </div>
     </div>
   );
 };
