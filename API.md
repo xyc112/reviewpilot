@@ -1,17 +1,17 @@
 # Nexus 后端 API 文档
 
-本文档描述 Nexus 学习平台后端 REST API 的请求与响应格式，便于前端与第三方集成。
+本文档描述 Nexus 学习平台后端 REST API 的请求与响应格式，便于前端集成。
 
 ---
 
 ## 文档约定
 
-| 项目 | 说明 |
-|------|------|
-| **Base URL** | 由部署环境决定，例如 `http://localhost:8080` |
-| **认证** | 除「认证模块」外，请求头需携带 `Authorization: Bearer <JWT>` |
+| 项目               | 说明                                             |
+|------------------|------------------------------------------------|
+| **Base URL**     | 由部署环境决定，例如 `http://localhost:8080`             |
+| **认证**           | 除「认证模块」外，请求头需携带 `Authorization: Bearer <JWT>`  |
 | **Content-Type** | 请求体为 JSON 时使用 `Content-Type: application/json` |
-| **日期时间** | 服务端返回 ISO-8601 格式（如 `2025-02-03T12:00:00`） |
+| **日期时间**         | 服务端返回 ISO-8601 格式（如 `2025-02-03T12:00:00`）     |
 
 ### 统一错误响应
 
@@ -26,10 +26,10 @@
 }
 ```
 
-- `status`: HTTP 状态码数字  
-- `error`: 简短错误类型  
-- `message`: 可读错误信息（部分接口可能无此字段）  
-- `timestamp`: 服务器时间  
+- `status`: HTTP 状态码数字
+- `error`: 简短错误类型
+- `message`: 可读错误信息（部分接口可能无此字段）
+- `timestamp`: 服务器时间
 
 ---
 
@@ -56,19 +56,19 @@
 
 ### 1.1 用户注册
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `POST` |
+| 项目     | 说明                   |
+|--------|----------------------|
+| **方法** | `POST`               |
 | **路径** | `/api/auth/register` |
-| **认证** | 不需要 |
+| **认证** | 不需要                  |
 
 **请求体**（JSON）
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| username | string | 是 | 用户名，非空 |
-| password | string | 是 | 密码，非空 |
-| role | string | 否 | `USER` 或 `ADMIN`，默认 `USER` |
+| 字段       | 类型     | 必填 | 说明                         |
+|----------|--------|----|----------------------------|
+| username | string | 是  | 用户名，非空                     |
+| password | string | 是  | 密码，非空                      |
+| role     | string | 否  | `USER` 或 `ADMIN`，默认 `USER` |
 
 **成功响应** `200 OK`
 
@@ -85,25 +85,25 @@
 
 **错误响应**
 
-- `400`: 用户名或密码为空  
-- `409`: 用户名已存在（具体 message 以接口为准）  
+- `400`: 用户名或密码为空
+- `409`: 用户名已存在（具体 message 以接口为准）
 
 ---
 
 ### 1.2 用户登录
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `POST` |
+| 项目     | 说明                |
+|--------|-------------------|
+| **方法** | `POST`            |
 | **路径** | `/api/auth/login` |
-| **认证** | 不需要 |
+| **认证** | 不需要               |
 
 **请求体**（JSON）
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| username | string | 是 | 用户名 |
-| password | string | 是 | 密码 |
+| 字段       | 类型     | 必填 | 说明  |
+|----------|--------|----|-----|
+| username | string | 是  | 用户名 |
+| password | string | 是  | 密码  |
 
 **成功响应** `200 OK`
 
@@ -120,8 +120,8 @@
 
 **错误响应**
 
-- `400`: 用户名或密码为空  
-- `401`: 用户名或密码错误（message: "用户名或密码错误"）  
+- `400`: 用户名或密码为空
+- `401`: 用户名或密码错误（message: "用户名或密码错误"）
 
 ---
 
@@ -131,19 +131,19 @@
 
 ### 2.1 列出课程
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `GET` |
+| 项目     | 说明             |
+|--------|----------------|
+| **方法** | `GET`          |
 | **路径** | `/api/courses` |
-| **认证** | 需要 |
+| **认证** | 需要             |
 
 **查询参数**
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| q | string | 否 | 按标题/描述关键词过滤 |
-| tags | string | 否 | 逗号分隔标签，如 `数学,线代` |
-| level | string | 否 | `BEGINNER` \| `INTERMEDIATE` \| `ADVANCED` |
+| 参数    | 类型     | 必填 | 说明                                         |
+|-------|--------|----|--------------------------------------------|
+| q     | string | 否  | 按标题/描述关键词过滤                                |
+| tags  | string | 否  | 逗号分隔标签，如 `数学,线代`                           |
+| level | string | 否  | `BEGINNER` \| `INTERMEDIATE` \| `ADVANCED` |
 
 **成功响应** `200 OK`
 
@@ -153,7 +153,10 @@
     "id": 1,
     "title": "线性代数入门",
     "description": "矩阵与向量基础",
-    "tags": ["数学", "线代"],
+    "tags": [
+      "数学",
+      "线代"
+    ],
     "level": "BEGINNER",
     "authorId": 1,
     "syllabus": null,
@@ -166,11 +169,11 @@
 
 ### 2.2 获取课程详情
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `GET` |
+| 项目     | 说明                  |
+|--------|---------------------|
+| **方法** | `GET`               |
 | **路径** | `/api/courses/{id}` |
-| **认证** | 需要 |
+| **认证** | 需要                  |
 
 **成功响应** `200 OK`  
 返回单个课程对象（同上结构，含 syllabus 等）。
@@ -181,21 +184,21 @@
 
 ### 2.3 创建课程
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `POST` |
-| **路径** | `/api/courses` |
+| 项目     | 说明                |
+|--------|-------------------|
+| **方法** | `POST`            |
+| **路径** | `/api/courses`    |
 | **认证** | 需要（创建者即 authorId） |
 
 **请求体**（JSON）
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| title | string | 是 | 课程标题 |
-| description | string | 否 | 课程描述 |
-| tags | string[] | 否 | 标签列表 |
-| level | string | 否 | BEGINNER \| INTERMEDIATE \| ADVANCED |
-| syllabus | string | 否 | 大纲（JSON 或文本） |
+| 字段          | 类型       | 必填 | 说明                                   |
+|-------------|----------|----|--------------------------------------|
+| title       | string   | 是  | 课程标题                                 |
+| description | string   | 否  | 课程描述                                 |
+| tags        | string[] | 否  | 标签列表                                 |
+| level       | string   | 否  | BEGINNER \| INTERMEDIATE \| ADVANCED |
+| syllabus    | string   | 否  | 大纲（JSON 或文本）                         |
 
 **成功响应** `201 Created`  
 Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
@@ -206,11 +209,11 @@ Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
 
 ### 2.4 更新课程
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `PUT` |
+| 项目     | 说明                  |
+|--------|---------------------|
+| **方法** | `PUT`               |
 | **路径** | `/api/courses/{id}` |
-| **认证** | 需要（ADMIN 或课程作者） |
+| **认证** | 需要（ADMIN 或课程作者）     |
 
 **请求体**：与创建相同，字段可部分提交。
 
@@ -223,11 +226,11 @@ Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
 
 ### 2.5 删除课程
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `DELETE` |
+| 项目     | 说明                  |
+|--------|---------------------|
+| **方法** | `DELETE`            |
 | **路径** | `/api/courses/{id}` |
-| **认证** | 需要（ADMIN 或课程作者） |
+| **认证** | 需要（ADMIN 或课程作者）     |
 
 **成功响应** `204 No Content`
 
@@ -241,11 +244,11 @@ Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
 
 ### 3.1 列出课程文件
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `GET` |
+| 项目     | 说明                              |
+|--------|---------------------------------|
+| **方法** | `GET`                           |
 | **路径** | `/api/courses/{courseId}/files` |
-| **认证** | 需要 |
+| **认证** | 需要                              |
 
 **成功响应** `200 OK`
 
@@ -265,12 +268,12 @@ Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
 
 ### 3.2 上传文件
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `POST` |
-| **路径** | `/api/courses/{courseId}/files` |
-| **认证** | 需要 |
-| **Content-Type** | `multipart/form-data` |
+| 项目               | 说明                              |
+|------------------|---------------------------------|
+| **方法**           | `POST`                          |
+| **路径**           | `/api/courses/{courseId}/files` |
+| **认证**           | 需要                              |
+| **Content-Type** | `multipart/form-data`           |
 
 **请求体**：表单字段 `file`（文件）。
 
@@ -290,11 +293,11 @@ Body 为完整课程对象，`Location` 头为 `/api/courses/{id}`。
 
 ### 3.3 下载文件
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `GET` |
+| 项目     | 说明                                       |
+|--------|------------------------------------------|
+| **方法** | `GET`                                    |
 | **路径** | `/api/courses/{courseId}/files/{fileId}` |
-| **认证** | 需要 |
+| **认证** | 需要                                       |
 
 **成功响应** `200 OK`  
 Body 为文件二进制流，`Content-Type`、`Content-Disposition` 由服务端设置。
@@ -305,11 +308,11 @@ Body 为文件二进制流，`Content-Type`、`Content-Disposition` 由服务端
 
 ### 3.4 删除文件
 
-| 项目 | 说明 |
-|------|------|
-| **方法** | `DELETE` |
+| 项目     | 说明                                       |
+|--------|------------------------------------------|
+| **方法** | `DELETE`                                 |
 | **路径** | `/api/courses/{courseId}/files/{fileId}` |
-| **认证** | 需要（上传者或 ADMIN） |
+| **认证** | 需要（上传者或 ADMIN）                           |
 
 **成功响应** `204 No Content`
 
@@ -321,13 +324,13 @@ Body 为文件二进制流，`Content-Type`、`Content-Disposition` 由服务端
 
 **数据约定**
 
-- **Node**：id（服务端生成）、label（必填）、type、description、meta  
-- **Relation**：id、from（节点 id）、to（节点 id）、type（必填）、directed（默认 true）、weight（0–1）、meta  
+- **Node**：id（服务端生成）、label（必填）、type、description、meta
+- **Relation**：id、from（节点 id）、to（节点 id）、type（必填）、directed（默认 true）、weight（0–1）、meta
 
 ### 4.1 列出节点
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                             | 说明        |
+|-----|--------------------------------|-----------|
 | GET | `/api/graphs/{courseId}/nodes` | 返回该课程全部节点 |
 
 **成功响应** `200 OK`
@@ -348,8 +351,8 @@ Body 为文件二进制流，`Content-Type`、`Content-Disposition` 由服务端
 
 ### 4.2 获取单个节点
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                      | 说明         |
+|-----|-----------------------------------------|------------|
 | GET | `/api/graphs/{courseId}/nodes/{nodeId}` | 返回节点及入度/出度 |
 
 **成功响应** `200 OK`
@@ -374,8 +377,8 @@ Body 为文件二进制流，`Content-Type`、`Content-Disposition` 由服务端
 
 ### 4.3 创建节点
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                             | 说明          |
+|------|--------------------------------|-------------|
 | POST | `/api/graphs/{courseId}/nodes` | ADMIN 或课程作者 |
 
 **请求体**：至少包含 `label`，可选 type、description、meta。
@@ -389,8 +392,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.4 更新节点
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                      | 说明          |
+|-----|-----------------------------------------|-------------|
 | PUT | `/api/graphs/{courseId}/nodes/{nodeId}` | ADMIN 或课程作者 |
 
 **请求体**：可部分更新 label、type、description、meta。
@@ -402,8 +405,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.5 删除节点
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                      | 说明          |
+|--------|-----------------------------------------|-------------|
 | DELETE | `/api/graphs/{courseId}/nodes/{nodeId}` | ADMIN 或课程作者 |
 
 **成功响应** `204 No Content`  
@@ -413,8 +416,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.6 列出关系
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                 | 说明   |
+|-----|------------------------------------|------|
 | GET | `/api/graphs/{courseId}/relations` | 支持过滤 |
 
 **查询参数**：`from`、`to`、`type`（均为可选）。
@@ -439,8 +442,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.7 创建关系
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                                 | 说明          |
+|------|------------------------------------|-------------|
 | POST | `/api/graphs/{courseId}/relations` | ADMIN 或课程作者 |
 
 **请求体**：from、to、type 必填；directed、weight、meta 可选。
@@ -452,8 +455,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.8 更新关系
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                              | 说明          |
+|-----|-------------------------------------------------|-------------|
 | PUT | `/api/graphs/{courseId}/relations/{relationId}` | ADMIN 或课程作者 |
 
 **请求体**：可更新 type、directed、weight、meta。
@@ -465,8 +468,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 4.9 删除关系
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                              | 说明          |
+|--------|-------------------------------------------------|-------------|
 | DELETE | `/api/graphs/{courseId}/relations/{relationId}` | ADMIN 或课程作者 |
 
 **成功响应** `204 No Content`  
@@ -482,8 +485,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 5.1 列出笔记
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                              | 说明                    |
+|-----|---------------------------------|-----------------------|
 | GET | `/api/courses/{courseId}/notes` | 当前用户可见的笔记（公开 + 自己的私有） |
 
 **成功响应** `200 OK`  
@@ -493,8 +496,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 5.2 获取单条笔记
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                       | 说明   |
+|-----|------------------------------------------|------|
 | GET | `/api/courses/{courseId}/notes/{noteId}` | 笔记详情 |
 
 **成功响应** `200 OK`  
@@ -504,8 +507,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 5.3 创建笔记
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                              | 说明                     |
+|------|---------------------------------|------------------------|
 | POST | `/api/courses/{courseId}/notes` | 任意已认证用户，authorId 为当前用户 |
 
 **请求体**：title、content 必填；summary、visibility 可选。
@@ -517,8 +520,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 5.4 更新笔记
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                       | 说明          |
+|-----|------------------------------------------|-------------|
 | PUT | `/api/courses/{courseId}/notes/{noteId}` | 笔记作者或 ADMIN |
 
 **请求体**：可部分更新。
@@ -530,8 +533,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 5.5 删除笔记
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                       | 说明          |
+|--------|------------------------------------------|-------------|
 | DELETE | `/api/courses/{courseId}/notes/{noteId}` | 笔记作者或 ADMIN |
 
 **成功响应** `204 No Content`  
@@ -541,12 +544,13 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ## 六、测验
 
-课程下的测验与题目。需 JWT。创建/更新/删除仅限 ADMIN 或课程作者；普通用户可读测验并提交答卷。题目类型：`single`、`multiple`、`truefalse`。普通用户接口返回的题目中不包含正确答案（answer）。
+课程下的测验与题目。需 JWT。创建/更新/删除仅限 ADMIN 或课程作者；普通用户可读测验并提交答卷。题目类型：`single`、`multiple`、
+`truefalse`。普通用户接口返回的题目中不包含正确答案（answer）。
 
 ### 6.1 列出测验
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                | 说明                      |
+|-----|-----------------------------------|-------------------------|
 | GET | `/api/courses/{courseId}/quizzes` | 该课程下所有测验，普通用户题目无 answer |
 
 **成功响应** `200 OK`  
@@ -556,8 +560,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 6.2 获取测验详情
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                         | 说明                 |
+|-----|--------------------------------------------|--------------------|
 | GET | `/api/courses/{courseId}/quizzes/{quizId}` | 作者/ADMIN 可见 answer |
 
 **成功响应** `200 OK`  
@@ -567,14 +571,14 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 6.3 创建测验
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                                | 说明          |
+|------|-----------------------------------|-------------|
 | POST | `/api/courses/{courseId}/quizzes` | ADMIN 或课程作者 |
 
 **请求体**（JSON）
 
-- title：必填  
-- questions：数组，每项含 type、question；选择题含 options、answer（选项索引数组，0-based）  
+- title：必填
+- questions：数组，每项含 type、question；选择题含 options、answer（选项索引数组，0-based）
 
 **成功响应** `201 Created`  
 **错误响应** `400` title and questions are required；`403`
@@ -583,8 +587,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 6.4 更新测验
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                         | 说明          |
+|-----|--------------------------------------------|-------------|
 | PUT | `/api/courses/{courseId}/quizzes/{quizId}` | ADMIN 或课程作者 |
 
 **请求体**：可部分更新 title、questions。
@@ -596,8 +600,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 6.5 删除测验
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                         | 说明          |
+|--------|--------------------------------------------|-------------|
 | DELETE | `/api/courses/{courseId}/quizzes/{quizId}` | ADMIN 或课程作者 |
 
 **成功响应** `204 No Content`  
@@ -607,8 +611,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 6.6 提交答卷
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                                                  | 说明              |
+|------|-----------------------------------------------------|-----------------|
 | POST | `/api/courses/{courseId}/quizzes/{quizId}/attempts` | 已认证用户，自动计分并记录进度 |
 
 **请求体**（JSON）
@@ -616,13 +620,18 @@ Body 为完整节点对象，含服务端生成的 id。
 ```json
 {
   "answers": [
-    { "questionId": "q1-1", "answer": [1] }
+    {
+      "questionId": "q1-1",
+      "answer": [
+        1
+      ]
+    }
   ]
 }
 ```
 
-- questionId：题目 id（如 q1-1）  
-- answer：选项索引数组（单选单元素，多选多元素）  
+- questionId：题目 id（如 q1-1）
+- answer：选项索引数组（单选单元素，多选多元素）
 
 **成功响应** `200 OK`
 
@@ -645,7 +654,7 @@ Body 为完整节点对象，含服务端生成的 id。
 ```
 
 - results 中每项可能含 `questionEntityId`（题目实体 id，用于错题本等）。  
-**错误响应** `400` answers format invalid；`404` Quiz not found
+  **错误响应** `400` answers format invalid；`404` Quiz not found
 
 ---
 
@@ -657,13 +666,13 @@ Body 为完整节点对象，含服务端生成的 id。
 
 **Post**：id、courseId、authorId、title、content、createdAt、updatedAt、authorUsername（可选）。
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/courses/{courseId}/posts` | 该课程帖子列表 |
-| GET | `/api/courses/{courseId}/posts/{postId}` | 帖子详情（帖子不属于该课程时 400） |
-| POST | `/api/courses/{courseId}/posts` | 创建帖子，body: title、content |
-| PUT | `/api/courses/{courseId}/posts/{postId}` | 更新帖子（作者或 ADMIN） |
-| DELETE | `/api/courses/{courseId}/posts/{postId}` | 删除帖子（作者或 ADMIN） |
+| 方法     | 路径                                       | 说明                       |
+|--------|------------------------------------------|--------------------------|
+| GET    | `/api/courses/{courseId}/posts`          | 该课程帖子列表                  |
+| GET    | `/api/courses/{courseId}/posts/{postId}` | 帖子详情（帖子不属于该课程时 400）      |
+| POST   | `/api/courses/{courseId}/posts`          | 创建帖子，body: title、content |
+| PUT    | `/api/courses/{courseId}/posts/{postId}` | 更新帖子（作者或 ADMIN）          |
+| DELETE | `/api/courses/{courseId}/posts/{postId}` | 删除帖子（作者或 ADMIN）          |
 
 创建成功 `201 Created`，返回完整 Post；更新 `200 OK`；删除 `204 No Content`。
 
@@ -673,13 +682,13 @@ Body 为完整节点对象，含服务端生成的 id。
 
 **Comment**：id、postId、authorId、content、parentId（可选，用于回复）、createdAt、updatedAt、authorUsername（可选）。
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/courses/{courseId}/posts/{postId}/comments` | 该帖子下评论列表 |
-| GET | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 单条评论（不属于该帖子时 400） |
-| POST | `/api/courses/{courseId}/posts/{postId}/comments` | 创建评论，body: content、parentId（可选） |
-| PUT | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 更新评论（作者或 ADMIN） |
-| DELETE | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 删除评论（作者或 ADMIN） |
+| 方法     | 路径                                                            | 说明                              |
+|--------|---------------------------------------------------------------|---------------------------------|
+| GET    | `/api/courses/{courseId}/posts/{postId}/comments`             | 该帖子下评论列表                        |
+| GET    | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 单条评论（不属于该帖子时 400）               |
+| POST   | `/api/courses/{courseId}/posts/{postId}/comments`             | 创建评论，body: content、parentId（可选） |
+| PUT    | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 更新评论（作者或 ADMIN）                 |
+| DELETE | `/api/courses/{courseId}/posts/{postId}/comments/{commentId}` | 删除评论（作者或 ADMIN）                 |
 
 创建成功 `201 Created`，其余同上。
 
@@ -693,8 +702,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.1 列出所有计划
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                  | 说明       |
+|-----|---------------------|----------|
 | GET | `/api/review-plans` | 当前用户全部计划 |
 
 **成功响应** `200 OK`  
@@ -704,8 +713,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.2 按日期范围查询
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                             | 说明                                        |
+|-----|--------------------------------|-------------------------------------------|
 | GET | `/api/review-plans/date-range` | 查询参数：startDate、endDate（ISO 日期 YYYY-MM-DD） |
 
 **成功响应** `200 OK`  
@@ -715,8 +724,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.3 按单日查询
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                              | 说明                |
+|-----|---------------------------------|-------------------|
 | GET | `/api/review-plans/date/{date}` | date 为 YYYY-MM-DD |
 
 **成功响应** `200 OK`  
@@ -726,8 +735,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.4 获取单条计划
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                       | 说明  |
+|-----|--------------------------|-----|
 | GET | `/api/review-plans/{id}` | 仅本人 |
 
 **成功响应** `200 OK`  
@@ -737,8 +746,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.5 创建计划
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                  | 说明                                                      |
+|------|---------------------|---------------------------------------------------------|
 | POST | `/api/review-plans` | body: planDate、title、description（可选）、type、completed（可选） |
 
 **成功响应** `201 Created`  
@@ -748,8 +757,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.6 更新计划
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                       | 说明             |
+|-----|--------------------------|----------------|
 | PUT | `/api/review-plans/{id}` | 仅本人，body 可部分更新 |
 
 **成功响应** `200 OK`  
@@ -759,8 +768,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 8.7 删除计划
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                       | 说明  |
+|--------|--------------------------|-----|
 | DELETE | `/api/review-plans/{id}` | 仅本人 |
 
 **成功响应** `204 No Content`  
@@ -774,8 +783,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 9.1 总体统计
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                      | 说明       |
+|-----|-------------------------|----------|
 | GET | `/api/progress/overall` | 当前用户总体统计 |
 
 **成功响应** `200 OK`
@@ -791,19 +800,19 @@ Body 为完整节点对象，含服务端生成的 id。
 }
 ```
 
-- totalCourses：统计涉及的课程数  
-- totalQuizzes：这些课程下测验总数  
-- completedQuizzes：已完成测验数  
-- averageScore：已完成测验平均分（整数）  
-- totalNotes：笔记总数  
-- completionRate：完成率百分比（0–100）  
+- totalCourses：统计涉及的课程数
+- totalQuizzes：这些课程下测验总数
+- completedQuizzes：已完成测验数
+- averageScore：已完成测验平均分（整数）
+- totalNotes：笔记总数
+- completionRate：完成率百分比（0–100）
 
 ---
 
 ### 9.2 所有课程进度列表
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                      | 说明            |
+|-----|-------------------------|---------------|
 | GET | `/api/progress/courses` | 当前用户在各课程的进度摘要 |
 
 **成功响应** `200 OK`
@@ -833,8 +842,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 9.3 单门课程进度详情
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                 | 说明            |
+|-----|------------------------------------|---------------|
 | GET | `/api/progress/courses/{courseId}` | 当前用户在该课程的详细进度 |
 
 **成功响应** `200 OK`  
@@ -850,8 +859,8 @@ Body 为完整节点对象，含服务端生成的 id。
 
 ### 10.1 列出错题
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                        | 说明                        |
+|-----|-------------------------------------------|---------------------------|
 | GET | `/api/courses/{courseId}/wrong-questions` | 查询参数：mastered（可选，boolean） |
 
 **成功响应** `200 OK`  
@@ -861,8 +870,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 10.2 添加错题
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                                        | 说明                                           |
+|------|-------------------------------------------|----------------------------------------------|
 | POST | `/api/courses/{courseId}/wrong-questions` | body: questionId（题目实体 id）、userAnswer（选项索引数组） |
 
 **成功响应** `200 OK`  
@@ -872,8 +881,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 10.3 标记已掌握
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                                                   | 说明        |
+|-----|----------------------------------------------------------------------|-----------|
 | PUT | `/api/courses/{courseId}/wrong-questions/{wrongQuestionId}/mastered` | 将错题标记为已掌握 |
 
 **成功响应** `200 OK`  
@@ -883,8 +892,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 10.4 删除错题
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                                          | 说明     |
+|--------|-------------------------------------------------------------|--------|
 | DELETE | `/api/courses/{courseId}/wrong-questions/{wrongQuestionId}` | 从错题本移除 |
 
 **成功响应** `204 No Content`
@@ -893,8 +902,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 10.5 练习错题（增加练习次数）
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                                                                   | 说明     |
+|------|----------------------------------------------------------------------|--------|
 | POST | `/api/courses/{courseId}/wrong-questions/{wrongQuestionId}/practice` | 记录一次练习 |
 
 **成功响应** `200 OK`  
@@ -904,8 +913,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 10.6 错题统计
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                              | 说明      |
+|-----|-------------------------------------------------|---------|
 | GET | `/api/courses/{courseId}/wrong-questions/stats` | 该课程错题统计 |
 
 **成功响应** `200 OK`
@@ -926,8 +935,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.1 获取已选课程列表
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                  | 说明              |
+|-----|---------------------|-----------------|
 | GET | `/api/user-courses` | 当前用户已选课程及当前学习标记 |
 
 **成功响应** `200 OK`
@@ -948,8 +957,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.2 添加课程
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                             | 说明                   |
+|------|--------------------------------|----------------------|
 | POST | `/api/user-courses/{courseId}` | 将课程加入学习列表，已存在则返回 200 |
 
 **成功响应** `200 OK`  
@@ -959,8 +968,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.3 移除课程
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                             | 说明      |
+|--------|--------------------------------|---------|
 | DELETE | `/api/user-courses/{courseId}` | 从学习列表移除 |
 
 **成功响应** `204 No Content`  
@@ -970,8 +979,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.4 设置当前学习课程
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                              | 说明                |
+|-----|-------------------------------------------------|-------------------|
 | PUT | `/api/user-courses/{courseId}/current-studying` | 将该课程设为当前学习（仅能有一个） |
 
 **成功响应** `200 OK`  
@@ -981,8 +990,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.5 取消当前学习课程
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法     | 路径                                   | 说明       |
+|--------|--------------------------------------|----------|
 | DELETE | `/api/user-courses/current-studying` | 清除当前学习标记 |
 
 **成功响应** `204 No Content`
@@ -991,8 +1000,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 11.6 获取当前学习课程 ID
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                                   | 说明                    |
+|-----|--------------------------------------|-----------------------|
 | GET | `/api/user-courses/current-studying` | 返回当前学习的课程 ID，无则为 null |
 
 **成功响应** `200 OK`
@@ -1013,8 +1022,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 12.1 获取当前用户资料
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径              | 说明           |
+|-----|-----------------|--------------|
 | GET | `/api/users/me` | 当前用户资料（不含密码） |
 
 **成功响应** `200 OK`
@@ -1034,8 +1043,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 12.2 更新当前用户资料
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径              | 说明                               |
+|-----|-----------------|----------------------------------|
 | PUT | `/api/users/me` | body: nickname、bio（均为可选，只更新传入字段） |
 
 **成功响应** `200 OK`  
@@ -1045,8 +1054,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 12.3 获取头像
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法  | 路径                     | 说明                          |
+|-----|------------------------|-----------------------------|
 | GET | `/api/users/me/avatar` | 返回图片二进制流，Content-Type 为图片类型 |
 
 **成功响应** `200 OK`  
@@ -1056,8 +1065,8 @@ WrongQuestion 数组（含 id、userId、courseId、questionId、quizId、userAn
 
 ### 12.4 上传头像
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
+| 方法   | 路径                     | 说明                                          |
+|------|------------------------|---------------------------------------------|
 | POST | `/api/users/me/avatar` | Content-Type: multipart/form-data，表单字段 file |
 
 **成功响应** `200 OK`
