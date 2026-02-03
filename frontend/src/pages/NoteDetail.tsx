@@ -12,6 +12,7 @@ import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { MarkdownRenderer, ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const NoteDetail = () => {
   const { noteId } = useParams<{ noteId: string }>();
@@ -32,7 +33,7 @@ const NoteDetail = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     if (noteId) {
@@ -61,7 +62,7 @@ const NoteDetail = () => {
     try {
       await noteAPI.deleteNote(course.id, note.id);
       success("笔记删除成功");
-      void navigate("/notes");
+      void navigate(ROUTES.NOTES);
     } catch (err: unknown) {
       const errorMsg = "删除笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -91,7 +92,7 @@ const NoteDetail = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>
@@ -144,7 +145,7 @@ const NoteDetail = () => {
           <Button
             variant="outline"
             className="w-fit"
-            onClick={() => void navigate("/notes")}
+            onClick={() => void navigate(ROUTES.NOTES)}
           >
             <ArrowLeft className="size-4" />
             返回笔记列表
@@ -152,7 +153,9 @@ const NoteDetail = () => {
           {canEdit() && (
             <div className="flex gap-2">
               <Button
-                onClick={() => void navigate(`/notes/${noteId ?? ""}/edit`)}
+                onClick={() =>
+                  noteId && void navigate(ROUTES.NOTE_EDIT(noteId))
+                }
               >
                 <Pencil className="size-4" />
                 编辑笔记

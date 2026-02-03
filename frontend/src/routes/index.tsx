@@ -7,6 +7,7 @@ import { ROUTES } from "./routes";
 export { ROUTES };
 
 // 页面组件懒加载
+const Landing = lazy(() => import("../pages/Landing"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const CourseList = lazy(() => import("../pages/CourseList"));
@@ -36,7 +37,15 @@ const LazyWrapper = ({ children }: { children: ReactNode }) => (
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* 公开路由 */}
+      {/* 公开：落地页 */}
+      <Route
+        path={ROUTES.LANDING}
+        element={
+          <LazyWrapper>
+            <Landing />
+          </LazyWrapper>
+        }
+      />
       <Route
         path={ROUTES.LOGIN}
         element={
@@ -54,7 +63,7 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* 受保护的路由 */}
+      {/* 受保护的应用路由（/app） */}
       <Route
         path={ROUTES.HOME}
         element={
@@ -63,14 +72,7 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route
-          index
-          element={
-            <LazyWrapper>
-              <CourseList />
-            </LazyWrapper>
-          }
-        />
+        <Route index element={<Navigate to={ROUTES.COURSES} replace />} />
         <Route
           path="courses"
           element={
@@ -217,8 +219,8 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      {/* 404 重定向 */}
-      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
+      {/* 404 重定向到落地页 */}
+      <Route path="*" element={<Navigate to={ROUTES.LANDING} replace />} />
     </Routes>
   );
 };

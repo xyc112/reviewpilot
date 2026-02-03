@@ -20,6 +20,7 @@ import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const NoteEdit = () => {
   const { noteId } = useParams<{ noteId: string }>();
@@ -47,7 +48,7 @@ const NoteEdit = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     if (noteId) {
@@ -88,7 +89,7 @@ const NoteEdit = () => {
     try {
       await noteAPI.updateNote(course.id, note.id, noteForm);
       success("笔记更新成功");
-      void navigate(`/notes/${noteId ?? ""}`);
+      if (noteId) void navigate(ROUTES.NOTE_DETAIL(noteId));
     } catch (err: unknown) {
       const errorMsg = "更新笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -108,7 +109,7 @@ const NoteEdit = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>
@@ -145,7 +146,7 @@ const NoteEdit = () => {
         <Alert variant="destructive">
           <AlertTitle>无权限编辑此笔记</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/notes")}>
+            <Button onClick={() => void navigate(ROUTES.NOTES)}>
               返回笔记列表
             </Button>
           </div>
@@ -160,7 +161,9 @@ const NoteEdit = () => {
         <Button
           variant="outline"
           className="w-fit"
-          onClick={() => void navigate(`/notes/${noteId ?? ""}`)}
+          onClick={() => {
+            if (noteId) void navigate(ROUTES.NOTE_DETAIL(noteId));
+          }}
         >
           <ArrowLeft className="size-4" />
           取消编辑
@@ -249,7 +252,9 @@ const NoteEdit = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => void navigate(`/notes/${String(noteId)}`)}
+                  onClick={() => {
+                    if (noteId) void navigate(ROUTES.NOTE_DETAIL(noteId));
+                  }}
                   disabled={saving}
                 >
                   <X className="size-4" />

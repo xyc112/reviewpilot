@@ -29,7 +29,6 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "../components";
 
 const ReviewPlanPage = () => {
-  const isDark = false;
   const [plans, setPlans] = useState<ReviewPlanType[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -359,12 +358,8 @@ const ReviewPlanPage = () => {
                       isToday
                         ? "border-primary bg-primary/10"
                         : isSelected
-                          ? isDark
-                            ? "border-border bg-muted"
-                            : "border-foreground bg-muted"
-                          : isDark
-                            ? "border-border bg-muted hover:bg-muted/80"
-                            : "border-border bg-background hover:bg-muted"
+                          ? "border-foreground bg-muted"
+                          : "border-border bg-background hover:bg-muted"
                     }`}
                   >
                     <span

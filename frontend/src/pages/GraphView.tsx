@@ -6,6 +6,7 @@ import { graphAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { GraphCanvas, ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,7 +73,7 @@ const GraphView = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     void fetchGraphData();
@@ -348,7 +349,7 @@ const GraphView = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>

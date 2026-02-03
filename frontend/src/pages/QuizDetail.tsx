@@ -6,6 +6,7 @@ import { quizAPI, wrongQuestionAPI } from "../services";
 import { useCourseStore } from "../stores";
 import { useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +39,7 @@ const QuizDetail = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     if (quizId) {
@@ -189,7 +190,7 @@ const QuizDetail = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>
@@ -436,7 +437,7 @@ const QuizDetail = () => {
               <RotateCcw className="size-4" />
               重新答题
             </Button>
-            <Button onClick={() => void navigate("/quizzes")}>
+            <Button onClick={() => void navigate(ROUTES.QUIZZES)}>
               <ArrowLeft className="size-4" />
               返回测验列表
             </Button>
@@ -547,7 +548,7 @@ const QuizDetail = () => {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => void navigate("/quizzes")}
+            onClick={() => void navigate(ROUTES.QUIZZES)}
           >
             <ArrowLeft className="size-4" />
             返回测验列表

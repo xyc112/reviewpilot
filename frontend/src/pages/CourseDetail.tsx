@@ -19,6 +19,7 @@ import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,7 +58,7 @@ const CourseDetail = () => {
     try {
       await courseAPI.deleteCourse(course.id);
       success("课程删除成功");
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
     } catch (err: unknown) {
       const errorMsg = "删除课程失败: " + (getErrorMessage(err) || "无权限");
       setError(errorMsg);
@@ -142,7 +143,7 @@ const CourseDetail = () => {
           variant="outline"
           className="w-fit"
           onClick={() => {
-            void navigate("/courses");
+            void navigate(ROUTES.COURSES);
           }}
         >
           <ArrowLeft className="size-4" />
@@ -153,7 +154,7 @@ const CourseDetail = () => {
           <CardContent className="flex flex-col gap-6 pt-6">
             {canEdit ? (
               <div className="flex justify-end gap-2">
-                <Link to={`/courses/edit/${String(course.id)}`}>
+                <Link to={ROUTES.EDIT_COURSE(course.id)}>
                   <Button variant="outline">
                     <Pencil className="size-4" />
                     编辑课程
@@ -208,7 +209,7 @@ const CourseDetail = () => {
 
             <div className="h-px w-full bg-border" />
 
-            <Link to={`/courses/${String(course.id)}/community`}>
+            <Link to={ROUTES.COURSE_COMMUNITY(course.id)}>
               <Button>
                 <MessageCircle className="size-4" />
                 进入课程社区

@@ -19,6 +19,7 @@ import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,7 +87,7 @@ const EditCourse = () => {
 
       await courseAPI.updateCourse(course.id, courseData);
       success("课程更新成功");
-      void navigate(`/courses/${String(course.id)}`);
+      void navigate(ROUTES.COURSE_DETAIL(course.id));
     } catch (err: unknown) {
       const errorMsg = getErrorMessage(err) || "更新课程失败";
       setError(errorMsg);

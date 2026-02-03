@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "@/stores";
+import { ROUTES } from "@/routes";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -16,11 +17,11 @@ const ProtectedRoute = ({
   const isAdmin = user?.role === "ADMIN";
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={ROUTES.HOME} replace />;
   }
 
   return <>{children}</>;

@@ -1,7 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LogOut, User, LayoutDashboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -34,7 +33,7 @@ const Layout = () => {
 
   const handleLogout = () => {
     logout();
-    void navigate("/login");
+    void navigate("/");
   };
 
   return (
@@ -47,7 +46,7 @@ const Layout = () => {
               <LayoutDashboard className="size-5" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-foreground md:text-xl">
-              ReviewPilot
+              Nexus
             </span>
           </div>
           <div className="flex items-center gap-1">

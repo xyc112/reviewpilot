@@ -21,6 +21,7 @@ import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { ConfirmDialog, useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const CourseOverview = () => {
   const { id } = useParams<{ id: string }>();
@@ -85,7 +86,7 @@ const CourseOverview = () => {
     try {
       await courseAPI.deleteCourse(course.id);
       success("课程删除成功");
-      window.location.href = "/courses";
+      window.location.href = ROUTES.COURSES;
     } catch (err: unknown) {
       const errorMsg = "删除课程失败: " + (getErrorMessage(err) || "无权限");
       setError(errorMsg);
@@ -182,7 +183,7 @@ const CourseOverview = () => {
               )}
               {canEdit ? (
                 <div className="flex gap-2">
-                  <Link to={`/courses/edit/${String(course.id)}`}>
+                  <Link to={ROUTES.EDIT_COURSE(course.id)}>
                     <Button variant="outline">
                       <Pencil className="size-4" />
                       编辑课程

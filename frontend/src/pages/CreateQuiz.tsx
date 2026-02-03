@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const CreateQuiz = () => {
   const navigate = useNavigate();
@@ -45,10 +46,10 @@ const CreateQuiz = () => {
 
   useEffect(() => {
     if (!isAdmin) {
-      void navigate("/quizzes");
+      void navigate(ROUTES.QUIZZES);
     }
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
     }
   }, [isAdmin, course, navigate]);
 
@@ -174,7 +175,7 @@ const CreateQuiz = () => {
       };
 
       await quizAPI.createQuiz(course.id, quizData);
-      void navigate("/quizzes");
+      void navigate(ROUTES.QUIZZES);
     } catch (err: unknown) {
       setError(getErrorMessage(err) || "创建测验失败");
     } finally {
@@ -198,7 +199,7 @@ const CreateQuiz = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>

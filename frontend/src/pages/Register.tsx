@@ -1,20 +1,12 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import {
-  User,
-  Lock,
-  ArrowRight,
-  Rocket,
-  GraduationCap,
-  BarChart3,
-  Users,
-  Sparkles,
-} from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { FormErrorMessage } from "@/components/feedback";
+import { LandingHeader } from "@/components/layout/LandingHeader";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -22,9 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuthStore } from "../stores";
+import { cn } from "@/lib/utils";
+import { ROUTES } from "@/routes";
 import { authAPI } from "../services";
-import { validateUsername, validatePassword, getErrorMessage } from "../utils";
+import { useAuthStore } from "../stores";
+import { getErrorMessage, validatePassword, validateUsername } from "../utils";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -32,16 +26,19 @@ const Register = () => {
   const [role, setRole] = useState<string>("USER");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
 
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
+  const userError = validateUsername(username);
+  const passError = validatePassword(password);
+
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const userError = validateUsername(username);
-    const passError = validatePassword(password);
-    if (userError || passError) {
+    if (userError ?? passError) {
       setError(userError ?? passError ?? "");
+      setShakeKey((k) => k + 1);
       return;
     }
     setLoading(true);
@@ -49,162 +46,134 @@ const Register = () => {
     try {
       const response = await authAPI.register({ username, password, role });
       login(response.data);
-      void navigate("/");
+      void navigate(ROUTES.COURSES);
     } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setError(getErrorMessage(err) || "注册失败，请稍后重试");
+      setShakeKey((k) => k + 1);
       console.error("注册错误:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const features = [
-    {
-      icon: GraduationCap,
-      title: "个性化学习路径",
-      desc: "根据您的需求定制学习计划",
-    },
-    { icon: BarChart3, title: "学习进度追踪", desc: "实时了解学习成果" },
-    { icon: Users, title: "社区互动交流", desc: "与学习者共同进步" },
-  ];
+  const showUserError = Boolean(error && userError);
+  const showPassError = Boolean(error && passError);
 
   return (
-    <div className="flex min-h-screen">
-      {/* 左侧品牌区 */}
-      <div className="relative hidden w-[48%] flex-shrink-0 flex-col justify-between overflow-hidden bg-primary p-12 lg:flex">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,oklch(0.55_0.22_264/0.4)_0%,transparent_50%),linear-gradient(180deg,transparent_60%,oklch(0.35_0.2_264/0.3)_100%)]" />
-        <div className="relative z-10">
-          <div className="mb-10 flex size-14 items-center justify-center rounded-2xl bg-primary-foreground/15 shadow-lg">
-            <Rocket className="size-7 text-primary-foreground" />
-          </div>
-          <h1 className="mb-3 text-3xl font-bold tracking-tight text-primary-foreground drop-shadow-sm md:text-4xl">
-            加入 ReviewPilot
-          </h1>
-          <p className="max-w-sm text-lg leading-relaxed text-primary-foreground/90">
-            开启您的学习之旅，与知识同行，与成长相伴
-          </p>
-        </div>
-        <div className="relative z-10 flex flex-col gap-4">
-          {features.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="flex gap-4 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-4 backdrop-blur-sm transition-colors hover:bg-primary-foreground/15"
-            >
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15">
-                <Icon className="size-5 text-primary-foreground" />
-              </div>
-              <div>
-                <div className="mb-0.5 font-semibold text-primary-foreground">
-                  {title}
-                </div>
-                <div className="text-sm text-primary-foreground/85">{desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-landing-bg">
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,var(--landing-border)_0.5px,transparent_0.5px),linear-gradient(to_bottom,var(--landing-border)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem]"
+          style={{ opacity: 0.6 }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,var(--primary)/12%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_50%,var(--chart-2)/8%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_20%_80%,var(--primary)/5%,transparent_50%)]" />
       </div>
 
-      {/* 右侧表单区 */}
-      <div className="flex flex-1 flex-col items-center justify-center bg-background px-6 py-12 md:px-12">
-        <Card className="w-full max-w-[400px] rounded-2xl border border-border shadow-lg">
-          <CardHeader className="space-y-1 pb-4 text-center">
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+      <LandingHeader />
+
+      <main className="flex min-h-screen flex-col items-center justify-center px-6 py-24">
+        <div className="mx-auto flex w-full max-w-[480px] flex-col items-center text-center lg:max-w-[900px] lg:flex-row lg:items-center lg:gap-16 lg:text-left">
+          <div className="mb-10 lg:mb-0 lg:flex-1">
+            <h1 className="mb-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
               创建账号
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              欢迎加入，填写以下信息即可开始使用
+            </h1>
+            <p className="max-w-md text-base text-muted-foreground md:text-lg">
+              课程 · 笔记 · 测验 · 图谱 — 一站式学习管理
             </p>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                void handleSubmit(e);
-              }}
-              className="space-y-5"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-foreground">
-                  用户名
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="请输入用户名"
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(e.target.value);
-                    }}
-                    className="h-11 pl-9"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-foreground">
-                  密码
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="请输入密码"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                    className="h-11 pl-9"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground">角色</Label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger className="h-11 w-full">
-                    <SelectValue placeholder="选择角色" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USER">普通用户</SelectItem>
-                    <SelectItem value="ADMIN">管理员</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {error ? (
-                <Alert variant="destructive" className="rounded-lg">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              ) : null}
-              <Button
-                type="submit"
-                className="h-11 w-full font-medium"
-                disabled={loading}
+          </div>
+
+          <Card className="w-full max-w-[400px] shrink-0 rounded-2xl border border-landing-border/80 bg-landing-card/95 shadow-xl backdrop-blur-sm lg:max-w-[420px]">
+            <CardHeader className="space-y-1 pb-6 pt-8">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                开始使用
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                填写信息即可创建账号
+              </p>
+            </CardHeader>
+            <CardContent className="pb-8">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void handleSubmit(e);
+                }}
+                className="space-y-5"
               >
-                {loading ? (
-                  <span className="opacity-80">注册中…</span>
-                ) : (
-                  <>
-                    注册
-                    <ArrowRight className="ml-2 size-4" />
-                  </>
-                )}
-              </Button>
-            </form>
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              已有账号？{" "}
-              <Link
-                to="/login"
-                className="font-medium text-primary underline-offset-2 hover:underline"
-              >
-                立即登录
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+                <div
+                  key={shakeKey}
+                  className={cn(
+                    "space-y-5",
+                    (showUserError || showPassError) && "animate-input-shake",
+                  )}
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="username">用户名</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      value={username}
+                      onChange={(e) => {
+                        setUsername(e.target.value);
+                      }}
+                      autoComplete="username"
+                      className="h-11 rounded-xl"
+                      aria-invalid={showUserError}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">密码（至少 6 位）</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                      autoComplete="new-password"
+                      className="h-11 rounded-xl"
+                      aria-invalid={showPassError}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="text-foreground">
+                    角色
+                  </Label>
+                  <Select value={role} onValueChange={setRole}>
+                    <SelectTrigger id="role" className="h-11 w-full rounded-xl">
+                      <SelectValue placeholder="选择角色" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USER">普通用户</SelectItem>
+                      <SelectItem value="ADMIN">管理员</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {error ? <FormErrorMessage message={error} /> : null}
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="h-11 w-full rounded-xl font-medium"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="opacity-80">注册中…</span>
+                  ) : (
+                    <>
+                      注册
+                      <ArrowRight className="ml-2 size-4" aria-hidden />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
     </div>
   );
 };

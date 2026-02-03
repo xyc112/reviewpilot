@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const QuizList = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const QuizList = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     void fetchQuizzes();
@@ -94,7 +95,7 @@ const QuizList = () => {
     return (
       <Alert className="mx-8 my-8">
         <AlertDescription>请先选择一个课程</AlertDescription>
-        <Button className="mt-4" onClick={() => void navigate("/courses")}>
+        <Button className="mt-4" onClick={() => void navigate(ROUTES.COURSES)}>
           前往课程列表
         </Button>
       </Alert>
@@ -122,7 +123,7 @@ const QuizList = () => {
       <div className="mb-6 flex w-full flex-col gap-4">
         {isAdmin ? (
           <div className="flex justify-end">
-            <Link to="/quizzes/new">
+            <Link to={ROUTES.CREATE_QUIZ}>
               <Button>
                 <Plus className="size-4" />
                 创建测验
@@ -165,7 +166,7 @@ const QuizList = () => {
           }
           action={
             isAdmin ? (
-              <Link to="/quizzes/new">
+              <Link to={ROUTES.CREATE_QUIZ}>
                 <Button>
                   <Plus className="size-4" />
                   创建新测验
@@ -209,7 +210,7 @@ const QuizList = () => {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2">
-                  <Link to={`/quizzes/${quiz.id}`}>
+                  <Link to={ROUTES.QUIZ_DETAIL(quiz.id)}>
                     <Button size="sm">开始测验</Button>
                   </Link>
                   {isAdmin ? (
@@ -217,9 +218,7 @@ const QuizList = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() =>
-                          void navigate(`/quizzes/edit/${quiz.id}`)
-                        }
+                        onClick={() => void navigate(ROUTES.EDIT_QUIZ(quiz.id))}
                         title="编辑测验"
                       >
                         <Pencil className="size-4" />

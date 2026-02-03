@@ -18,6 +18,7 @@ import { noteAPI } from "../services";
 import { useCourseStore } from "../stores";
 import { useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const NoteCreate = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const NoteCreate = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
     }
   }, [course, navigate]);
 
@@ -54,7 +55,7 @@ const NoteCreate = () => {
     try {
       const response = await noteAPI.createNote(course.id, noteForm);
       success("笔记创建成功");
-      void navigate(`/notes/${response.data.id}`);
+      void navigate(ROUTES.NOTE_DETAIL(response.data.id));
     } catch (err: unknown) {
       const errorMsg = "创建笔记失败: " + getErrorMessage(err);
       setError(errorMsg);
@@ -70,7 +71,7 @@ const NoteCreate = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>
@@ -85,7 +86,7 @@ const NoteCreate = () => {
         <Button
           variant="outline"
           className="w-fit"
-          onClick={() => void navigate("/notes")}
+          onClick={() => void navigate(ROUTES.NOTES)}
         >
           <ArrowLeft className="size-4" />
           返回笔记列表
@@ -174,7 +175,7 @@ const NoteCreate = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => void navigate("/notes")}
+                  onClick={() => void navigate(ROUTES.NOTES)}
                   disabled={saving}
                 >
                   <X className="size-4" />

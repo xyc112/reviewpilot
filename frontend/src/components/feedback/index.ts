@@ -1,5 +1,6 @@
 export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as ConfirmDialog } from "./ConfirmDialog";
+export { default as FormErrorMessage } from "./FormErrorMessage";
 export {
   ErrorBoundary,
   default as ErrorBoundaryDefault,

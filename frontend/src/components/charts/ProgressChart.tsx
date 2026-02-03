@@ -55,7 +55,7 @@ export const CircularProgressChart = ({
       </svg>
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center"
-        style={{ width: size, height: size, lineHeight: `${size}px` }}
+        style={{ width: size, height: size, lineHeight: `${String(size)}px` }}
       >
         <span className="text-2xl font-bold text-foreground">
           {Math.round(percentage)}%

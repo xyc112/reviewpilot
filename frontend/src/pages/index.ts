@@ -3,6 +3,9 @@
  * 按功能模块分组
  */
 
+// 公开页
+export { default as Landing } from "./Landing";
+
 // 认证相关
 export { default as Login } from "./Login";
 export { default as Register } from "./Register";

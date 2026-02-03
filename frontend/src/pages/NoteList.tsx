@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const NoteList = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const NoteList = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     void fetchNotes();
@@ -109,7 +110,7 @@ const NoteList = () => {
         <Button
           className="mt-4"
           onClick={() => {
-            void navigate("/courses");
+            void navigate(ROUTES.COURSES);
           }}
         >
           前往课程列表
@@ -144,7 +145,7 @@ const NoteList = () => {
             style={{ flex: 1 }}
           />
         </div>
-        <Link to="/notes/new" className="shrink-0">
+        <Link to={ROUTES.CREATE_NOTE} className="shrink-0">
           <Button>
             <Plus className="size-4" />
             创建笔记
@@ -181,7 +182,7 @@ const NoteList = () => {
             </span>
           }
           action={
-            <Link to="/notes/new">
+            <Link to={ROUTES.CREATE_NOTE}>
               <Button>
                 <Plus className="size-4" />
                 创建笔记
@@ -210,7 +211,7 @@ const NoteList = () => {
             <ListItemCard key={note.id}>
               <div className="flex w-full items-start gap-4">
                 <Link
-                  to={`/notes/${note.id}`}
+                  to={ROUTES.NOTE_DETAIL(note.id)}
                   className="min-w-0 flex-1 no-underline text-foreground hover:text-foreground"
                 >
                   <div className="flex w-full flex-col gap-1">

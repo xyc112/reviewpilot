@@ -21,6 +21,7 @@ import {
   ListEmptyState,
 } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,7 +106,7 @@ const Community = () => {
 
   useEffect(() => {
     if (!courseId) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     void fetchCourse();

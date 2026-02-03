@@ -18,6 +18,7 @@ import {
   ListItemCard,
 } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const CourseList = () => {
   const navigate = useNavigate();
@@ -230,7 +231,7 @@ const CourseList = () => {
           </p>
         </div>
         {isAdmin ? (
-          <Link to="/courses/new" className="shrink-0">
+          <Link to={ROUTES.CREATE_COURSE} className="shrink-0">
             <Button size="lg" className="font-medium">
               <Plus className="size-4" />
               创建新课程
@@ -309,7 +310,7 @@ const CourseList = () => {
           }
           action={
             isAdmin ? (
-              <Link to="/courses/new">
+              <Link to={ROUTES.CREATE_COURSE}>
                 <Button>
                   <Plus className="size-4" />
                   创建新课程
@@ -445,7 +446,7 @@ const CourseList = () => {
                           size="icon"
                           onClick={(e) => {
                             e.stopPropagation();
-                            void navigate(`/courses/edit/${String(course.id)}`);
+                            void navigate(ROUTES.EDIT_COURSE(course.id));
                           }}
                           className="rounded-xl"
                         >

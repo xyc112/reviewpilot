@@ -5,6 +5,7 @@ export { Layout, Sidebar, ProtectedRoute } from "./layout";
 export {
   LoadingSpinner,
   ConfirmDialog,
+  FormErrorMessage,
   ErrorBoundary,
   ListEmptyState,
   ToastProvider,

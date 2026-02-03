@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useCourseStore, useAuthStore } from "@/stores";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/routes";
 
 const navItems: {
   key: string;
@@ -36,60 +37,60 @@ const navItems: {
     key: "review-plan",
     label: "复习计划",
     icon: <Calendar className="size-4" />,
-    path: "/review-plan",
+    path: ROUTES.REVIEW_PLAN,
   },
   {
     key: "courses",
     label: "课程列表",
     icon: <BookOpen className="size-4" />,
-    path: "/courses",
+    path: ROUTES.COURSES,
   },
   {
     key: "progress",
     label: "学习进度",
     icon: <TrendingUp className="size-4" />,
-    path: "/progress",
+    path: ROUTES.PROGRESS,
   },
   {
     key: "course-overview",
     label: "课程概览",
     icon: <Info className="size-4" />,
-    getPath: (id) => `/courses/${String(id)}/overview`,
+    getPath: (id) => ROUTES.COURSE_OVERVIEW(id),
     requireCourse: true,
   },
   {
     key: "graph",
     label: "知识图谱",
     icon: <GitBranch className="size-4" />,
-    path: "/graph",
+    path: ROUTES.GRAPH,
     requireCourse: true,
   },
   {
     key: "notes",
     label: "笔记模块",
     icon: <FileText className="size-4" />,
-    path: "/notes",
+    path: ROUTES.NOTES,
     requireCourse: true,
   },
   {
     key: "quizzes",
     label: "测验模块",
     icon: <ClipboardList className="size-4" />,
-    path: "/quizzes",
+    path: ROUTES.QUIZZES,
     requireCourse: true,
   },
   {
     key: "wrong-questions",
     label: "错题模块",
     icon: <XCircle className="size-4" />,
-    path: "/wrong-questions",
+    path: ROUTES.WRONG_QUESTIONS,
     requireCourse: true,
   },
   {
     key: "community",
     label: "社区模块",
     icon: <MessageCircle className="size-4" />,
-    getPath: (id) => `/courses/${String(id)}/community`,
+    getPath: (id) => ROUTES.COURSE_COMMUNITY(id),
     requireCourse: true,
   },
 ];
@@ -104,17 +105,16 @@ const Sidebar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getSelectedKey = () => {
-    if (location.pathname === "/courses" || location.pathname === "/")
-      return "courses";
-    if (location.pathname.includes("/community")) return "community";
-    if (location.pathname.includes("/overview")) return "course-overview";
-    if (location.pathname.startsWith("/review-plan")) return "review-plan";
-    if (location.pathname.startsWith("/progress")) return "progress";
-    if (location.pathname.startsWith("/graph")) return "graph";
-    if (location.pathname.startsWith("/notes")) return "notes";
-    if (location.pathname.startsWith("/quizzes")) return "quizzes";
-    if (location.pathname.startsWith("/wrong-questions"))
-      return "wrong-questions";
+    const path = location.pathname;
+    if (path === ROUTES.COURSES || path === ROUTES.HOME) return "courses";
+    if (path.includes("/community")) return "community";
+    if (path.includes("/overview")) return "course-overview";
+    if (path.startsWith("/app/review-plan")) return "review-plan";
+    if (path.startsWith("/app/progress")) return "progress";
+    if (path.startsWith("/app/graph")) return "graph";
+    if (path.startsWith("/app/notes")) return "notes";
+    if (path.startsWith("/app/quizzes")) return "quizzes";
+    if (path.startsWith("/app/wrong-questions")) return "wrong-questions";
     return "";
   };
 

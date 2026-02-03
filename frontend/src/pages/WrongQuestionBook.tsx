@@ -21,6 +21,7 @@ import {
   ListEmptyState,
 } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const WrongQuestionBook = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ const WrongQuestionBook = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     void fetchWrongQuestions();

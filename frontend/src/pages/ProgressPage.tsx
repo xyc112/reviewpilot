@@ -12,12 +12,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ROUTES } from "@/routes";
 
 const ProgressPage = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const isDark = false;
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
   const [courseProgressList, setCourseProgressList] = useState<
     CourseProgress[]
@@ -248,14 +248,14 @@ const ProgressPage = () => {
                           alignItems: "center",
                           justifyContent: "center",
                           width: "100%",
-                          color: isDark ? "#9ca3af" : "#78716c",
+                          color: "#78716c",
                         }}
                       >
                         <p
                           style={{
                             margin: 0,
                             fontSize: "0.8125rem",
-                            color: isDark ? "#9ca3af" : "#78716c",
+                            color: "#78716c",
                           }}
                         >
                           暂无分数数据
@@ -303,7 +303,7 @@ const ProgressPage = () => {
                         key={quizProgress.quizId}
                         style={{
                           padding: "0.625rem",
-                          backgroundColor: isDark ? "#1f2937" : "#fafaf9",
+                          backgroundColor: "#fafaf9",
                           borderRadius: "0.5rem",
                           border: `2px solid ${getScoreColor(quizProgress.score)}`,
                         }}
@@ -313,7 +313,7 @@ const ProgressPage = () => {
                             fontSize: "0.8125rem",
                             fontWeight: 500,
                             marginBottom: "0.25rem",
-                            color: isDark ? "#f9fafb" : "#1c1917",
+                            color: "#1c1917",
                           }}
                         >
                           测验 {quizProgress.quizId}
@@ -456,7 +456,7 @@ const ProgressPage = () => {
             <Card className="w-full text-center">
               <CardContent className="flex flex-col items-center gap-2">
                 <p className="text-sm text-muted-foreground">暂无学习记录</p>
-                <Link to="/courses">
+                <Link to={ROUTES.COURSES}>
                   <Button size="sm">浏览课程</Button>
                 </Link>
               </CardContent>
@@ -596,14 +596,13 @@ const CompactCourseCard = ({
   getLevelText: (level: string) => string;
   getScoreColor: (score: number | null) => string;
 }) => {
-  const isDark = false;
   return (
     <div
       style={{
         padding: "0.75rem",
-        backgroundColor: isDark ? "#1f2937" : "#fafaf9",
+        backgroundColor: "#fafaf9",
         borderRadius: "0.5rem",
-        border: `1px solid ${isDark ? "#374151" : "#e7e5e4"}`,
+        border: "1px solid #e7e5e4",
       }}
     >
       <div
@@ -619,7 +618,7 @@ const CompactCourseCard = ({
             style={{
               fontSize: "0.8125rem",
               fontWeight: 600,
-              color: isDark ? "#f9fafb" : "#1c1917",
+              color: "#1c1917",
               marginBottom: "0.25rem",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -631,7 +630,7 @@ const CompactCourseCard = ({
           <div
             style={{
               fontSize: "0.625rem",
-              color: isDark ? "#9ca3af" : "#78716c",
+              color: "#78716c",
             }}
           >
             {getLevelText(level)} · {completed}/{total} 完成
@@ -655,7 +654,7 @@ const CompactCourseCard = ({
         style={{
           width: "100%",
           height: "0.3125rem",
-          backgroundColor: isDark ? "#374151" : "#f5f5f4",
+          backgroundColor: "#f5f5f4",
           borderRadius: "9999px",
           overflow: "hidden",
         }}

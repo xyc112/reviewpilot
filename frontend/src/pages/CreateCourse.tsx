@@ -17,6 +17,7 @@ import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 
 const CreateCourse = () => {
   const [loading, setLoading] = useState(false);
@@ -53,7 +54,7 @@ const CreateCourse = () => {
 
       await courseAPI.createCourse(courseData);
       success("课程创建成功");
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
     } catch (err: unknown) {
       const errorMsg = getErrorMessage(err) || "创建课程失败";
       setError(errorMsg);

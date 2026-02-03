@@ -5,6 +5,7 @@ import type { Quiz, QuizQuestion } from "../types";
 import { quizAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { getErrorMessage } from "../utils";
+import { ROUTES } from "@/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,7 @@ const EditQuiz = () => {
 
   useEffect(() => {
     if (!course) {
-      void navigate("/courses");
+      void navigate(ROUTES.COURSES);
       return;
     }
     if (quizId) {
@@ -202,7 +203,7 @@ const EditQuiz = () => {
       };
 
       await quizAPI.updateQuiz(course.id, quizId, quizData);
-      void navigate("/quizzes");
+      void navigate(ROUTES.QUIZZES);
     } catch (err: unknown) {
       setError(getErrorMessage(err) || "更新测验失败");
     } finally {
@@ -216,7 +217,7 @@ const EditQuiz = () => {
         <Alert variant="destructive">
           <AlertTitle>请先选择一个课程</AlertTitle>
           <div className="mt-2">
-            <Button onClick={() => void navigate("/courses")}>
+            <Button onClick={() => void navigate(ROUTES.COURSES)}>
               前往课程列表
             </Button>
           </div>
