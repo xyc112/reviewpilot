@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -42,11 +43,14 @@ public class AuthController {
             );
             User user = (User) auth.getPrincipal();
             String token = jwtUtil.generateToken(user.getUsername());
-            return ResponseEntity.ok(Map.of(
-                    "token", token,
-                    "username", user.getUsername(),
-                    "role", user.getRole()
-            ));
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getId());
+            userMap.put("username", user.getUsername());
+            userMap.put("role", user.getRole().name());
+            Map<String, Object> body = new HashMap<>();
+            body.put("token", token);
+            body.put("user", userMap);
+            return ResponseEntity.ok(body);
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("用户名或密码错误");
         }
@@ -70,11 +74,13 @@ public class AuthController {
 
         User user = userService.register(username, password, role);
         String token = jwtUtil.generateToken(user.getUsername());
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "username", user.getUsername(),
-                "role", user.getRole()
-        ));
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", user.getId());
+        userMap.put("username", user.getUsername());
+        userMap.put("role", user.getRole().name());
+        Map<String, Object> body = new HashMap<>();
+        body.put("token", token);
+        body.put("user", userMap);
+        return ResponseEntity.ok(body);
     }
 }
