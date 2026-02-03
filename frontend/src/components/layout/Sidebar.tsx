@@ -21,7 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { useCourseStore, useAuthStore } from "../stores";
+import { useCourseStore, useAuthStore } from "@/stores";
 import { cn } from "@/lib/utils";
 
 const navItems: {
@@ -165,7 +165,7 @@ const Sidebar = () => {
               className={cn(
                 "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
                 selected
-                  ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
+                  ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 disabled && "cursor-not-allowed opacity-60",
               )}
@@ -216,7 +216,7 @@ const Sidebar = () => {
 
       {!isMobile ? (
         <aside
-          className="fixed left-0 top-0 bottom-0 z-40 h-screen w-[260px] overflow-auto border-r border-border bg-card shadow-sm dark:shadow-black/20"
+          className="fixed left-0 top-0 bottom-0 z-40 h-screen w-[260px] overflow-auto border-r border-border bg-card shadow-sm"
           aria-label="主导航"
         >
           {menuContent}

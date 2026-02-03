@@ -222,16 +222,16 @@ const CourseList = () => {
     <div className="mx-auto max-w-[1400px] p-0">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 md:text-3xl">
+          <h1 className="m-0 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
             课程列表
           </h1>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             浏览并管理您的课程，添加到学习列表即可开始学习
           </p>
         </div>
         {isAdmin ? (
           <Link to="/courses/new" className="shrink-0">
-            <Button size="lg" className="rounded-xl font-medium shadow-md">
+            <Button size="lg" className="font-medium">
               <Plus className="size-4" />
               创建新课程
             </Button>
@@ -310,7 +310,7 @@ const CourseList = () => {
           action={
             isAdmin ? (
               <Link to="/courses/new">
-                <Button className="rounded-xl shadow-sm">
+                <Button>
                   <Plus className="size-4" />
                   创建新课程
                 </Button>
@@ -353,7 +353,10 @@ const CourseList = () => {
                           {getLevelText(course.level)}
                         </Badge>
                         {currentStudyingCourse?.id === course.id && (
-                          <Badge className="bg-amber-500 hover:bg-amber-600">
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/15 text-primary hover:bg-primary/20"
+                          >
                             正在学习
                           </Badge>
                         )}

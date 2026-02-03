@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 import type { Course } from "../types";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";

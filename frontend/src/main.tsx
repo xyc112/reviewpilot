@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ErrorBoundary } from "./components";
-import { Toaster } from "@/components/ui/sonner";
 import "./index.css";
 
 const rootEl = document.getElementById("root");
@@ -11,7 +10,6 @@ createRoot(rootEl).render(
   <StrictMode>
     <ErrorBoundary>
       <App />
-      <Toaster richColors position="top-center" />
     </ErrorBoundary>
   </StrictMode>,
 );

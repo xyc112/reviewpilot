@@ -1,4 +1,4 @@
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -73,7 +73,7 @@ const SearchBox = ({
           }}
           aria-label="清除"
         >
-          <span className="text-muted-foreground">×</span>
+          <X className="size-4 text-muted-foreground" />
         </Button>
       ) : null}
       {onSearch ? (

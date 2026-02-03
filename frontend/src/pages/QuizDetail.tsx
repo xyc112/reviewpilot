@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 
 const QuizDetail = () => {
   const { quizId } = useParams<{ quizId: string }>();
@@ -231,7 +231,7 @@ const QuizDetail = () => {
           <Card
             className={
               isPassed
-                ? "border-0 bg-gradient-to-br from-violet-500 to-purple-700 text-center text-white"
+                ? "border-0 bg-primary text-center text-primary-foreground"
                 : "border-0 bg-gradient-to-br from-pink-400 to-rose-500 text-center text-white"
             }
           >
@@ -369,9 +369,9 @@ const QuizDetail = () => {
                         </div>
 
                         {question.explanation ? (
-                          <Card className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/20">
+                          <Card className="border-l-4 border-l-primary bg-primary/10">
                             <CardContent className="p-4">
-                              <p className="font-medium text-blue-600 dark:text-blue-400">
+                              <p className="font-medium text-primary">
                                 📖 解析
                               </p>
                               <p className="mt-1 text-sm">

@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Lock, ArrowRight } from "lucide-react";
+import {
+  User,
+  Lock,
+  ArrowRight,
+  Rocket,
+  GraduationCap,
+  BarChart3,
+  Users,
+  Sparkles,
+} from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -51,71 +60,73 @@ const Register = () => {
     }
   };
 
+  const features = [
+    {
+      icon: GraduationCap,
+      title: "个性化学习路径",
+      desc: "根据您的需求定制学习计划",
+    },
+    { icon: BarChart3, title: "学习进度追踪", desc: "实时了解学习成果" },
+    { icon: Users, title: "社区互动交流", desc: "与学习者共同进步" },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-violet-600 via-purple-700 to-indigo-800">
-      <div className="hidden flex-1 items-center justify-center p-12 text-white lg:flex">
-        <div className="relative z-10 max-w-[480px]">
-          <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl shadow-lg backdrop-blur-sm">
-            🚀
+    <div className="flex min-h-screen">
+      {/* 左侧品牌区 */}
+      <div className="relative hidden w-[48%] flex-shrink-0 flex-col justify-between overflow-hidden bg-primary p-12 lg:flex">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,oklch(0.55_0.22_264/0.4)_0%,transparent_50%),linear-gradient(180deg,transparent_60%,oklch(0.35_0.2_264/0.3)_100%)]" />
+        <div className="relative z-10">
+          <div className="mb-10 flex size-14 items-center justify-center rounded-2xl bg-primary-foreground/15 shadow-lg">
+            <Rocket className="size-7 text-primary-foreground" />
           </div>
-          <h1 className="m-0 mb-4 text-3xl font-bold tracking-tight text-white drop-shadow-sm md:text-4xl">
-            加入我们
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-primary-foreground drop-shadow-sm md:text-4xl">
+            加入 ReviewPilot
           </h1>
-          <p className="mb-10 block text-lg leading-relaxed text-white/95">
-            开启您的学习之旅
-            <br />
-            与知识同行，与成长相伴
+          <p className="max-w-sm text-lg leading-relaxed text-primary-foreground/90">
+            开启您的学习之旅，与知识同行，与成长相伴
           </p>
-          <div className="flex w-full flex-col gap-4">
-            {[
-              {
-                emoji: "🎓",
-                title: "个性化学习路径",
-                desc: "根据您的需求定制学习计划",
-              },
-              { emoji: "📊", title: "学习进度追踪", desc: "实时了解学习成果" },
-              { emoji: "🤝", title: "社区互动交流", desc: "与学习者共同进步" },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="flex gap-4 rounded-xl border border-white/20 bg-white/10 p-4 shadow-sm backdrop-blur-sm transition-colors hover:bg-white/15"
-              >
-                <div className="shrink-0 text-2xl">{item.emoji}</div>
-                <div>
-                  <div className="mb-1 font-semibold text-white">
-                    {item.title}
-                  </div>
-                  <div className="text-sm text-white/90">{item.desc}</div>
-                </div>
+        </div>
+        <div className="relative z-10 flex flex-col gap-4">
+          {features.map(({ icon: Icon, title, desc }) => (
+            <div
+              key={title}
+              className="flex gap-4 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-4 backdrop-blur-sm transition-colors hover:bg-primary-foreground/15"
+            >
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15">
+                <Icon className="size-5 text-primary-foreground" />
               </div>
-            ))}
-          </div>
+              <div>
+                <div className="mb-0.5 font-semibold text-primary-foreground">
+                  {title}
+                </div>
+                <div className="text-sm text-primary-foreground/85">{desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center bg-background/95 p-8 md:p-12">
-        <Card className="w-full max-w-[420px] rounded-2xl border-0 shadow-2xl shadow-stone-200/50 dark:shadow-black/30">
-          <CardHeader className="pb-2">
-            <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground">
+      {/* 右侧表单区 */}
+      <div className="flex flex-1 flex-col items-center justify-center bg-background px-6 py-12 md:px-12">
+        <Card className="w-full max-w-[400px] rounded-2xl border border-border shadow-lg">
+          <CardHeader className="space-y-1 pb-4 text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
               创建账号
             </h2>
-            <p className="block text-center text-sm text-muted-foreground">
-              欢迎加入学习辅助系统
+            <p className="text-sm text-muted-foreground">
+              欢迎加入，填写以下信息即可开始使用
             </p>
           </CardHeader>
-          <CardContent className="p-8 pt-0">
+          <CardContent className="pt-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 void handleSubmit(e);
               }}
-              className="space-y-6"
+              className="space-y-5"
             >
               <div className="space-y-2">
-                <Label
-                  htmlFor="username"
-                  className="font-medium text-foreground"
-                >
+                <Label htmlFor="username" className="text-foreground">
                   用户名
                 </Label>
                 <div className="relative">
@@ -133,10 +144,7 @@ const Register = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="font-medium text-foreground"
-                >
+                <Label htmlFor="password" className="text-foreground">
                   密码
                 </Label>
                 <div className="relative">
@@ -154,7 +162,7 @@ const Register = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium text-foreground">角色</Label>
+                <Label className="text-foreground">角色</Label>
                 <Select value={role} onValueChange={setRole}>
                   <SelectTrigger className="h-11 w-full">
                     <SelectValue placeholder="选择角色" />
@@ -172,15 +180,21 @@ const Register = () => {
               ) : null}
               <Button
                 type="submit"
-                className="h-12 w-full rounded-xl font-medium shadow-md"
+                className="h-11 w-full font-medium"
                 disabled={loading}
               >
-                <ArrowRight className="size-4" />
-                注册
+                {loading ? (
+                  <span className="opacity-80">注册中…</span>
+                ) : (
+                  <>
+                    注册
+                    <ArrowRight className="ml-2 size-4" />
+                  </>
+                )}
               </Button>
             </form>
-            <p className="mt-8 text-center text-sm text-muted-foreground">
-              <span>已有账号？</span>{" "}
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              已有账号？{" "}
               <Link
                 to="/login"
                 className="font-medium text-primary underline-offset-2 hover:underline"

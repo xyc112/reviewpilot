@@ -25,7 +25,7 @@ interface ConfirmDialogProps {
 
 const iconColorClass = {
   danger: "text-destructive",
-  warning: "text-amber-500",
+  warning: "text-chart-3",
   info: "text-primary",
 } as const;
 

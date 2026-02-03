@@ -274,7 +274,7 @@ const WrongQuestionBook = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <span className="text-2xl font-semibold text-green-600 dark:text-green-500">
+              <span className="text-2xl font-semibold text-primary">
                 {stats.mastered}
               </span>
             </CardContent>
@@ -401,14 +401,14 @@ const WrongQuestionBook = () => {
                         "flex items-center gap-2 rounded-lg border-2 p-3",
                         showResult &&
                           isCorrectlySelected &&
-                          "border-green-500 bg-green-50 dark:bg-green-950/20",
+                          "border-primary bg-primary/10",
                         showResult &&
                           isIncorrectlySelected &&
                           "border-red-500 bg-red-50 dark:bg-red-950/20",
                         showResult &&
                           !isSelected &&
                           isCorrect &&
-                          "border-dashed border-green-500 bg-green-50 dark:bg-green-950/20",
+                          "border-dashed border-primary bg-primary/10",
                       )}
                     >
                       <RadioGroupItem
@@ -423,7 +423,7 @@ const WrongQuestionBook = () => {
                         {showResult ? (
                           <span className="ml-2 flex gap-1">
                             {isCorrectlySelected ? (
-                              <Badge variant="default" className="bg-green-600">
+                              <Badge variant="default" className="bg-primary">
                                 你的答案（正确）
                               </Badge>
                             ) : null}
@@ -431,7 +431,7 @@ const WrongQuestionBook = () => {
                               <Badge variant="destructive">你的答案</Badge>
                             ) : null}
                             {!isSelected && isCorrect ? (
-                              <Badge variant="default" className="bg-green-600">
+                              <Badge variant="default" className="bg-primary">
                                 正确答案
                               </Badge>
                             ) : null}
@@ -462,14 +462,14 @@ const WrongQuestionBook = () => {
                         "flex items-center gap-2 rounded-lg border-2 p-3",
                         showResult &&
                           isCorrectlySelected &&
-                          "border-green-500 bg-green-50 dark:bg-green-950/20",
+                          "border-primary bg-primary/10",
                         showResult &&
                           isIncorrectlySelected &&
                           "border-red-500 bg-red-50 dark:bg-red-950/20",
                         showResult &&
                           !isSelected &&
                           isCorrect &&
-                          "border-dashed border-green-500 bg-green-50 dark:bg-green-950/20",
+                          "border-dashed border-primary bg-primary/10",
                       )}
                     >
                       <Checkbox
@@ -505,7 +505,7 @@ const WrongQuestionBook = () => {
                         {showResult ? (
                           <span className="ml-2 flex gap-1">
                             {isCorrectlySelected ? (
-                              <Badge variant="default" className="bg-green-600">
+                              <Badge variant="default" className="bg-primary">
                                 你的答案（正确）
                               </Badge>
                             ) : null}
@@ -513,7 +513,7 @@ const WrongQuestionBook = () => {
                               <Badge variant="destructive">你的答案</Badge>
                             ) : null}
                             {!isSelected && isCorrect ? (
-                              <Badge variant="default" className="bg-green-600">
+                              <Badge variant="default" className="bg-primary">
                                 正确答案
                               </Badge>
                             ) : null}
@@ -527,7 +527,7 @@ const WrongQuestionBook = () => {
             )}
 
             {showPracticeResult[practicingQuestion.questionId] ? (
-              <Card className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/20">
+              <Card className="border-l-4 border-l-primary bg-primary/10">
                 <CardContent className="pt-4">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
@@ -544,7 +544,7 @@ const WrongQuestionBook = () => {
                       <>
                         <Separator className="my-2" />
                         <div>
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                          <span className="text-sm font-medium text-primary">
                             解析：
                           </span>
                           <p className="mt-1 text-sm">
@@ -634,7 +634,9 @@ const WrongQuestionBook = () => {
                     <Badge
                       variant={wq.mastered ? "default" : "secondary"}
                       className={
-                        wq.mastered ? "bg-green-600" : "bg-amber-500 text-white"
+                        wq.mastered
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground"
                       }
                     >
                       {wq.mastered ? "已掌握" : "未掌握"}

@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 import type { Course } from "../types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
@@ -240,7 +240,7 @@ const CourseOverview = () => {
             <div className="grid gap-4 sm:grid-cols-3">
               <Card>
                 <CardContent className="flex items-center gap-3 pt-6">
-                  <FileText className="size-8 text-blue-500" />
+                  <FileText className="size-8 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">笔记数量</p>
                     <p className="text-2xl font-semibold">

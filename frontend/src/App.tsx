@@ -1,25 +1,26 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useAuthStore } from "./stores";
-import { ToastProvider, ThemeProvider } from "./components";
+import { ToastProvider } from "./components";
+import { Toaster } from "@/components/ui/sonner";
 import { AppRoutes } from "./routes";
 
 const App = () => {
   const initialize = useAuthStore((state) => state.initialize);
 
   useEffect(() => {
-    // 初始化认证状态
     initialize();
   }, [initialize]);
 
   return (
-    <ThemeProvider>
+    <>
+      <Toaster theme="light" richColors position="top-center" />
       <ToastProvider>
         <Router>
           <AppRoutes />
         </Router>
       </ToastProvider>
-    </ThemeProvider>
+    </>
   );
 };
 

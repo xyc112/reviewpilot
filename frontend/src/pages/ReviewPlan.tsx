@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type { ReviewPlan as ReviewPlanType } from "../types";
 import { reviewPlanAPI } from "../services";
-import { useToast, useTheme, ConfirmDialog } from "../components";
+import { useToast, ConfirmDialog } from "../components";
 import { getErrorMessage } from "../utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "../components";
 
 const ReviewPlanPage = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const isDark = false;
   const [plans, setPlans] = useState<ReviewPlanType[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -358,25 +357,25 @@ const ReviewPlanPage = () => {
                       isPast ? "opacity-60" : ""
                     } ${
                       isToday
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
+                        ? "border-primary bg-primary/10"
                         : isSelected
                           ? isDark
-                            ? "border-gray-500 bg-gray-700"
+                            ? "border-border bg-muted"
                             : "border-foreground bg-muted"
                           : isDark
-                            ? "border-gray-700 bg-gray-800 hover:bg-gray-700"
+                            ? "border-border bg-muted hover:bg-muted/80"
                             : "border-border bg-background hover:bg-muted"
                     }`}
                   >
                     <span
-                      className={`text-sm ${isToday ? "font-semibold text-blue-600 dark:text-blue-400" : isDark ? "text-gray-100" : "text-foreground"}`}
+                      className={`text-sm ${isToday ? "font-semibold text-primary" : "text-foreground"}`}
                     >
                       {date.getDate()}
                     </span>
                     {hasPlans ? (
-                      <div className="relative mt-1 size-1.5 rounded-full bg-blue-500">
+                      <div className="relative mt-1 size-1.5 rounded-full bg-primary">
                         {planCount > 1 && (
-                          <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                          <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">
                             {planCount}
                           </span>
                         )}
@@ -555,7 +554,7 @@ const ReviewPlanPage = () => {
                           {plan.type === "exam" ? (
                             <span className="text-lg text-red-500">🎓</span>
                           ) : (
-                            <Clock className="size-5 text-blue-500" />
+                            <Clock className="size-5 text-primary" />
                           )}
                           <div className="flex-1">
                             <div className="mb-1 flex items-center gap-2">
@@ -662,7 +661,7 @@ const ReviewPlanPage = () => {
                           {plan.type === "exam" ? (
                             <span className="text-base text-red-500">🎓</span>
                           ) : (
-                            <Clock className="size-4 text-blue-500" />
+                            <Clock className="size-4 text-primary" />
                           )}
                           <span className="flex-1 text-sm font-semibold">
                             {plan.title}

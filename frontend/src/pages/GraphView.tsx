@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 
 const GraphView = () => {
   const navigate = useNavigate();

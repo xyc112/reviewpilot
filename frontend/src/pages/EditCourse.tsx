@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 import { courseAPI } from "../services";
 import { useAuthStore } from "../stores";
 import { useToast } from "../components";

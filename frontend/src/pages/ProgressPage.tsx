@@ -5,7 +5,6 @@ import type { OverallStats, CourseProgress } from "../types";
 import { progressAPI, courseAPI } from "../services";
 import { useCourseStore } from "../stores";
 import {
-  useTheme,
   SkeletonGrid,
   CircularProgressChart,
   ScoreDistributionChart,
@@ -18,8 +17,7 @@ const ProgressPage = () => {
   const currentStudyingCourse = useCourseStore(
     (state) => state.currentStudyingCourse,
   );
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const isDark = false;
   const [overallStats, setOverallStats] = useState<OverallStats | null>(null);
   const [courseProgressList, setCourseProgressList] = useState<
     CourseProgress[]
@@ -598,8 +596,7 @@ const CompactCourseCard = ({
   getLevelText: (level: string) => string;
   getScoreColor: (score: number | null) => string;
 }) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const isDark = false;
   return (
     <div
       style={{

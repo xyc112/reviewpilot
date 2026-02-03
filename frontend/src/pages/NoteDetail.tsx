@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components";
 import { noteAPI } from "../services";
 import { useAuthStore, useCourseStore } from "../stores";
 import { MarkdownRenderer, ConfirmDialog, useToast } from "../components";

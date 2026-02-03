@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { LogOut, User, LayoutDashboard, Moon, Sun } from "lucide-react";
+import { LogOut, User, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -10,14 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore } from "../stores";
-import { useTheme, Sidebar } from "./index";
-import { useGlobalShortcuts } from "../hooks";
+import { useAuthStore } from "@/stores";
+import { useGlobalShortcuts } from "@/hooks";
+import Sidebar from "./Sidebar";
 
 const Layout = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
@@ -39,12 +38,12 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background/80">
+    <div className="min-h-screen bg-background">
       <Sidebar />
       <div className={isMobile ? "" : "ml-[260px]"}>
-        <header className="sticky top-0 z-[100] flex h-16 items-center justify-between border-b border-border bg-card/90 px-6 shadow-sm backdrop-blur-md md:px-8">
+        <header className="sticky top-0 z-[100] flex h-16 items-center justify-between border-b border-border bg-card/95 px-6 shadow-sm backdrop-blur-md md:px-8">
           <div className="flex items-center gap-2">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <LayoutDashboard className="size-5" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-foreground md:text-xl">
@@ -52,19 +51,6 @@ const Layout = () => {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground"
-              onClick={toggleTheme}
-              title={theme === "light" ? "切换到暗色模式" : "切换到亮色模式"}
-            >
-              {theme === "light" ? (
-                <Moon className="size-5" />
-              ) : (
-                <Sun className="size-5" />
-              )}
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -72,7 +58,7 @@ const Layout = () => {
                   className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-muted"
                 >
                   <Avatar className="size-8 bg-primary text-primary-foreground">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
                       {(user?.username ?? "?").slice(0, 1).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>

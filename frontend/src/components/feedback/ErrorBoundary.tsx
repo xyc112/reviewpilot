@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { RotateCw, Home } from "lucide-react";
+import { RotateCw, Home, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   children: ReactNode;
@@ -72,56 +73,48 @@ const ErrorFallback = ({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-50 p-8 dark:bg-neutral-950">
+    <div className="flex min-h-screen items-center justify-center bg-background p-8">
       <div className="w-full max-w-lg text-center">
         <div className="mb-6 flex justify-center">
-          <span
-            className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-4xl text-red-600 dark:bg-red-900/30 dark:text-red-400"
+          <div
+            className="flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive"
             aria-hidden
           >
-            !
-          </span>
+            <AlertCircle className="size-8" />
+          </div>
         </div>
-        <h1 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+        <h1 className="mb-2 text-xl font-semibold text-foreground">
           出现了一些问题
         </h1>
-        <p className="mb-8 text-neutral-600 dark:text-neutral-400">
+        <p className="mb-8 text-muted-foreground">
           应用程序遇到了意外错误。我们已经记录了这个问题，请尝试刷新页面。
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <button
-            type="button"
-            onClick={handleReload}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
+          <Button onClick={handleReload}>
             <RotateCw className="size-4" />
             刷新页面
-          </button>
-          <button
-            type="button"
-            onClick={handleGoHome}
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-          >
+          </Button>
+          <Button variant="outline" onClick={handleGoHome}>
             <Home className="size-4" />
             返回首页
-          </button>
+          </Button>
         </div>
         {error ? (
-          <details className="mt-8 rounded-lg bg-neutral-100 p-4 text-left dark:bg-neutral-800">
-            <summary className="mb-2 cursor-pointer font-medium">
+          <details className="mt-8 rounded-lg bg-muted p-4 text-left">
+            <summary className="mb-2 cursor-pointer font-medium text-foreground">
               错误详情
             </summary>
             <div className="mt-4">
               <div className="mb-4">
-                <strong>错误信息：</strong>
-                <pre className="mt-2 overflow-auto rounded bg-white p-2 text-sm dark:bg-neutral-900">
+                <strong className="text-foreground">错误信息：</strong>
+                <pre className="mt-2 overflow-auto rounded bg-card p-2 text-sm text-foreground">
                   {error.toString()}
                 </pre>
               </div>
               {errorInfo ? (
                 <div>
-                  <strong>组件堆栈：</strong>
-                  <pre className="mt-2 overflow-auto rounded bg-white p-2 text-sm dark:bg-neutral-900">
+                  <strong className="text-foreground">组件堆栈：</strong>
+                  <pre className="mt-2 overflow-auto rounded bg-card p-2 text-sm text-foreground">
                     {errorInfo.componentStack}
                   </pre>
                 </div>
@@ -134,7 +127,6 @@ const ErrorFallback = ({
   );
 };
 
-// Hook-based wrapper for functional components
 export const ErrorBoundary = (props: Props) => {
   return <ErrorBoundaryClass {...props} />;
 };

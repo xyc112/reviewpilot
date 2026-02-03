@@ -4,34 +4,26 @@ interface SearchHighlightProps {
 }
 
 const SearchHighlight = ({ text, searchQuery }: SearchHighlightProps) => {
-  const isDark =
-    typeof document !== "undefined" &&
-    document.documentElement.getAttribute("data-theme") === "dark";
-
   if (!searchQuery) {
     return <>{text}</>;
   }
 
-  const regex = new RegExp(`(${searchQuery})`, "gi");
+  const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
   const parts = text.split(regex);
-
   const highlightStyle: React.CSSProperties = {
-    background: isDark
-      ? "linear-gradient(135deg, #78350f 0%, #92400e 100%)"
-      : "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
-    color: isDark ? "#fef3c7" : "#92400e",
+    background: "linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)",
+    color: "#3730a3",
     padding: "0.125rem 0.25rem",
     borderRadius: "4px",
     fontWeight: 600,
-    boxShadow: isDark
-      ? "0 1px 3px rgba(254, 243, 199, 0.3)"
-      : "0 1px 3px rgba(146, 64, 14, 0.2)",
+    boxShadow: "0 1px 3px rgba(55, 48, 163, 0.2)",
   };
 
   return (
     <>
       {parts.map((part, index) =>
-        regex.test(part) ? (
+        index % 2 === 1 ? (
           <mark key={index} style={highlightStyle}>
             {part}
           </mark>
