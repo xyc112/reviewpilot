@@ -5,12 +5,14 @@ export interface ListItemCardProps {
   children: ReactNode;
   onClick?: () => void;
   cursor?: "pointer" | "default";
+  className?: string;
 }
 
 const ListItemCard = ({
   children,
   onClick,
   cursor = onClick ? "pointer" : "default",
+  className,
 }: ListItemCardProps) => {
   return (
     <div
@@ -27,9 +29,10 @@ const ListItemCard = ({
           : undefined
       }
       className={cn(
-        "mb-4 rounded-2xl border border-border/90 bg-card/95 px-6 py-5 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md",
+        "rounded-xl border border-border/90 bg-card/95 px-5 py-4 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out",
+        "hover:border-primary/25 hover:shadow-md",
         cursor === "pointer" ? "cursor-pointer" : "cursor-default",
+        className,
       )}
       onClick={onClick}
     >

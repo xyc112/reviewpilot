@@ -351,7 +351,7 @@ const GraphView = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="flex h-screen w-full flex-col p-0">
+    <div className="flex h-full min-h-0 w-full flex-col p-0">
       {error ? (
         <div className="flex shrink-0 items-center gap-4 px-4 py-2">
           <Alert variant="destructive" className="flex-1 rounded-xl">
@@ -389,8 +389,8 @@ const GraphView = () => {
         }}
       />
 
-      <div className="min-h-0 flex-1 w-full">
-        <div className="h-full w-full">
+      <div className="min-h-0 flex-1 w-full overflow-hidden">
+        <div className="h-full w-full min-h-0">
           <GraphCanvas
             nodes={nodes}
             relations={relations}

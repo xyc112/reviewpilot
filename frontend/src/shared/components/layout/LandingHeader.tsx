@@ -16,40 +16,40 @@ export function LandingHeader({
   return (
     <header
       className={cn(
-        "fixed left-0 right-0 top-0 z-50 flex h-16 items-center bg-landing-bg/80 backdrop-blur-xl",
+        "fixed left-0 right-0 top-0 z-50 flex h-16 items-center",
         hideBorder
-          ? "border-b border-transparent"
-          : "border-b border-landing-border/40",
+          ? "border-b border-transparent bg-landing-bg"
+          : "border-b border-landing-border/40 bg-landing-bg/70 backdrop-blur-xl",
         className,
       )}
     >
       <div className="page-container flex w-full items-center justify-between">
         <Link
           to={ROUTES.LANDING}
-          className="flex items-center gap-2 rounded-lg transition-opacity hover:opacity-90"
+          className="flex items-center gap-2.5 rounded-xl transition-all hover:opacity-90 active:scale-[0.98]"
         >
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Sparkles className="size-5" aria-hidden />
           </div>
-          <span className="text-base font-semibold tracking-tight text-foreground md:text-lg">
+          <span className="text-base font-bold tracking-tight text-foreground md:text-lg">
             Nexus
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <nav className="flex items-center gap-2">
           <Link
             to={ROUTES.LOGIN}
-            className="rounded-full border border-foreground/20 bg-landing-bg px-3.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-landing-border/50"
+            className="rounded-xl border border-foreground/20 bg-transparent px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-landing-border/40"
           >
             登录
           </Link>
           <Link
             to={ROUTES.REGISTER}
-            className="rounded-full border border-landing-bg/30 bg-foreground px-3.5 py-1.5 text-xs font-medium text-landing-bg transition-colors hover:bg-foreground/90"
+            className="rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-landing-bg shadow-sm transition-all hover:bg-foreground/90 active:scale-[0.98]"
           >
             注册
           </Link>
-        </div>
+        </nav>
       </div>
     </header>
   );

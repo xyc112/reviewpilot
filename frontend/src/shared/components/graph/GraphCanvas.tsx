@@ -62,7 +62,6 @@ const GraphCanvas = ({
   onRelationDirectedChange,
   onRelationWeightChange,
 }: GraphCanvasProps) => {
-  const isDark = false;
   const token = {
     padding: 16,
     paddingSM: 12,
@@ -71,6 +70,7 @@ const GraphCanvas = ({
     paddingLG: 24,
     marginXXS: 4,
     marginXS: 8,
+    marginSM: 12,
     borderRadiusLG: 8,
     borderRadiusSM: 4,
     fontSizeSM: 14,
@@ -81,7 +81,7 @@ const GraphCanvas = ({
   } as const;
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
+  const [, setTransform] = useState({ x: 0, y: 0, k: 1 });
   const draggingFromRef = useRef<string | null>(null);
   const tempLineRef = useRef<{
     x1: number;
@@ -315,7 +315,9 @@ const GraphCanvas = ({
       .append("circle")
       .attr("r", 20)
       .attr("fill", (d) => colorScale(d.group ?? "default"))
-      .attr("stroke", (d) => (d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)"))
+      .attr("stroke", (d) =>
+        d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)",
+      )
       .attr("stroke-width", (d) => (d.id === selectedNodeId ? 4 : 2))
       .attr("class", "node-circle")
       .style("cursor", "pointer");
@@ -441,7 +443,10 @@ const GraphCanvas = ({
           .transition()
           .duration(150)
           .attr("r", 20)
-          .attr("stroke", d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)")
+          .attr(
+            "stroke",
+            d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)",
+          )
           .attr("stroke-width", d.id === selectedNodeId ? 4 : 2);
       } else {
         d3.select(this)
@@ -673,255 +678,95 @@ const GraphCanvas = ({
     position: "relative",
     width: "100%",
     height: "100%",
-    background: isDark ? "#141414" : "oklch(0.97 0.012 85)",
+    background: "oklch(0.97 0.012 85)",
     borderRadius: token.borderRadiusLG,
     overflow: "hidden",
-  };
-
-  const controlsStyle: React.CSSProperties = {
-    position: "absolute",
-    top: token.padding,
-    left: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    padding: token.padding,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: isDark
-      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
-      : "0 4px 12px rgba(0, 0, 0, 0.12)",
-    display: "flex",
-    flexDirection: "column",
-    gap: token.paddingSM,
-    zIndex: 100,
-    minWidth: 200,
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: token.fontSizeSM,
-    fontWeight: 500,
-    color: isDark ? token.colorTextSecondary : "#64748b",
-    marginBottom: token.marginXXS,
-  };
-
-  const zoomInfoStyle: React.CSSProperties = {
-    fontSize: token.fontSizeSM,
-    color: isDark ? token.colorTextSecondary : "#64748b",
-    padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
-    background: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
-    borderRadius: token.borderRadiusSM,
-    textAlign: "center",
   };
 
   const canvasStyle: React.CSSProperties = {
     width: "100%",
     height: "100%",
-    background: isDark ? "#141414" : "oklch(0.97 0.012 85)",
+    background: "oklch(0.97 0.012 85)",
     borderRadius: token.borderRadiusLG,
   };
 
-  const legendStyle: React.CSSProperties = {
+  const bottomPanelStyle: React.CSSProperties = {
     position: "absolute",
     bottom: token.padding,
     left: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
+    background: "oklch(0.985 0.012 85 / 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
     borderRadius: token.borderRadiusLG,
-    boxShadow: isDark
-      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
-      : "0 4px 12px rgba(0, 0, 0, 0.12)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.12)",
     zIndex: 100,
-  };
-
-  const legendItemStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: token.paddingXS,
-    marginBottom: token.paddingXS,
+    maxWidth: 360,
     fontSize: token.fontSizeSM,
-    color: isDark ? token.colorTextSecondary : "#475569",
+    lineHeight: 1.6,
+    color: "#475569",
   };
 
   const legendColorStyle: React.CSSProperties = {
-    width: 16,
-    height: 16,
+    width: 14,
+    height: 14,
     borderRadius: "50%",
-    border: `2px solid ${isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 0.8)"}`,
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    border: "2px solid rgba(255, 255, 255, 0.8)",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   };
 
-  const helpStyle: React.CSSProperties = {
-    position: "absolute",
-    bottom: token.padding,
-    right: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    padding: token.padding,
-    borderRadius: token.borderRadiusLG,
-    boxShadow: isDark
-      ? "0 4px 12px rgba(0, 0, 0, 0.3)"
-      : "0 4px 12px rgba(0, 0, 0, 0.12)",
-    zIndex: 100,
-    maxWidth: 280,
+  const legendTitleStyle: React.CSSProperties = {
+    marginBottom: token.marginSM,
+    fontWeight: 600,
+    color: token.colorText,
+  };
+
+  const legendDotWrapStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: token.paddingXS,
+    marginRight: token.marginSM,
     fontSize: token.fontSizeSM,
-    lineHeight: 1.6,
+    color: "#475569",
+  };
+
+  const legendDotWrapStyleRight: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: token.paddingXS,
+    fontSize: token.fontSizeSM,
+    color: "#475569",
+  };
+
+  const legendHelpTextStyle: React.CSSProperties = {
+    color: "#64748b",
+    fontSize: token.fontSizeSM,
   };
 
   return (
     <div style={containerStyle}>
-      <div style={controlsStyle}>
-        {editable && onRelationCreate ? (
-          <>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: token.marginXXS,
-              }}
-            >
-              <label style={labelStyle}>关系类型</label>
-              <select
-                value={relationType}
-                onChange={(e) =>
-                  onRelationTypeChange?.(
-                    e.target.value as "prerequisite" | "related" | "part_of",
-                  )
-                }
-                style={{
-                  padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
-                  borderRadius: token.borderRadiusSM,
-                  border: `1px solid ${token.colorBorder}`,
-                  fontSize: token.fontSizeSM,
-                  background: token.colorBgContainer,
-                  color: token.colorText,
-                  cursor: "pointer",
-                }}
-              >
-                <option value="prerequisite">前置</option>
-                <option value="related">相关</option>
-                <option value="part_of">包含</option>
-              </select>
-            </div>
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: token.marginXXS,
-                fontSize: token.fontSizeSM,
-                cursor: "pointer",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={relationDirected}
-                onChange={(e) => onRelationDirectedChange?.(e.target.checked)}
-                style={{ cursor: "pointer" }}
-              />
-              <span
-                style={{ color: isDark ? token.colorTextSecondary : "#64748b" }}
-              >
-                有向
-              </span>
-            </label>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: token.marginXXS,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: token.fontSizeSM,
-                  color: isDark ? token.colorTextSecondary : "#64748b",
-                }}
-              >
-                权重
-              </span>
-              <input
-                type="number"
-                min={0}
-                max={1}
-                step={0.1}
-                value={relationWeight}
-                onChange={(e) => {
-                  const v = Number(e.target.value);
-                  onRelationWeightChange?.(
-                    Math.max(0, Math.min(1, Number.isNaN(v) ? 0 : v)),
-                  );
-                }}
-                style={{
-                  width: 50,
-                  padding: `${String(token.paddingXXS)} ${String(token.paddingXS)}`,
-                  borderRadius: token.borderRadiusSM,
-                  border: `1px solid ${token.colorBorder}`,
-                  fontSize: token.fontSizeSM,
-                  background: token.colorBgContainer,
-                  color: token.colorText,
-                }}
-              />
-            </div>
-          </>
-        ) : null}
-        <div style={zoomInfoStyle}>
-          缩放: {String(Math.round(transform.k * 100))}%
-        </div>
-      </div>
-
       <svg ref={svgRef} style={canvasStyle} />
 
-      <div style={legendStyle}>
-        <div style={legendItemStyle}>
-          <div style={{ ...legendColorStyle, background: "#3498db" }}></div>
-          <span>概念 (Concept)</span>
+      <div style={bottomPanelStyle}>
+        <div style={legendTitleStyle}>图例与操作</div>
+        <div style={{ marginBottom: token.marginXS }}>
+          <span style={{ color: "#64748b", marginRight: token.marginXS }}>
+            节点类型：
+          </span>
+          <span style={legendDotWrapStyle}>
+            <span style={{ ...legendColorStyle, background: "#3498db" }} /> 概念
+          </span>
+          <span style={legendDotWrapStyle}>
+            <span style={{ ...legendColorStyle, background: "#9b59b6" }} /> 主题
+          </span>
+          <span style={legendDotWrapStyleRight}>
+            <span style={{ ...legendColorStyle, background: "#e67e22" }} /> 技能
+          </span>
         </div>
-        <div style={{ ...legendItemStyle, marginBottom: 0 }}>
-          <div style={{ ...legendColorStyle, background: "#9b59b6" }}></div>
-          <span>主题 (Topic)</span>
+        <div style={legendHelpTextStyle}>
+          拖拽移动节点 · 滚轮缩放 · 点击节点查看详情
+          {editable ? " · 双击画布新建节点 · Ctrl+点击两节点创建关系" : ""}
         </div>
-        <div style={{ ...legendItemStyle, marginBottom: 0 }}>
-          <div style={{ ...legendColorStyle, background: "#e67e22" }}></div>
-          <span>技能 (Skill)</span>
-        </div>
-      </div>
-
-      <div style={helpStyle}>
-        <p
-          style={{
-            margin: `0 0 ${String(token.marginXS)} 0`,
-            fontWeight: 600,
-            color: token.colorText,
-            fontSize: token.fontSizeSM,
-          }}
-        >
-          💡 <strong>操作提示：</strong>
-        </p>
-        <ul
-          style={{
-            margin: 0,
-            paddingLeft: token.paddingLG,
-            color: isDark ? token.colorTextSecondary : "#64748b",
-          }}
-        >
-          <li style={{ marginBottom: token.marginXXS }}>
-            🖱️ 拖拽节点来重新布局
-          </li>
-          <li style={{ marginBottom: token.marginXXS }}>🔍 滚轮缩放画布</li>
-          <li style={{ marginBottom: token.marginXXS }}>👆 点击节点查看详情</li>
-          {editable ? (
-            <>
-              <li style={{ marginBottom: token.marginXXS }}>
-                🖱️ 双击画布创建新节点
-              </li>
-              <li style={{ marginBottom: 0 }}>
-                🔗 Ctrl+点击节点，再点击另一个节点创建关系
-              </li>
-            </>
-          ) : null}
-        </ul>
       </div>
     </div>
   );

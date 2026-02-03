@@ -55,7 +55,7 @@ const Register = () => {
     } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      setError(getErrorMessage(err) || "注册失败，请稍后重试");
+      setError(getErrorMessage(err) || "注册失败，请重试");
       setShakeKey((k) => k + 1);
       console.error("注册错误:", err);
     } finally {
@@ -67,7 +67,7 @@ const Register = () => {
   const showPassError = Boolean(error && passError);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-landing-bg">
+    <div className="flex h-dvh flex-col overflow-hidden bg-landing-bg">
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
         <div
           className="absolute inset-0 bg-[linear-gradient(to_right,var(--landing-border)_0.5px,transparent_0.5px),linear-gradient(to_bottom,var(--landing-border)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem]"
@@ -78,66 +78,63 @@ const Register = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_20%_80%,var(--primary)/5%,transparent_50%)]" />
       </div>
 
-      <LandingHeader />
+      <LandingHeader hideBorder />
 
-      <main className="flex min-h-screen flex-col items-center justify-center px-6 py-24">
-        <div className="mx-auto flex w-full max-w-[480px] flex-col items-center text-center lg:max-w-[900px] lg:flex-row lg:items-center lg:gap-16 lg:text-left">
-          <div className="mb-10 lg:mb-0 lg:flex-1">
-            <h1 className="mb-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+      <main className="flex flex-1 flex-col items-center justify-center px-6 min-h-0">
+        <div className="mx-auto flex w-full max-w-[480px] flex-col items-center text-center lg:max-w-[900px] lg:flex-row lg:items-center lg:gap-12 lg:text-left">
+          <div className="mb-6 lg:mb-0 lg:flex-1">
+            <h1 className="mb-2 text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
               创建账号
             </h1>
-            <p className="max-w-md text-base text-muted-foreground md:text-lg">
-              课程 · 笔记 · 测验 · 图谱 — 一站式学习管理
-            </p>
+            <p className="text-muted-foreground">一站式学习管理</p>
           </div>
 
           <Card className="w-full max-w-[400px] shrink-0 rounded-2xl border border-landing-border/80 bg-landing-card/95 shadow-xl backdrop-blur-sm lg:max-w-[420px]">
-            <CardHeader className="space-y-1 pb-6 pt-8">
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                开始使用
+            <CardHeader className="pb-4 pt-6">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                注册
               </h2>
-              <p className="text-sm text-muted-foreground">
-                填写信息即可创建账号
-              </p>
             </CardHeader>
-            <CardContent className="pb-8">
+            <CardContent className="pb-6">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   void handleSubmit(e);
                 }}
-                className="space-y-5"
+                className="space-y-4"
               >
                 <div
                   key={shakeKey}
                   className={cn(
-                    "space-y-5",
+                    "space-y-4",
                     (showUserError || showPassError) && "animate-input-shake",
                   )}
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="username">用户名</Label>
+                    <Label htmlFor="reg-username">用户名</Label>
                     <Input
-                      id="username"
+                      id="reg-username"
                       type="text"
                       value={username}
                       onChange={(e) => {
                         setUsername(e.target.value);
                       }}
+                      placeholder="请设置您的用户名"
                       autoComplete="username"
                       className="h-11 rounded-xl"
                       aria-invalid={showUserError}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password">密码（至少 6 位）</Label>
+                    <Label htmlFor="reg-password">密码（至少 6 位）</Label>
                     <Input
-                      id="password"
+                      id="reg-password"
                       type="password"
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
                       }}
+                      placeholder="请设置密码，至少 6 位"
                       autoComplete="new-password"
                       className="h-11 rounded-xl"
                       aria-invalid={showPassError}

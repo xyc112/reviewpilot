@@ -5,15 +5,16 @@
 
 -- 密码都是 "123456"，使用 BCrypt 加密
 -- BCrypt hash for "123456": $2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.
-INSERT INTO account (id, username, password, role) VALUES
-(1, 'admin', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'ADMIN'),
-(2, '胡久鸣', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(3, '蔡烨培', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(4, '吴迪', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(5, '居远谋', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(6, '钟定博', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(7, '杨舒文', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER'),
-(8, '谢宇成', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER');
+-- avatar 存 BLOB，初始为空；nickname、bio 可为空
+INSERT INTO account (id, username, password, role, nickname, bio) VALUES
+(1, 'admin', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'ADMIN', NULL, NULL),
+(2, '胡久鸣', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(3, '蔡烨培', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(4, '吴迪', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(5, '居远谋', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(6, '钟定博', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(7, '杨舒文', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL),
+(8, '谢宇成', '$2b$10$suuVlIIyfyAsF2hS6GTEIOn1RsxaZLUDUkzP8STICny4n2fs1UIq.', 'USER', NULL, NULL);
 
 -- 插入示例课程
 INSERT INTO course (id, title, description, level, author_id, created_at) VALUES

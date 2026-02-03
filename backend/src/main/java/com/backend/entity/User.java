@@ -26,6 +26,19 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    /** 用户头像（图片二进制，存 H2 BLOB），未上传则为 null */
+    @Lob
+    @Column(name = "avatar")
+    private byte[] avatar;
+
+    /** 昵称/显示名 */
+    @Column(name = "nickname", length = 64)
+    private String nickname;
+
+    /** 个人简介 */
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
     public enum Role {
         USER, ADMIN
     }

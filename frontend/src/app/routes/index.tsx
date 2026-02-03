@@ -10,10 +10,12 @@ const Login = lazy(() => import("@/features/auth/Login"));
 const Register = lazy(() => import("@/features/auth/Register"));
 const CourseList = lazy(() => import("@/features/course/CourseList"));
 const CourseDetail = lazy(() => import("@/features/course/CourseDetail"));
+const CourseFiles = lazy(() => import("@/features/course/CourseFiles"));
 const CourseOverview = lazy(() => import("@/features/course/CourseOverview"));
 const CreateCourse = lazy(() => import("@/features/course/CreateCourse"));
 const EditCourse = lazy(() => import("@/features/course/EditCourse"));
 const Community = lazy(() => import("@/features/community/Community"));
+const CreatePost = lazy(() => import("@/features/community/CreatePost"));
 const NoteList = lazy(() => import("@/features/notes/NoteList"));
 const NoteDetail = lazy(() => import("@/features/notes/NoteDetail"));
 const NoteEdit = lazy(() => import("@/features/notes/NoteEdit"));
@@ -28,6 +30,7 @@ const WrongQuestionBook = lazy(
   () => import("@/features/learning/WrongQuestionBook"),
 );
 const ReviewPlan = lazy(() => import("@/features/learning/ReviewPlan"));
+const Profile = lazy(() => import("@/features/profile/Profile"));
 
 const LazyWrapper = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
@@ -70,10 +73,26 @@ export const AppRoutes = () => {
       >
         <Route index element={<Navigate to={ROUTES.COURSES} replace />} />
         <Route
+          path="profile"
+          element={
+            <LazyWrapper>
+              <Profile />
+            </LazyWrapper>
+          }
+        />
+        <Route
           path="courses"
           element={
             <LazyWrapper>
               <CourseList />
+            </LazyWrapper>
+          }
+        />
+        <Route
+          path="courses/:id/files"
+          element={
+            <LazyWrapper>
+              <CourseFiles />
             </LazyWrapper>
           }
         />
@@ -106,6 +125,14 @@ export const AppRoutes = () => {
           element={
             <LazyWrapper>
               <EditCourse />
+            </LazyWrapper>
+          }
+        />
+        <Route
+          path="courses/:courseId/community/new"
+          element={
+            <LazyWrapper>
+              <CreatePost />
             </LazyWrapper>
           }
         />

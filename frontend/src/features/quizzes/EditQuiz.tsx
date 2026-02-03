@@ -272,111 +272,147 @@ const EditQuiz = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1000px] px-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">编辑测验</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void handleSubmit(e);
-            }}
-            className="flex flex-col gap-6"
-          >
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="quiz-title">测验标题</Label>
-              <Input
-                id="quiz-title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-                placeholder="输入测验标题"
-                required
-              />
-            </div>
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[1000px] flex-1 overflow-auto px-4 py-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">编辑测验</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleSubmit(e);
+              }}
+              className="flex flex-col gap-6"
+            >
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="quiz-title">测验标题</Label>
+                <Input
+                  id="quiz-title"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
+                  placeholder="输入测验标题"
+                  required
+                />
+              </div>
 
-            <Separator className="my-2" />
+              <Separator className="my-2" />
 
-            <div className="flex flex-col gap-4">
-              <h3 className="text-base font-medium">题目设置</h3>
-              {questions.map((question, qIndex) => (
-                <Card key={qIndex}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-base">
-                      题目 {qIndex + 1}
-                    </CardTitle>
-                    {questions.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => {
-                          handleRemoveQuestion(qIndex);
-                        }}
-                      >
-                        <Trash2 className="size-4" />
-                        删除题目
-                      </Button>
-                    )}
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-2">
-                      <Label>题目类型</Label>
-                      <Select
-                        value={question.type}
-                        onValueChange={(
-                          value: "single" | "multiple" | "truefalse",
-                        ) => {
-                          handleQuestionChange(qIndex, "type", value);
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="single">单选题</SelectItem>
-                          <SelectItem value="multiple">多选题</SelectItem>
-                          <SelectItem value="truefalse">判断题</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <Label>问题内容</Label>
-                      <Textarea
-                        value={question.question}
-                        onChange={(e) => {
-                          handleQuestionChange(
-                            qIndex,
-                            "question",
-                            e.target.value,
-                          );
-                        }}
-                        rows={3}
-                        placeholder="输入问题内容"
-                        required
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <Label>选项</Label>
-                      {(question.type === "single" ||
-                        question.type === "truefalse") && (
-                        <RadioGroup
-                          value={
-                            question.answer[0] !== undefined
-                              ? String(question.answer[0])
-                              : ""
-                          }
-                          onValueChange={(v) => {
-                            handleAnswerChange(qIndex, Number(v));
+              <div className="flex flex-col gap-4">
+                <h3 className="text-base font-medium">题目设置</h3>
+                {questions.map((question, qIndex) => (
+                  <Card key={qIndex}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-base">
+                        题目 {qIndex + 1}
+                      </CardTitle>
+                      {questions.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            handleRemoveQuestion(qIndex);
                           }}
-                          className="flex flex-col gap-2"
                         >
-                          {question.options.map((option, oIndex) => (
+                          <Trash2 className="size-4" />
+                          删除题目
+                        </Button>
+                      )}
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-2">
+                        <Label>题目类型</Label>
+                        <Select
+                          value={question.type}
+                          onValueChange={(
+                            value: "single" | "multiple" | "truefalse",
+                          ) => {
+                            handleQuestionChange(qIndex, "type", value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="single">单选题</SelectItem>
+                            <SelectItem value="multiple">多选题</SelectItem>
+                            <SelectItem value="truefalse">判断题</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <Label>问题内容</Label>
+                        <Textarea
+                          value={question.question}
+                          onChange={(e) => {
+                            handleQuestionChange(
+                              qIndex,
+                              "question",
+                              e.target.value,
+                            );
+                          }}
+                          rows={3}
+                          placeholder="输入问题内容"
+                          required
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <Label>选项</Label>
+                        {(question.type === "single" ||
+                          question.type === "truefalse") && (
+                          <RadioGroup
+                            value={
+                              question.answer[0] !== undefined
+                                ? String(question.answer[0])
+                                : ""
+                            }
+                            onValueChange={(v) => {
+                              handleAnswerChange(qIndex, Number(v));
+                            }}
+                            className="flex flex-col gap-2"
+                          >
+                            {question.options.map((option, oIndex) => (
+                              <div
+                                key={oIndex}
+                                className="flex flex-wrap items-center gap-2"
+                              >
+                                <Input
+                                  value={option}
+                                  onChange={(e) => {
+                                    handleOptionChange(
+                                      qIndex,
+                                      oIndex,
+                                      e.target.value,
+                                    );
+                                  }}
+                                  placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
+                                  disabled={question.type === "truefalse"}
+                                  className="min-w-0 flex-1"
+                                />
+                                <div className="flex items-center gap-2">
+                                  <RadioGroupItem
+                                    value={String(oIndex)}
+                                    id={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
+                                  />
+                                  <Label
+                                    htmlFor={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
+                                    className="cursor-pointer text-sm font-normal"
+                                  >
+                                    正确答案
+                                  </Label>
+                                </div>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        )}
+                        {question.type === "multiple" &&
+                          question.options.map((option, oIndex) => (
                             <div
                               key={oIndex}
                               className="flex flex-wrap items-center gap-2"
@@ -391,13 +427,15 @@ const EditQuiz = () => {
                                   );
                                 }}
                                 placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
-                                disabled={question.type === "truefalse"}
                                 className="min-w-0 flex-1"
                               />
                               <div className="flex items-center gap-2">
-                                <RadioGroupItem
-                                  value={String(oIndex)}
+                                <Checkbox
                                   id={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
+                                  checked={question.answer.includes(oIndex)}
+                                  onCheckedChange={() => {
+                                    handleAnswerChange(qIndex, oIndex);
+                                  }}
                                 />
                                 <Label
                                   htmlFor={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
@@ -406,114 +444,78 @@ const EditQuiz = () => {
                                   正确答案
                                 </Label>
                               </div>
+                              {question.options.length > 2 && (
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="icon"
+                                  onClick={() => {
+                                    handleRemoveOption(qIndex, oIndex);
+                                  }}
+                                >
+                                  <Minus className="size-4" />
+                                </Button>
+                              )}
                             </div>
                           ))}
-                        </RadioGroup>
-                      )}
-                      {question.type === "multiple" &&
-                        question.options.map((option, oIndex) => (
-                          <div
-                            key={oIndex}
-                            className="flex flex-wrap items-center gap-2"
+                        {question.type === "multiple" && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              handleAddOption(qIndex);
+                            }}
                           >
-                            <Input
-                              value={option}
-                              onChange={(e) => {
-                                handleOptionChange(
-                                  qIndex,
-                                  oIndex,
-                                  e.target.value,
-                                );
-                              }}
-                              placeholder={`选项 ${String.fromCharCode(65 + oIndex)}`}
-                              className="min-w-0 flex-1"
-                            />
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
-                                checked={question.answer.includes(oIndex)}
-                                onCheckedChange={() => {
-                                  handleAnswerChange(qIndex, oIndex);
-                                }}
-                              />
-                              <Label
-                                htmlFor={`eq-q${String(qIndex)}-opt${String(oIndex)}`}
-                                className="cursor-pointer text-sm font-normal"
-                              >
-                                正确答案
-                              </Label>
-                            </div>
-                            {question.options.length > 2 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => {
-                                  handleRemoveOption(qIndex, oIndex);
-                                }}
-                              >
-                                <Minus className="size-4" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                      {question.type === "multiple" && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            handleAddOption(qIndex);
-                          }}
-                        >
-                          <Plus className="size-4" />
-                          添加选项
-                        </Button>
-                      )}
-                      {question.type === "truefalse" && (
-                        <Alert>
-                          <AlertTitle className="text-sm">
-                            判断题固定为「正确」和「错误」两个选项
-                          </AlertTitle>
-                        </Alert>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                            <Plus className="size-4" />
+                            添加选项
+                          </Button>
+                        )}
+                        {question.type === "truefalse" && (
+                          <Alert>
+                            <AlertTitle className="text-sm">
+                              判断题固定为「正确」和「错误」两个选项
+                            </AlertTitle>
+                          </Alert>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
 
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleAddQuestion}
-              >
-                <Plus className="size-4" />
-                添加题目
-              </Button>
-            </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleAddQuestion}
+                >
+                  <Plus className="size-4" />
+                  添加题目
+                </Button>
+              </div>
 
-            {error ? (
-              <Alert variant="destructive">
-                <AlertTitle>{error}</AlertTitle>
-              </Alert>
-            ) : null}
+              {error ? (
+                <Alert variant="destructive">
+                  <AlertTitle>{error}</AlertTitle>
+                </Alert>
+              ) : null}
 
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void navigate(-1)}
-              >
-                取消
-              </Button>
-              <Button type="submit" disabled={saving}>
-                {saving ? "保存中..." : "保存更改"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void navigate(-1)}
+                >
+                  取消
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? "保存中..." : "保存更改"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -12,11 +12,14 @@ export const ROUTES = {
   HOME: "/app",
   COURSES: "/app/courses",
   COURSE_DETAIL: (id: number) => `/app/courses/${String(id)}`,
+  COURSE_FILES: (id: number) => `/app/courses/${String(id)}/files`,
   COURSE_OVERVIEW: (id: number) => `/app/courses/${String(id)}/overview`,
   CREATE_COURSE: "/app/courses/new",
   EDIT_COURSE: (id: number) => `/app/courses/edit/${String(id)}`,
   COURSE_COMMUNITY: (courseId: number) =>
     `/app/courses/${String(courseId)}/community`,
+  CREATE_POST: (courseId: number) =>
+    `/app/courses/${String(courseId)}/community/new`,
 
   // 笔记相关
   NOTES: "/app/notes",
@@ -31,6 +34,7 @@ export const ROUTES = {
   EDIT_QUIZ: (quizId: string) => `/app/quizzes/edit/${quizId}`,
 
   // 其他功能
+  PROFILE: "/app/profile",
   GRAPH: "/app/graph",
   PROGRESS: "/app/progress",
   WRONG_QUESTIONS: "/app/wrong-questions",

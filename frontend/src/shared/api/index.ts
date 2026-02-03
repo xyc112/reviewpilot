@@ -1,5 +1,7 @@
 export { authAPI } from "./auth";
+export { profileAPI } from "./profile";
 export { courseAPI } from "./course";
+export { courseFileAPI } from "./courseFile";
 export { graphAPI } from "./graph";
 export { noteAPI } from "./note";
 export { quizAPI } from "./quiz";

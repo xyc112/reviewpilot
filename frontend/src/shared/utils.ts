@@ -1,6 +1,14 @@
 import type { User } from "@/shared/types";
 
 /**
+ * 将字符串中的字面量 \n（反斜杠+n）转为真实换行，便于在 pre-wrap 中正确显示
+ */
+export function normalizeNewlines(s: string): string {
+  if (typeof s !== "string") return "";
+  return s.replace(/\\n/g, "\n");
+}
+
+/**
  * 从 unknown 错误中提取可读消息（兼容 axios 等）
  */
 export function getErrorMessage(err: unknown): string {

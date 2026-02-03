@@ -128,135 +128,139 @@ const NoteList = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4">
-      {error ? (
-        <Alert variant="destructive" className="mb-6">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[1000px] flex h-full min-h-0 flex-col overflow-auto px-4">
+        {error ? (
+          <Alert variant="destructive" className="mb-5">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : null}
 
-      <div className="mb-6 flex w-full flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex flex-1">
-          <SearchBox
-            placeholder="搜索笔记标题或内容..."
-            value={searchQuery}
-            onChange={setSearchQuery}
-            maxWidth={undefined}
-            style={{ flex: 1 }}
-          />
+        <div className="mb-5 flex w-full shrink-0 flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex flex-1">
+            <SearchBox
+              placeholder="搜索笔记标题或内容..."
+              value={searchQuery}
+              onChange={setSearchQuery}
+              maxWidth={undefined}
+              style={{ flex: 1 }}
+            />
+          </div>
+          <Link to={ROUTES.CREATE_NOTE} className="shrink-0">
+            <Button>
+              <Plus className="size-4" />
+              创建笔记
+            </Button>
+          </Link>
         </div>
-        <Link to={ROUTES.CREATE_NOTE} className="shrink-0">
-          <Button>
-            <Plus className="size-4" />
-            创建笔记
-          </Button>
-        </Link>
-      </div>
 
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        title="删除笔记"
-        message="确定要删除这条笔记吗？此操作无法撤销。"
-        confirmText="删除"
-        cancelText="取消"
-        type="danger"
-        onConfirm={() => {
-          void confirmDelete();
-        }}
-        onCancel={() => {
-          setDeleteConfirm({ isOpen: false, noteId: null });
-        }}
-      />
-
-      {notes.length === 0 ? (
-        <ListEmptyState
-          variant="empty"
-          icon={<FileText className="size-16 text-muted-foreground" />}
-          description={
-            <span>
-              暂无笔记
-              <br />
-              <span className="text-muted-foreground">
-                点击「创建笔记」按钮开始记录你的学习心得
-              </span>
-            </span>
-          }
-          action={
-            <Link to={ROUTES.CREATE_NOTE}>
-              <Button>
-                <Plus className="size-4" />
-                创建笔记
-              </Button>
-            </Link>
-          }
-        />
-      ) : filteredNotes.length === 0 ? (
-        <ListEmptyState
-          variant="noResults"
-          description={
-            <span>
-              未找到匹配的笔记
-              <br />
-              <span className="text-muted-foreground">尝试调整搜索条件</span>
-            </span>
-          }
-          onClearFilter={() => {
-            setSearchQuery("");
+        <ConfirmDialog
+          isOpen={deleteConfirm.isOpen}
+          title="删除笔记"
+          message="确定要删除这条笔记吗？此操作无法撤销。"
+          confirmText="删除"
+          cancelText="取消"
+          type="danger"
+          onConfirm={() => {
+            void confirmDelete();
           }}
-          clearFilterLabel="清除搜索"
+          onCancel={() => {
+            setDeleteConfirm({ isOpen: false, noteId: null });
+          }}
         />
-      ) : (
-        <div className="space-y-0">
-          {filteredNotes.map((note) => (
-            <ListItemCard key={note.id}>
-              <div className="flex w-full items-start gap-4">
-                <Link
-                  to={ROUTES.NOTE_DETAIL(note.id)}
-                  className="min-w-0 flex-1 no-underline text-foreground hover:text-foreground"
-                >
-                  <div className="flex w-full flex-col gap-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="m-0 text-lg font-semibold text-foreground">
-                        {note.title}
-                      </h4>
-                      <Badge
-                        variant={
-                          note.visibility === "public" ? "default" : "secondary"
-                        }
-                      >
-                        {note.visibility === "public" ? "公开" : "私有"}
-                      </Badge>
-                    </div>
-                    <p className="m-0 line-clamp-2 text-sm text-muted-foreground">
-                      {note.summary ??
-                        (note.content.length > 150
-                          ? note.content.substring(0, 150) + "..."
-                          : note.content
-                        ).replace(/\n/g, " ")}
-                    </p>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(note.createdAt)}
-                    </span>
-                  </div>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDeleteNote(note.id);
-                  }}
-                  aria-label="删除笔记"
-                >
-                  <Trash2 className="size-4" />
+
+        {notes.length === 0 ? (
+          <ListEmptyState
+            variant="empty"
+            icon={<FileText className="size-16 text-muted-foreground" />}
+            description={
+              <span>
+                暂无笔记
+                <br />
+                <span className="text-muted-foreground">
+                  点击「创建笔记」按钮开始记录你的学习心得
+                </span>
+              </span>
+            }
+            action={
+              <Link to={ROUTES.CREATE_NOTE}>
+                <Button>
+                  <Plus className="size-4" />
+                  创建笔记
                 </Button>
-              </div>
-            </ListItemCard>
-          ))}
-        </div>
-      )}
+              </Link>
+            }
+          />
+        ) : filteredNotes.length === 0 ? (
+          <ListEmptyState
+            variant="noResults"
+            description={
+              <span>
+                未找到匹配的笔记
+                <br />
+                <span className="text-muted-foreground">尝试调整搜索条件</span>
+              </span>
+            }
+            onClearFilter={() => {
+              setSearchQuery("");
+            }}
+            clearFilterLabel="清除搜索"
+          />
+        ) : (
+          <div className="space-y-3">
+            {filteredNotes.map((note) => (
+              <ListItemCard key={note.id}>
+                <div className="flex w-full items-start gap-4">
+                  <Link
+                    to={ROUTES.NOTE_DETAIL(note.id)}
+                    className="min-w-0 flex-1 no-underline text-foreground hover:text-foreground"
+                  >
+                    <div className="flex w-full flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="m-0 text-lg font-semibold text-foreground">
+                          {note.title}
+                        </h4>
+                        <Badge
+                          variant={
+                            note.visibility === "public"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {note.visibility === "public" ? "公开" : "私有"}
+                        </Badge>
+                      </div>
+                      <p className="m-0 line-clamp-2 text-sm text-muted-foreground">
+                        {note.summary ??
+                          (note.content.length > 150
+                            ? note.content.substring(0, 150) + "..."
+                            : note.content
+                          ).replace(/\n/g, " ")}
+                      </p>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(note.createdAt)}
+                      </span>
+                    </div>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-destructive hover:text-destructive"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDeleteNote(note.id);
+                    }}
+                    aria-label="删除笔记"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </ListItemCard>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

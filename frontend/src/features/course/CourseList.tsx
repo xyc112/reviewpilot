@@ -11,10 +11,8 @@ import {
   ConfirmDialog,
   useToast,
   SkeletonGrid,
-  SearchHighlight,
   SearchBox,
   ListEmptyState,
-  FilterBar,
   ListItemCard,
 } from "@/shared/components";
 import { getErrorMessage } from "@/shared/utils";
@@ -26,7 +24,6 @@ const CourseList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     courseId: number | null;
@@ -155,54 +152,15 @@ const CourseList = () => {
     return colors[level] ?? "default";
   };
 
-  // 获取所有唯一的标签
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    courses.forEach((course) => {
-      course.tags.forEach((tag) => tagSet.add(tag));
-    });
-    return Array.from(tagSet).sort();
-  }, [courses]);
-
-  // 过滤课程
   const filteredCourses = useMemo(() => {
-    return courses.filter((course) => {
-      // 搜索过滤
-      const matchesSearch =
-        !searchQuery ||
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.tags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-
-      // 标签过滤
-      const matchesTags =
-        selectedTags.size === 0 ||
-        course.tags.some((tag) => selectedTags.has(tag));
-
-      return matchesSearch && matchesTags;
-    });
-  }, [courses, searchQuery, selectedTags]);
-
-  const toggleTag = (tag: string) => {
-    setSelectedTags((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(tag)) {
-        newSet.delete(tag);
-      } else {
-        newSet.add(tag);
-      }
-      return newSet;
-    });
-  };
-
-  const clearFilters = () => {
-    setSearchQuery("");
-    setSelectedTags(new Set());
-  };
-
-  const hasActiveFilters = searchQuery || selectedTags.size > 0;
+    if (!searchQuery.trim()) return courses;
+    const q = searchQuery.toLowerCase();
+    return courses.filter(
+      (course) =>
+        course.title.toLowerCase().includes(q) ||
+        (course.description || "").toLowerCase().includes(q),
+    );
+  }, [courses, searchQuery]);
 
   if (loading) {
     return <SkeletonGrid count={6} />;
@@ -220,127 +178,81 @@ const CourseList = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] p-0">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-            课程列表
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            浏览并管理您的课程，添加到学习列表即可开始学习
-          </p>
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[1000px] flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="mb-4 flex shrink-0 items-center justify-between gap-4">
+          <SearchBox
+            placeholder="搜索课程..."
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+          {isAdmin ? (
+            <Link to={ROUTES.CREATE_COURSE} className="shrink-0">
+              <Button size="sm">
+                <Plus className="size-4" />
+                新建
+              </Button>
+            </Link>
+          ) : null}
         </div>
-        {isAdmin ? (
-          <Link to={ROUTES.CREATE_COURSE} className="shrink-0">
-            <Button size="lg" className="font-medium">
-              <Plus className="size-4" />
-              创建新课程
-            </Button>
-          </Link>
-        ) : null}
-      </div>
 
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        title="删除课程"
-        message="确定要删除这个课程吗？此操作不可撤销，将删除课程及其所有相关内容。"
-        confirmText="删除"
-        cancelText="取消"
-        type="danger"
-        onConfirm={() => {
-          void confirmDelete();
-        }}
-        onCancel={() => {
-          setDeleteConfirm({ isOpen: false, courseId: null });
-        }}
-      />
+        <ConfirmDialog
+          isOpen={deleteConfirm.isOpen}
+          title="删除课程"
+          message="确定要删除这个课程吗？此操作不可撤销，将删除课程及其所有相关内容。"
+          confirmText="删除"
+          cancelText="取消"
+          type="danger"
+          onConfirm={() => {
+            void confirmDelete();
+          }}
+          onCancel={() => {
+            setDeleteConfirm({ isOpen: false, courseId: null });
+          }}
+        />
 
-      {/* 搜索和过滤栏 */}
-      <div className="mb-8 flex w-full flex-col gap-4">
-        <SearchBox
-          placeholder="搜索课程标题、描述或标签..."
-          value={searchQuery}
-          onChange={setSearchQuery}
-        />
-        <FilterBar
-          hasActiveFilters={hasActiveFilters}
-          onClearFilters={clearFilters}
-          clearLabel="清除筛选"
-          extra={
-            allTags.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  标签：
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {allTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant={selectedTags.has(tag) ? "default" : "outline"}
-                      className="cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-                      onClick={() => {
-                        toggleTag(tag);
-                      }}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            ) : undefined
-          }
-          resultSummary={
-            hasActiveFilters
-              ? `找到 ${String(filteredCourses.length)} 个课程（共 ${String(courses.length)} 个）`
-              : undefined
-          }
-        />
-      </div>
-
-      {/* 课程列表 */}
-      {courses.length === 0 ? (
-        <ListEmptyState
-          variant="empty"
-          icon={<BookOpen className="size-16 text-muted-foreground" />}
-          description={
-            <span>
-              还没有创建任何课程，
-              {isAdmin ? "立即创建第一个课程吧！" : "请等待管理员创建课程。"}
-            </span>
-          }
-          action={
-            isAdmin ? (
-              <Link to={ROUTES.CREATE_COURSE}>
-                <Button>
-                  <Plus className="size-4" />
-                  创建新课程
-                </Button>
-              </Link>
-            ) : undefined
-          }
-        />
-      ) : filteredCourses.length === 0 ? (
-        <ListEmptyState
-          variant="noResults"
-          description="未找到匹配的课程，尝试调整搜索条件或筛选器"
-          onClearFilter={clearFilters}
-          clearFilterLabel="清除所有筛选"
-        />
-      ) : (
-        <div className="space-y-0">
-          {filteredCourses.map((course) => {
-            const state = getCourseState(course);
-            return (
-              <ListItemCard key={course.id} cursor="pointer">
-                <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex w-full flex-col gap-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h4 className="m-0 text-lg font-semibold text-foreground">
-                          <SearchHighlight
-                            text={course.title}
-                            searchQuery={searchQuery}
-                          />
+        <div className="min-h-0 flex-1 overflow-auto">
+          {courses.length === 0 ? (
+            <ListEmptyState
+              variant="empty"
+              icon={<BookOpen className="size-12 text-muted-foreground" />}
+              description={isAdmin ? "暂无课程，可创建新课程" : "暂无课程"}
+              action={
+                isAdmin ? (
+                  <Link to={ROUTES.CREATE_COURSE}>
+                    <Button size="sm">
+                      <Plus className="size-4" />
+                      创建
+                    </Button>
+                  </Link>
+                ) : undefined
+              }
+            />
+          ) : filteredCourses.length === 0 ? (
+            <ListEmptyState
+              variant="noResults"
+              description="无匹配课程"
+              onClearFilter={() => {
+                setSearchQuery("");
+              }}
+              clearFilterLabel="清空搜索"
+            />
+          ) : (
+            <div className="space-y-2">
+              {filteredCourses.map((course) => {
+                const state = getCourseState(course);
+                return (
+                  <ListItemCard
+                    key={course.id}
+                    cursor="pointer"
+                    onClick={() => {
+                      void navigate(ROUTES.COURSE_DETAIL(course.id));
+                    }}
+                  >
+                    <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
+                      <div className="min-w-0 flex-1 flex items-center gap-3">
+                        <h4 className="m-0 truncate text-base font-semibold text-foreground">
+                          {course.title}
                         </h4>
                         <Badge
                           variant={
@@ -350,128 +262,103 @@ const CourseList = () => {
                                 ? "outline"
                                 : "destructive"
                           }
+                          className="shrink-0 text-sm"
                         >
                           {getLevelText(course.level)}
                         </Badge>
-                        {currentStudyingCourse?.id === course.id && (
+                        {currentStudyingCourse?.id === course.id ? (
                           <Badge
                             variant="secondary"
-                            className="bg-primary/15 text-primary hover:bg-primary/20"
+                            className="shrink-0 text-sm bg-primary/15 text-primary"
                           >
                             正在学习
                           </Badge>
-                        )}
+                        ) : null}
                       </div>
-                      {course.description ? (
-                        <p className="m-0 line-clamp-2 text-sm text-muted-foreground">
-                          <SearchHighlight
-                            text={course.description}
-                            searchQuery={searchQuery}
-                          />
-                        </p>
-                      ) : null}
-                      {course.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {course.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
-                              <SearchHighlight
-                                text={tag}
-                                searchQuery={searchQuery}
-                              />
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                      <div className="flex shrink-0 gap-2">
+                        {state === 0 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handleAddToStudyList(course);
+                            }}
+                          >
+                            <BookOpen className="size-4" />
+                            添加
+                          </Button>
+                        )}
+                        {state === 1 && (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void handleSetCurrentStudying(course);
+                              }}
+                            >
+                              <Star className="size-4" />
+                              开始
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void handleRemoveFromStudyList(course);
+                              }}
+                            >
+                              <X className="size-4" />
+                            </Button>
+                          </>
+                        )}
+                        {state === 2 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handleEndStudying(course);
+                            }}
+                          >
+                            <Star className="size-4" />
+                            结束
+                          </Button>
+                        )}
+                        {isAdmin ? (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void navigate(ROUTES.EDIT_COURSE(course.id));
+                              }}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCourse(course.id);
+                              }}
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          </>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex shrink-0 flex-wrap gap-2">
-                    {state === 0 && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleAddToStudyList(course);
-                        }}
-                        className="rounded-xl"
-                      >
-                        <BookOpen className="size-4" />
-                        添加到学习
-                      </Button>
-                    )}
-                    {state === 1 && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            void handleSetCurrentStudying(course);
-                          }}
-                          className="rounded-xl shadow-sm"
-                        >
-                          <Star className="size-4" />
-                          开始学习
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            void handleRemoveFromStudyList(course);
-                          }}
-                          className="rounded-xl"
-                        >
-                          <X className="size-4" />
-                        </Button>
-                      </>
-                    )}
-                    {state === 2 && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleEndStudying(course);
-                        }}
-                        className="rounded-xl"
-                      >
-                        <Star className="size-4" />
-                        结束学习
-                      </Button>
-                    )}
-                    {isAdmin ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            void navigate(ROUTES.EDIT_COURSE(course.id));
-                          }}
-                          className="rounded-xl"
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteCourse(course.id);
-                          }}
-                          className="rounded-xl"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-              </ListItemCard>
-            );
-          })}
+                  </ListItemCard>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

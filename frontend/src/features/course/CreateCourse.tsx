@@ -75,104 +75,109 @@ const CreateCourse = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[800px] px-4">
-      <Card className="rounded-xl shadow-sm">
-        <CardContent className="pt-6">
-          <h1 className="mb-6 text-2xl font-semibold">创建新课程</h1>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void handleSubmit(e);
-            }}
-            className="flex flex-col gap-4"
-          >
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="title">课程标题</Label>
-              <Input
-                id="title"
-                placeholder="请输入课程标题"
-                value={form.title}
-                onChange={(e) => {
-                  setForm((prev) => ({ ...prev, title: e.target.value }));
-                }}
-                maxLength={100}
-                required
-              />
-            </div>
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[800px] flex-1 overflow-auto px-4 py-4">
+        <Card className="rounded-xl shadow-sm">
+          <CardContent className="pt-6">
+            <h1 className="mb-6 text-2xl font-semibold">创建新课程</h1>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleSubmit(e);
+              }}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="title">课程标题</Label>
+                <Input
+                  id="title"
+                  placeholder="请输入课程标题"
+                  value={form.title}
+                  onChange={(e) => {
+                    setForm((prev) => ({ ...prev, title: e.target.value }));
+                  }}
+                  maxLength={100}
+                  required
+                />
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="description">课程描述</Label>
-              <Textarea
-                id="description"
-                rows={4}
-                placeholder="请输入课程描述"
-                value={form.description}
-                onChange={(e) => {
-                  setForm((prev) => ({ ...prev, description: e.target.value }));
-                }}
-                maxLength={500}
-                className="resize-none"
-              />
-              <span className="text-xs text-muted-foreground">
-                {form.description.length}/500
-              </span>
-            </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="description">课程描述</Label>
+                <Textarea
+                  id="description"
+                  rows={4}
+                  placeholder="请输入课程描述"
+                  value={form.description}
+                  onChange={(e) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }));
+                  }}
+                  maxLength={500}
+                  className="resize-none"
+                />
+                <span className="text-xs text-muted-foreground">
+                  {form.description.length}/500
+                </span>
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="tags">标签</Label>
-              <Input
-                id="tags"
-                placeholder="例如: 数学, 基础, 入门"
-                value={form.tags}
-                onChange={(e) => {
-                  setForm((prev) => ({ ...prev, tags: e.target.value }));
-                }}
-              />
-              <span className="text-xs text-muted-foreground">
-                多个标签请用逗号分隔
-              </span>
-            </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="tags">标签</Label>
+                <Input
+                  id="tags"
+                  placeholder="例如: 数学, 基础, 入门"
+                  value={form.tags}
+                  onChange={(e) => {
+                    setForm((prev) => ({ ...prev, tags: e.target.value }));
+                  }}
+                />
+                <span className="text-xs text-muted-foreground">
+                  多个标签请用逗号分隔
+                </span>
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <Label>难度等级</Label>
-              <Select
-                value={form.level}
-                onValueChange={(value) => {
-                  setForm((prev) => ({ ...prev, level: value }));
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="请选择难度等级" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BEGINNER">初级</SelectItem>
-                  <SelectItem value="INTERMEDIATE">中级</SelectItem>
-                  <SelectItem value="ADVANCED">高级</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="flex flex-col gap-2">
+                <Label>难度等级</Label>
+                <Select
+                  value={form.level}
+                  onValueChange={(value) => {
+                    setForm((prev) => ({ ...prev, level: value }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="请选择难度等级" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BEGINNER">初级</SelectItem>
+                    <SelectItem value="INTERMEDIATE">中级</SelectItem>
+                    <SelectItem value="ADVANCED">高级</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {error ? (
-              <Alert variant="destructive" className="mb-2">
-                <AlertTitle>{error}</AlertTitle>
-              </Alert>
-            ) : null}
+              {error ? (
+                <Alert variant="destructive" className="mb-2">
+                  <AlertTitle>{error}</AlertTitle>
+                </Alert>
+              ) : null}
 
-            <div className="mt-6 flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void navigate(-1)}
-              >
-                取消
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "创建中..." : "创建课程"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="mt-6 flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void navigate(-1)}
+                >
+                  取消
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "创建中..." : "创建课程"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

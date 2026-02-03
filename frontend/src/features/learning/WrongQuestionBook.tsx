@@ -233,459 +233,483 @@ const WrongQuestionBook = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4">
-      <ConfirmDialog
-        isOpen={deleteConfirm !== null}
-        title="移除错题"
-        message="确定要从错题本中移除这道题吗？"
-        confirmText="移除"
-        cancelText="取消"
-        type="danger"
-        onConfirm={() => {
-          void handleRemove();
-        }}
-        onCancel={() => {
-          setDeleteConfirm(null);
-        }}
-      />
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[1000px] flex h-full min-h-0 flex-col overflow-auto px-4">
+        <ConfirmDialog
+          isOpen={deleteConfirm !== null}
+          title="移除错题"
+          message="确定要从错题本中移除这道题吗？"
+          confirmText="移除"
+          cancelText="取消"
+          type="danger"
+          onConfirm={() => {
+            void handleRemove();
+          }}
+          onCancel={() => {
+            setDeleteConfirm(null);
+          }}
+        />
 
-      {stats ? (
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                总错题数
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-semibold">{stats.total}</span>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                未掌握
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-semibold text-destructive">
-                {stats.notMastered}
-              </span>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                已掌握
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-semibold text-primary">
-                {stats.mastered}
-              </span>
-            </CardContent>
-          </Card>
+        {stats ? (
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  总错题数
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <span className="text-2xl font-semibold">{stats.total}</span>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  未掌握
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <span className="text-2xl font-semibold text-destructive">
+                  {stats.notMastered}
+                </span>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  已掌握
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <span className="text-2xl font-semibold text-primary">
+                  {stats.mastered}
+                </span>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
+
+        <div className="mb-5 flex flex-wrap gap-2">
+          <Button
+            variant={filter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilter("all");
+            }}
+          >
+            全部
+          </Button>
+          <Button
+            variant={filter === "notMastered" ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilter("notMastered");
+            }}
+          >
+            未掌握
+          </Button>
+          <Button
+            variant={filter === "mastered" ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilter("mastered");
+            }}
+          >
+            已掌握
+          </Button>
         </div>
-      ) : null}
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        <Button
-          variant={filter === "all" ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setFilter("all");
-          }}
-        >
-          全部
-        </Button>
-        <Button
-          variant={filter === "notMastered" ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setFilter("notMastered");
-          }}
-        >
-          未掌握
-        </Button>
-        <Button
-          variant={filter === "mastered" ? "default" : "outline"}
-          size="sm"
-          onClick={() => {
-            setFilter("mastered");
-          }}
-        >
-          已掌握
-        </Button>
-      </div>
+        {/* 搜索栏 */}
+        <SearchBox
+          placeholder="搜索错题内容..."
+          value={searchQuery}
+          onChange={setSearchQuery}
+          style={{ marginBottom: "2rem" }}
+        />
 
-      {/* 搜索栏 */}
-      <SearchBox
-        placeholder="搜索错题内容..."
-        value={searchQuery}
-        onChange={setSearchQuery}
-        style={{ marginBottom: "2rem" }}
-      />
+        {error ? (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : null}
 
-      {error ? (
-        <Alert variant="destructive" className="mb-6">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
-
-      {practicingQuestion?.question ? (
-        <Card className="mb-8">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg">练习错题</CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleClosePractice}
-            >
-              <X className="size-4" />
-            </Button>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div>
-              <h3 className="mb-2 text-base font-medium">
-                {practicingQuestion.question.question}
-                {practicingQuestion.question.type === "multiple" && (
-                  <Badge variant="secondary" className="ml-2">
-                    多选
-                  </Badge>
-                )}
-                {practicingQuestion.question.type === "truefalse" && (
-                  <Badge variant="outline" className="ml-2">
-                    判断
-                  </Badge>
-                )}
-              </h3>
-            </div>
-
-            {practicingQuestion.question.type === "single" ||
-            practicingQuestion.question.type === "truefalse" ? (
-              <RadioGroup
-                value={
-                  (practiceAnswers[practicingQuestion.questionId] ?? [])[0] !==
-                  undefined
-                    ? String(
-                        (practiceAnswers[practicingQuestion.questionId] ??
-                          [])[0],
-                      )
-                    : ""
-                }
-                onValueChange={(v) => {
-                  if (!showPracticeResult[practicingQuestion.questionId]) {
-                    const val = Number(v);
-                    handlePracticeOptionSelect(
-                      practicingQuestion.questionId,
-                      val,
-                      practicingQuestion.question.type,
-                    );
-                  }
-                }}
-                disabled={
-                  showPracticeResult[practicingQuestion.questionId] ?? false
-                }
-                className="flex flex-col gap-2"
+        {practicingQuestion?.question ? (
+          <Card className="mb-8">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-lg">练习错题</CardTitle>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleClosePractice}
               >
-                {practicingQuestion.question.options.map((option, optIndex) => {
-                  const answers =
-                    practiceAnswers[practicingQuestion.questionId] ?? [];
-                  const isSelected = answers.includes(optIndex);
-                  const showResult =
-                    showPracticeResult[practicingQuestion.questionId];
-                  const isCorrect =
-                    practicingQuestion.question.answer.includes(optIndex);
-                  const isCorrectlySelected = isSelected && isCorrect;
-                  const isIncorrectlySelected = isSelected && !isCorrect;
-
-                  return (
-                    <div
-                      key={optIndex}
-                      className={cn(
-                        "flex items-center gap-2 rounded-lg border-2 p-3",
-                        showResult &&
-                          isCorrectlySelected &&
-                          "border-primary bg-primary/10",
-                        showResult &&
-                          isIncorrectlySelected &&
-                          "border-red-500 bg-red-50 dark:bg-red-950/20",
-                        showResult &&
-                          !isSelected &&
-                          isCorrect &&
-                          "border-dashed border-primary bg-primary/10",
-                      )}
-                    >
-                      <RadioGroupItem
-                        value={String(optIndex)}
-                        id={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
-                      />
-                      <Label
-                        htmlFor={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
-                        className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
-                      >
-                        {String.fromCharCode(65 + optIndex)}. {option}
-                        {showResult ? (
-                          <span className="ml-2 flex gap-1">
-                            {isCorrectlySelected ? (
-                              <Badge variant="default" className="bg-primary">
-                                你的答案（正确）
-                              </Badge>
-                            ) : null}
-                            {isIncorrectlySelected ? (
-                              <Badge variant="destructive">你的答案</Badge>
-                            ) : null}
-                            {!isSelected && isCorrect ? (
-                              <Badge variant="default" className="bg-primary">
-                                正确答案
-                              </Badge>
-                            ) : null}
-                          </span>
-                        ) : null}
-                      </Label>
-                    </div>
-                  );
-                })}
-              </RadioGroup>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {practicingQuestion.question.options.map((option, optIndex) => {
-                  const answers =
-                    practiceAnswers[practicingQuestion.questionId] ?? [];
-                  const isSelected = answers.includes(optIndex);
-                  const showResult =
-                    showPracticeResult[practicingQuestion.questionId];
-                  const isCorrect =
-                    practicingQuestion.question.answer.includes(optIndex);
-                  const isCorrectlySelected = isSelected && isCorrect;
-                  const isIncorrectlySelected = isSelected && !isCorrect;
-
-                  return (
-                    <div
-                      key={optIndex}
-                      className={cn(
-                        "flex items-center gap-2 rounded-lg border-2 p-3",
-                        showResult &&
-                          isCorrectlySelected &&
-                          "border-primary bg-primary/10",
-                        showResult &&
-                          isIncorrectlySelected &&
-                          "border-red-500 bg-red-50 dark:bg-red-950/20",
-                        showResult &&
-                          !isSelected &&
-                          isCorrect &&
-                          "border-dashed border-primary bg-primary/10",
-                      )}
-                    >
-                      <Checkbox
-                        id={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
-                        checked={isSelected}
-                        disabled={
-                          showPracticeResult[practicingQuestion.questionId] ??
-                          false
-                        }
-                        onCheckedChange={(checked) => {
-                          if (
-                            !showPracticeResult[practicingQuestion.questionId]
-                          ) {
-                            const current =
-                              practiceAnswers[practicingQuestion.questionId] ??
-                              [];
-                            const newAnswers: number[] =
-                              checked === true
-                                ? [...current, optIndex].sort((a, b) => a - b)
-                                : current.filter((i) => i !== optIndex);
-                            setPracticeAnswers((prev) => ({
-                              ...prev,
-                              [practicingQuestion.questionId]: newAnswers,
-                            }));
-                          }
-                        }}
-                      />
-                      <Label
-                        htmlFor={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
-                        className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
-                      >
-                        {String.fromCharCode(65 + optIndex)}. {option}
-                        {showResult ? (
-                          <span className="ml-2 flex gap-1">
-                            {isCorrectlySelected ? (
-                              <Badge variant="default" className="bg-primary">
-                                你的答案（正确）
-                              </Badge>
-                            ) : null}
-                            {isIncorrectlySelected ? (
-                              <Badge variant="destructive">你的答案</Badge>
-                            ) : null}
-                            {!isSelected && isCorrect ? (
-                              <Badge variant="default" className="bg-primary">
-                                正确答案
-                              </Badge>
-                            ) : null}
-                          </span>
-                        ) : null}
-                      </Label>
-                    </div>
-                  );
-                })}
+                <X className="size-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div>
+                <h3 className="mb-2 text-base font-medium">
+                  {practicingQuestion.question.question}
+                  {practicingQuestion.question.type === "multiple" && (
+                    <Badge variant="secondary" className="ml-2">
+                      多选
+                    </Badge>
+                  )}
+                  {practicingQuestion.question.type === "truefalse" && (
+                    <Badge variant="outline" className="ml-2">
+                      判断
+                    </Badge>
+                  )}
+                </h3>
               </div>
-            )}
 
-            {showPracticeResult[practicingQuestion.questionId] ? (
-              <Card className="border-l-4 border-l-primary bg-primary/10">
-                <CardContent className="pt-4">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        正确答案：
-                      </span>
-                      <span className="font-medium">
-                        {practicingQuestion.question.answer
-                          ?.map((idx) => String.fromCharCode(65 + idx))
-                          .join(", ")}
-                      </span>
-                    </div>
-                    {practicingQuestion.question.explanation ? (
-                      <>
-                        <Separator className="my-2" />
-                        <div>
-                          <span className="text-sm font-medium text-primary">
-                            解析：
-                          </span>
-                          <p className="mt-1 text-sm">
-                            {practicingQuestion.question.explanation}
-                          </p>
+              {practicingQuestion.question.type === "single" ||
+              practicingQuestion.question.type === "truefalse" ? (
+                <RadioGroup
+                  value={
+                    (practiceAnswers[practicingQuestion.questionId] ??
+                      [])[0] !== undefined
+                      ? String(
+                          (practiceAnswers[practicingQuestion.questionId] ??
+                            [])[0],
+                        )
+                      : ""
+                  }
+                  onValueChange={(v) => {
+                    if (!showPracticeResult[practicingQuestion.questionId]) {
+                      const val = Number(v);
+                      handlePracticeOptionSelect(
+                        practicingQuestion.questionId,
+                        val,
+                        practicingQuestion.question.type,
+                      );
+                    }
+                  }}
+                  disabled={
+                    showPracticeResult[practicingQuestion.questionId] ?? false
+                  }
+                  className="flex flex-col gap-2"
+                >
+                  {practicingQuestion.question.options.map(
+                    (option, optIndex) => {
+                      const answers =
+                        practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const isSelected = answers.includes(optIndex);
+                      const showResult =
+                        showPracticeResult[practicingQuestion.questionId];
+                      const isCorrect =
+                        practicingQuestion.question.answer.includes(optIndex);
+                      const isCorrectlySelected = isSelected && isCorrect;
+                      const isIncorrectlySelected = isSelected && !isCorrect;
+
+                      return (
+                        <div
+                          key={optIndex}
+                          className={cn(
+                            "flex items-center gap-2 rounded-lg border-2 p-3",
+                            showResult &&
+                              isCorrectlySelected &&
+                              "border-primary bg-primary/10",
+                            showResult &&
+                              isIncorrectlySelected &&
+                              "border-red-500 bg-red-50 dark:bg-red-950/20",
+                            showResult &&
+                              !isSelected &&
+                              isCorrect &&
+                              "border-dashed border-primary bg-primary/10",
+                          )}
+                        >
+                          <RadioGroupItem
+                            value={String(optIndex)}
+                            id={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                          />
+                          <Label
+                            htmlFor={`practice-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                            className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
+                          >
+                            {String.fromCharCode(65 + optIndex)}. {option}
+                            {showResult ? (
+                              <span className="ml-2 flex gap-1">
+                                {isCorrectlySelected ? (
+                                  <Badge
+                                    variant="default"
+                                    className="bg-primary"
+                                  >
+                                    你的答案（正确）
+                                  </Badge>
+                                ) : null}
+                                {isIncorrectlySelected ? (
+                                  <Badge variant="destructive">你的答案</Badge>
+                                ) : null}
+                                {!isSelected && isCorrect ? (
+                                  <Badge
+                                    variant="default"
+                                    className="bg-primary"
+                                  >
+                                    正确答案
+                                  </Badge>
+                                ) : null}
+                              </span>
+                            ) : null}
+                          </Label>
                         </div>
-                      </>
-                    ) : null}
+                      );
+                    },
+                  )}
+                </RadioGroup>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {practicingQuestion.question.options.map(
+                    (option, optIndex) => {
+                      const answers =
+                        practiceAnswers[practicingQuestion.questionId] ?? [];
+                      const isSelected = answers.includes(optIndex);
+                      const showResult =
+                        showPracticeResult[practicingQuestion.questionId];
+                      const isCorrect =
+                        practicingQuestion.question.answer.includes(optIndex);
+                      const isCorrectlySelected = isSelected && isCorrect;
+                      const isIncorrectlySelected = isSelected && !isCorrect;
+
+                      return (
+                        <div
+                          key={optIndex}
+                          className={cn(
+                            "flex items-center gap-2 rounded-lg border-2 p-3",
+                            showResult &&
+                              isCorrectlySelected &&
+                              "border-primary bg-primary/10",
+                            showResult &&
+                              isIncorrectlySelected &&
+                              "border-red-500 bg-red-50 dark:bg-red-950/20",
+                            showResult &&
+                              !isSelected &&
+                              isCorrect &&
+                              "border-dashed border-primary bg-primary/10",
+                          )}
+                        >
+                          <Checkbox
+                            id={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                            checked={isSelected}
+                            disabled={
+                              showPracticeResult[
+                                practicingQuestion.questionId
+                              ] ?? false
+                            }
+                            onCheckedChange={(checked) => {
+                              if (
+                                !showPracticeResult[
+                                  practicingQuestion.questionId
+                                ]
+                              ) {
+                                const current =
+                                  practiceAnswers[
+                                    practicingQuestion.questionId
+                                  ] ?? [];
+                                const newAnswers: number[] =
+                                  checked === true
+                                    ? [...current, optIndex].sort(
+                                        (a, b) => a - b,
+                                      )
+                                    : current.filter((i) => i !== optIndex);
+                                setPracticeAnswers((prev) => ({
+                                  ...prev,
+                                  [practicingQuestion.questionId]: newAnswers,
+                                }));
+                              }
+                            }}
+                          />
+                          <Label
+                            htmlFor={`practice-cb-${String(practicingQuestion.questionId)}-${String(optIndex)}`}
+                            className="flex flex-1 cursor-pointer items-center gap-2 font-medium"
+                          >
+                            {String.fromCharCode(65 + optIndex)}. {option}
+                            {showResult ? (
+                              <span className="ml-2 flex gap-1">
+                                {isCorrectlySelected ? (
+                                  <Badge
+                                    variant="default"
+                                    className="bg-primary"
+                                  >
+                                    你的答案（正确）
+                                  </Badge>
+                                ) : null}
+                                {isIncorrectlySelected ? (
+                                  <Badge variant="destructive">你的答案</Badge>
+                                ) : null}
+                                {!isSelected && isCorrect ? (
+                                  <Badge
+                                    variant="default"
+                                    className="bg-primary"
+                                  >
+                                    正确答案
+                                  </Badge>
+                                ) : null}
+                              </span>
+                            ) : null}
+                          </Label>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+
+              {showPracticeResult[practicingQuestion.questionId] ? (
+                <Card className="border-l-4 border-l-primary bg-primary/10">
+                  <CardContent className="pt-4">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          正确答案：
+                        </span>
+                        <span className="font-medium">
+                          {practicingQuestion.question.answer
+                            ?.map((idx) => String.fromCharCode(65 + idx))
+                            .join(", ")}
+                        </span>
+                      </div>
+                      {practicingQuestion.question.explanation ? (
+                        <>
+                          <Separator className="my-2" />
+                          <div>
+                            <span className="text-sm font-medium text-primary">
+                              解析：
+                            </span>
+                            <p className="mt-1 text-sm">
+                              {practicingQuestion.question.explanation}
+                            </p>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              <div className="flex gap-2">
+                {!showPracticeResult[practicingQuestion.questionId] ? (
+                  <Button
+                    onClick={() => {
+                      void handleSubmitPractice();
+                    }}
+                  >
+                    提交答案
+                  </Button>
+                ) : (
+                  <Button variant="outline" onClick={handleClosePractice}>
+                    关闭
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        <div className="flex flex-col gap-4">
+          {wrongQuestions.length === 0 ? (
+            <ListEmptyState
+              variant="empty"
+              icon={<BookOpen className="size-16 text-muted-foreground" />}
+              description={
+                <div className="flex flex-col gap-1 text-center">
+                  <h3 className="text-lg font-semibold">暂无错题</h3>
+                  <span className="text-sm text-muted-foreground">
+                    {filter === "mastered"
+                      ? "暂无已掌握的错题"
+                      : filter === "notMastered"
+                        ? "暂无未掌握的错题"
+                        : "完成测验后，错题会自动添加到错题本"}
+                  </span>
+                </div>
+              }
+            />
+          ) : filteredWrongQuestions.length === 0 && searchQuery ? (
+            <ListEmptyState
+              variant="noResults"
+              icon={<BookOpen className="size-16 text-muted-foreground" />}
+              description={
+                <div className="flex flex-col gap-1 text-center">
+                  <h3 className="text-lg font-semibold">未找到匹配的错题</h3>
+                  <span className="text-sm text-muted-foreground">
+                    尝试调整搜索条件
+                  </span>
+                </div>
+              }
+              onClearFilter={() => {
+                setSearchQuery("");
+              }}
+              clearFilterLabel="清除搜索"
+            />
+          ) : filteredWrongQuestions.length > 0 ? (
+            filteredWrongQuestions.map((wq) => (
+              <Card key={wq.id} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="mb-2 font-medium">
+                          {wq.question?.question ?? "题目加载中..."}
+                        </h3>
+                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                          <span>来自测验: {wq.quizId}</span>
+                          <span>练习次数: {String(wq.practiceCount)}</span>
+                          <span>
+                            添加时间:{" "}
+                            {new Date(wq.addedAt).toLocaleDateString("zh-CN")}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={wq.mastered ? "default" : "secondary"}
+                        className={
+                          wq.mastered
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground"
+                        }
+                      >
+                        {wq.mastered ? "已掌握" : "未掌握"}
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          handleStartPractice(wq);
+                        }}
+                      >
+                        <RotateCw className="mr-1 size-4" />
+                        重新练习
+                      </Button>
+                      {!wq.mastered && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            void handleMarkAsMastered(wq.id);
+                          }}
+                        >
+                          <CheckCircle className="mr-1 size-4" />
+                          标记为已掌握
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => {
+                          setDeleteConfirm(wq.id);
+                        }}
+                      >
+                        <Trash2 className="mr-1 size-4" />
+                        移除
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            ) : null}
-
-            <div className="flex gap-2">
-              {!showPracticeResult[practicingQuestion.questionId] ? (
-                <Button
-                  onClick={() => {
-                    void handleSubmitPractice();
-                  }}
-                >
-                  提交答案
-                </Button>
-              ) : (
-                <Button variant="outline" onClick={handleClosePractice}>
-                  关闭
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      ) : null}
-
-      <div className="flex flex-col gap-4">
-        {wrongQuestions.length === 0 ? (
-          <ListEmptyState
-            variant="empty"
-            icon={<BookOpen className="size-16 text-muted-foreground" />}
-            description={
-              <div className="flex flex-col gap-1 text-center">
-                <h3 className="text-lg font-semibold">暂无错题</h3>
-                <span className="text-sm text-muted-foreground">
-                  {filter === "mastered"
-                    ? "暂无已掌握的错题"
-                    : filter === "notMastered"
-                      ? "暂无未掌握的错题"
-                      : "完成测验后，错题会自动添加到错题本"}
-                </span>
-              </div>
-            }
-          />
-        ) : filteredWrongQuestions.length === 0 && searchQuery ? (
-          <ListEmptyState
-            variant="noResults"
-            icon={<BookOpen className="size-16 text-muted-foreground" />}
-            description={
-              <div className="flex flex-col gap-1 text-center">
-                <h3 className="text-lg font-semibold">未找到匹配的错题</h3>
-                <span className="text-sm text-muted-foreground">
-                  尝试调整搜索条件
-                </span>
-              </div>
-            }
-            onClearFilter={() => {
-              setSearchQuery("");
-            }}
-            clearFilterLabel="清除搜索"
-          />
-        ) : filteredWrongQuestions.length > 0 ? (
-          filteredWrongQuestions.map((wq) => (
-            <Card key={wq.id} className="overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="mb-2 font-medium">
-                        {wq.question?.question ?? "题目加载中..."}
-                      </h3>
-                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                        <span>来自测验: {wq.quizId}</span>
-                        <span>练习次数: {String(wq.practiceCount)}</span>
-                        <span>
-                          添加时间:{" "}
-                          {new Date(wq.addedAt).toLocaleDateString("zh-CN")}
-                        </span>
-                      </div>
-                    </div>
-                    <Badge
-                      variant={wq.mastered ? "default" : "secondary"}
-                      className={
-                        wq.mastered
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-secondary-foreground"
-                      }
-                    >
-                      {wq.mastered ? "已掌握" : "未掌握"}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        handleStartPractice(wq);
-                      }}
-                    >
-                      <RotateCw className="mr-1 size-4" />
-                      重新练习
-                    </Button>
-                    {!wq.mastered && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          void handleMarkAsMastered(wq.id);
-                        }}
-                      >
-                        <CheckCircle className="mr-1 size-4" />
-                        标记为已掌握
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => {
-                        setDeleteConfirm(wq.id);
-                      }}
-                    >
-                      <Trash2 className="mr-1 size-4" />
-                      移除
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : null}
+            ))
+          ) : null}
+        </div>
       </div>
     </div>
   );

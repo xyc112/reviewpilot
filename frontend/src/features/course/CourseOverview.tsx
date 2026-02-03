@@ -20,7 +20,7 @@ import type { Course } from "@/shared/types";
 import { courseAPI, noteAPI, quizAPI, postAPI } from "@/shared/api";
 import { useAuthStore, useCourseStore } from "@/shared/stores";
 import { ConfirmDialog, useToast } from "@/shared/components";
-import { getErrorMessage } from "@/shared/utils";
+import { getErrorMessage, normalizeNewlines } from "@/shared/utils";
 import { ROUTES } from "@/shared/config/routes";
 
 const CourseOverview = () => {
@@ -131,7 +131,7 @@ const CourseOverview = () => {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-[1200px] px-4 py-8">
+      <div className="mx-auto max-w-[1000px] px-4 py-8">
         <Alert variant="destructive">
           <AlertTitle>{error}</AlertTitle>
         </Alert>
@@ -141,7 +141,7 @@ const CourseOverview = () => {
 
   if (!course) {
     return (
-      <div className="mx-auto max-w-[1200px] px-4 py-8">
+      <div className="mx-auto max-w-[1000px] px-4 py-8">
         <Alert variant="destructive">
           <AlertTitle>课程不存在</AlertTitle>
         </Alert>
@@ -153,128 +153,130 @@ const CourseOverview = () => {
   const isCurrentCourse = currentStudyingCourse?.id === course.id;
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4">
-      <ConfirmDialog
-        isOpen={deleteConfirm}
-        title="删除课程"
-        message="确定要删除这个课程吗？此操作不可撤销，将删除课程及其所有相关内容（笔记、测验、知识图谱等）。"
-        confirmText="删除"
-        cancelText="取消"
-        type="danger"
-        onConfirm={() => {
-          void confirmDelete();
-        }}
-        onCancel={() => {
-          setDeleteConfirm(false);
-        }}
-      />
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mx-auto w-full max-w-[1000px] flex flex-col overflow-auto px-4">
+        <ConfirmDialog
+          isOpen={deleteConfirm}
+          title="删除课程"
+          message="确定要删除这个课程吗？此操作不可撤销，将删除课程及其所有相关内容（笔记、测验、知识图谱等）。"
+          confirmText="删除"
+          cancelText="取消"
+          type="danger"
+          onConfirm={() => {
+            void confirmDelete();
+          }}
+          onCancel={() => {
+            setDeleteConfirm(false);
+          }}
+        />
 
-      <div className="flex w-full flex-col gap-6">
-        <Card>
-          <CardContent className="flex flex-col gap-6 pt-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              {isCurrentCourse ? (
-                <Badge variant="secondary" className="gap-1">
-                  <Book className="size-3" />
-                  当前学习课程
-                </Badge>
-              ) : (
-                <span />
-              )}
-              {canEdit ? (
-                <div className="flex gap-2">
-                  <Link to={ROUTES.EDIT_COURSE(course.id)}>
-                    <Button variant="outline">
-                      <Pencil className="size-4" />
-                      编辑课程
+        <div className="flex w-full flex-col gap-6">
+          <Card>
+            <CardContent className="flex flex-col gap-6 pt-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                {isCurrentCourse ? (
+                  <Badge variant="secondary" className="gap-1">
+                    <Book className="size-3" />
+                    当前学习课程
+                  </Badge>
+                ) : (
+                  <span />
+                )}
+                {canEdit ? (
+                  <div className="flex gap-2">
+                    <Link to={ROUTES.EDIT_COURSE(course.id)}>
+                      <Button variant="outline">
+                        <Pencil className="size-4" />
+                        编辑课程
+                      </Button>
+                    </Link>
+                    <Button variant="destructive" onClick={handleDelete}>
+                      <Trash2 className="size-4" />
+                      删除课程
                     </Button>
-                  </Link>
-                  <Button variant="destructive" onClick={handleDelete}>
-                    <Trash2 className="size-4" />
-                    删除课程
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+                  </div>
+                ) : null}
+              </div>
 
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <BarChart2 className="size-4 text-muted-foreground" />
-                <Badge variant={getLevelColor(course.level)}>
-                  {getLevelText(course.level)}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="size-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {formatDate(course.createdAt)}
-                </span>
-              </div>
-              {course.authorId ? (
+              <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
-                  <User className="size-4 text-muted-foreground" />
+                  <BarChart2 className="size-4 text-muted-foreground" />
+                  <Badge variant={getLevelColor(course.level)}>
+                    {getLevelText(course.level)}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="size-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    作者 ID: {course.authorId}
+                    {formatDate(course.createdAt)}
                   </span>
                 </div>
-              ) : null}
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-lg font-semibold">课程简介</h2>
-              <p className="whitespace-pre-wrap text-muted-foreground">
-                {course.description || "暂无描述"}
-              </p>
-            </div>
-
-            {course.tags.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {course.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
+                {course.authorId ? (
+                  <div className="flex items-center gap-2">
+                    <User className="size-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      作者 ID: {course.authorId}
+                    </span>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
 
-            {/* 统计信息卡片 */}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Card>
-                <CardContent className="flex items-center gap-3 pt-6">
-                  <FileText className="size-8 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">笔记数量</p>
-                    <p className="text-2xl font-semibold">
-                      {stats?.noteCount ?? 0}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex items-center gap-3 pt-6">
-                  <List className="size-8 text-green-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">测验数量</p>
-                    <p className="text-2xl font-semibold">
-                      {stats?.quizCount ?? 0}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex items-center gap-3 pt-6">
-                  <MessageCircle className="size-8 text-violet-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">帖子数量</p>
-                    <p className="text-2xl font-semibold">
-                      {stats?.postCount ?? 0}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <h2 className="mb-2 text-lg font-semibold">课程简介</h2>
+                <p className="whitespace-pre-wrap text-muted-foreground">
+                  {normalizeNewlines(course.description || "暂无描述")}
+                </p>
+              </div>
+
+              {course.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {course.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              ) : null}
+
+              {/* 统计信息卡片 */}
+              <div className="grid gap-4 sm:grid-cols-3">
+                <Card>
+                  <CardContent className="flex items-center gap-3 pt-6">
+                    <FileText className="size-8 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">笔记数量</p>
+                      <p className="text-2xl font-semibold">
+                        {stats?.noteCount ?? 0}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="flex items-center gap-3 pt-6">
+                    <List className="size-8 text-green-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">测验数量</p>
+                      <p className="text-2xl font-semibold">
+                        {stats?.quizCount ?? 0}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="flex items-center gap-3 pt-6">
+                    <MessageCircle className="size-8 text-violet-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">帖子数量</p>
+                      <p className="text-2xl font-semibold">
+                        {stats?.postCount ?? 0}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

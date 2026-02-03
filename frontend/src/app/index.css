@@ -82,6 +82,21 @@ html {
 
 body {
   @apply bg-background text-foreground antialiased;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* 渐变标题文字 */
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--foreground) 0%,
+    var(--primary) 50%,
+    var(--foreground) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 *:focus-visible {
@@ -110,9 +125,10 @@ body {
 }
 
 .page-container {
-  @apply mx-auto w-full max-w-[1400px] px-4 md:px-6;
+  @apply mx-auto w-full max-w-[1400px];
 }
 
+/* Markdown 渲染样式（GFM：列表、引用、表格等） */
 .markdown-content {
   @apply text-foreground;
 }
@@ -121,18 +137,69 @@ body {
 }
 .markdown-content h1,
 .markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  @apply font-semibold text-foreground;
+}
+.markdown-content h1 {
+  @apply text-2xl;
+}
+.markdown-content h2 {
+  @apply text-xl;
+}
 .markdown-content h3 {
+  @apply text-lg;
+}
+.markdown-content p {
+  @apply my-2 leading-relaxed;
+}
+.markdown-content ul,
+.markdown-content ol {
+  @apply my-3 pl-6;
+}
+.markdown-content ul {
+  @apply list-disc;
+}
+.markdown-content ol {
+  @apply list-decimal;
+}
+.markdown-content li {
+  @apply my-1;
+}
+.markdown-content blockquote {
+  @apply border-l-4 border-primary/50 bg-muted/40 py-1 pl-4 pr-2 my-3 italic text-muted-foreground;
+}
+.markdown-content table {
+  @apply w-full my-4 border-collapse border border-border rounded-lg overflow-hidden;
+}
+.markdown-content th,
+.markdown-content td {
+  @apply border border-border px-3 py-2 text-left;
+}
+.markdown-content th {
+  @apply bg-muted font-semibold text-foreground;
+}
+.markdown-content tr:nth-child(even) {
+  @apply bg-muted/30;
+}
+.markdown-content hr {
+  @apply my-4 border-border;
+}
+.markdown-content strong {
   @apply font-semibold text-foreground;
 }
 .markdown-content pre,
 .markdown-content code {
-  @apply rounded bg-muted px-1.5 py-0.5 text-sm;
+  @apply rounded bg-muted px-1.5 py-0.5 text-sm font-mono;
 }
 .markdown-content pre {
-  @apply block overflow-auto p-3;
+  @apply block overflow-auto p-3 my-3;
 }
 .markdown-content pre code {
   @apply bg-transparent p-0;
+}
+.markdown-content img {
+  @apply max-w-full h-auto rounded-lg;
 }
 
 /* 输入框错误时的回弹动画 */

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
 import { FormErrorMessage } from "@/shared/components/feedback";
 import { LandingHeader } from "@/shared/components/layout/LandingHeader";
 import { Input } from "@/shared/components/ui/input";
@@ -47,7 +47,7 @@ const Login = () => {
     } catch (err: unknown) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      setError(getErrorMessage(err) || "登录失败，请检查用户名和密码");
+      setError(getErrorMessage(err) || "用户名或密码错误");
       setShakeKey((k) => k + 1);
       console.error("登录错误:", err);
     } finally {
@@ -59,7 +59,7 @@ const Login = () => {
   const showPassError = Boolean(error && passError);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-landing-bg">
+    <div className="flex h-dvh flex-col overflow-hidden bg-landing-bg">
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
         <div
           className="absolute inset-0 bg-[linear-gradient(to_right,var(--landing-border)_0.5px,transparent_0.5px),linear-gradient(to_bottom,var(--landing-border)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem]"
@@ -70,21 +70,24 @@ const Login = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_20%_80%,var(--primary)/5%,transparent_50%)]" />
       </div>
 
-      <LandingHeader />
+      <LandingHeader hideBorder />
 
-      <main className="flex min-h-screen flex-col items-center justify-center px-6 py-24">
+      <main className="flex flex-1 flex-col items-center justify-center px-6 min-h-0">
         <div className="mx-auto flex w-full max-w-[480px] flex-col items-center text-center lg:max-w-[900px] lg:flex-row lg:items-center lg:gap-16 lg:text-left">
-          <div className="mb-10 lg:mb-0 lg:flex-1">
-            <h1 className="mb-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+          <div className="mb-8 lg:mb-0 lg:flex-1">
+            <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               欢迎回来
             </h1>
-            <p className="max-w-md text-base text-muted-foreground md:text-lg">
-              继续你的学习之旅
-            </p>
+            <p className="text-muted-foreground">登录以继续</p>
           </div>
 
-          <Card className="w-full max-w-[400px] shrink-0 rounded-2xl border border-landing-border/80 bg-landing-card/95 shadow-xl backdrop-blur-sm lg:max-w-[420px]">
-            <CardContent className="p-6 sm:p-8">
+          <Card className="w-full max-w-[400px] shrink-0 rounded-2xl border border-landing-border/80 bg-landing-card/95 shadow-lg backdrop-blur-sm lg:max-w-[420px]">
+            <CardHeader className="pb-4 pt-6">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                登录
+              </h2>
+            </CardHeader>
+            <CardContent className="p-6 pt-0 sm:p-8 sm:pt-0">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -108,6 +111,7 @@ const Login = () => {
                       onChange={(e) => {
                         setUsername(e.target.value);
                       }}
+                      placeholder="请输入登录用户名"
                       autoComplete="username"
                       className="h-11 rounded-xl"
                       aria-invalid={showUserError}
@@ -122,6 +126,7 @@ const Login = () => {
                       onChange={(e) => {
                         setPassword(e.target.value);
                       }}
+                      placeholder="请输入登录密码"
                       autoComplete="current-password"
                       className="h-11 rounded-xl"
                       aria-invalid={showPassError}
