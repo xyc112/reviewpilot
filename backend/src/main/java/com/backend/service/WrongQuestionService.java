@@ -28,19 +28,19 @@ public class WrongQuestionService {
      */
     public List<WrongQuestion> getWrongQuestions(Long userId, Long courseId, Boolean mastered) {
         courseService.getCourse(courseId); // 验证课程存在
-        
+
         List<WrongQuestion> wrongQuestions;
         if (mastered == null) {
             wrongQuestions = wrongQuestionRepository.findByUserIdAndCourseIdOrderByAddedAtDesc(userId, courseId);
         } else {
             wrongQuestions = wrongQuestionRepository.findByUserIdAndCourseIdAndMasteredOrderByAddedAtDesc(userId, courseId, mastered);
         }
-        
+
         // 加载关联的Question信息
         for (WrongQuestion wq : wrongQuestions) {
             questionRepository.findById(wq.getQuestionId()).ifPresent(wq::setQuestion);
         }
-        
+
         return wrongQuestions;
     }
 
@@ -51,11 +51,11 @@ public class WrongQuestionService {
     public WrongQuestion addWrongQuestion(Long userId, Long courseId, Long questionId, List<Integer> userAnswer) {
         // 验证课程存在
         courseService.getCourse(courseId);
-        
+
         // 验证题目存在
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Question not found"));
-        
+
         if (!Objects.equals(question.getCourseId(), courseId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question does not belong to this course");
         }
@@ -95,7 +95,7 @@ public class WrongQuestionService {
     public WrongQuestion markAsMastered(Long userId, Long wrongQuestionId) {
         WrongQuestion wrongQuestion = wrongQuestionRepository.findById(wrongQuestionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong question not found"));
-        
+
         if (!Objects.equals(wrongQuestion.getUserId(), userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your wrong question");
         }
@@ -111,7 +111,7 @@ public class WrongQuestionService {
     public void removeWrongQuestion(Long userId, Long wrongQuestionId) {
         WrongQuestion wrongQuestion = wrongQuestionRepository.findById(wrongQuestionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong question not found"));
-        
+
         if (!Objects.equals(wrongQuestion.getUserId(), userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your wrong question");
         }
@@ -126,7 +126,7 @@ public class WrongQuestionService {
     public WrongQuestion incrementPracticeCount(Long userId, Long wrongQuestionId) {
         WrongQuestion wrongQuestion = wrongQuestionRepository.findById(wrongQuestionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong question not found"));
-        
+
         if (!Objects.equals(wrongQuestion.getUserId(), userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your wrong question");
         }
@@ -143,7 +143,7 @@ public class WrongQuestionService {
         long total = wrongQuestionRepository.countByUserIdAndCourseIdAndMastered(userId, courseId, null);
         long mastered = wrongQuestionRepository.countByUserIdAndCourseIdAndMastered(userId, courseId, true);
         long notMastered = wrongQuestionRepository.countByUserIdAndCourseIdAndMastered(userId, courseId, false);
-        
+
         return new WrongQuestionStats(total, mastered, notMastered);
     }
 

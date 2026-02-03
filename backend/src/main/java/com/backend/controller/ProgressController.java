@@ -33,7 +33,7 @@ public class ProgressController {
         User user = currentUser();
         // 获取当前学习的课程ID
         java.util.Optional<Long> currentStudyingId = userCourseService.getCurrentStudyingCourseId(user.getId());
-        
+
         List<Long> courseIds;
         if (currentStudyingId.isPresent()) {
             // 如果有当前学习的课程，只统计该课程
@@ -42,7 +42,7 @@ public class ProgressController {
             // 否则统计所有选择的课程
             courseIds = userCourseService.getUserSelectedCourseIds(user.getId());
         }
-        
+
         ProgressService.OverallStatsDTO stats = progressService.getOverallStats(user.getId(), courseIds);
         return ResponseEntity.ok(stats);
     }

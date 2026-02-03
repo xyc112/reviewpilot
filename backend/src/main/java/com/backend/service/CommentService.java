@@ -50,10 +50,10 @@ public class CommentService {
         if (!postRepository.existsById(postId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
         }
-        
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        
+
         if (!Objects.equals(post.getCourseId(), courseId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post does not belong to this course");
         }
@@ -89,7 +89,7 @@ public class CommentService {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        
+
         if (!Objects.equals(post.getCourseId(), courseId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post does not belong to this course");
         }
@@ -121,7 +121,7 @@ public class CommentService {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        
+
         if (!Objects.equals(post.getCourseId(), courseId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post does not belong to this course");
         }

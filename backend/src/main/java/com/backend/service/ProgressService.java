@@ -30,7 +30,7 @@ public class ProgressService {
         courseService.getCourse(courseId);
 
         Optional<Progress> existing = progressRepository.findByUserIdAndCourseIdAndQuizId(userId, courseId, quizId);
-        
+
         Progress progress;
         if (existing.isPresent()) {
             progress = existing.get();
@@ -72,7 +72,7 @@ public class ProgressService {
         } else {
             courseIds = courseIdsParam;
         }
-        
+
         // 只统计指定课程的进度
         List<Progress> allProgress = progressRepository.findByUserId(userId).stream()
                 .filter(p -> courseIds.contains(p.getCourseId()))
@@ -129,10 +129,10 @@ public class ProgressService {
         courseService.getCourse(courseId);
 
         List<Progress> progressList = progressRepository.findByUserIdAndCourseId(userId, courseId);
-        
+
         // 获取该课程的所有测验
         long totalQuizzes = quizRepository.countByCourseId(courseId);
-        
+
         // 统计已完成的测验
         List<Progress> completedQuizzes = progressList.stream()
                 .filter(p -> p.getCompleted() && p.getQuizId() != null)
@@ -179,7 +179,7 @@ public class ProgressService {
         if (courseIds == null || courseIds.isEmpty()) {
             return java.util.Collections.emptyList();
         }
-        
+
         return courseIds.stream()
                 .map(courseId -> getCourseProgress(userId, courseId))
                 .collect(Collectors.toList());
@@ -191,7 +191,7 @@ public class ProgressService {
     @Deprecated
     public List<CourseProgressDTO> getAllCourseProgress(Long userId) {
         List<Progress> allProgress = progressRepository.findByUserId(userId);
-        
+
         // 获取所有课程ID
         Set<Long> courseIds = allProgress.stream()
                 .map(Progress::getCourseId)

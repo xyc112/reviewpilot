@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * 记录用户在课程中的学习成果，包括测验完成情况和统计信息
  */
 @Entity
-@Table(name = "progress", 
+@Table(name = "progress",
        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "course_id", "quiz_id"}),
        indexes = {
            @Index(columnList = "user_id"),

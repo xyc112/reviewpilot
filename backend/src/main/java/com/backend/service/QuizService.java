@@ -116,13 +116,13 @@ public class QuizService {
                 .build();
 
         Quiz savedQuiz = quizRepository.save(quiz);
-        
+
         // 同步创建Question实体
         syncQuestionsToEntity(courseId, id, qs);
-        
+
         return savedQuiz;
     }
-    
+
     /**
      * 将Quiz中的questions同步到Question实体
      */
@@ -130,7 +130,7 @@ public class QuizService {
     private void syncQuestionsToEntity(Long courseId, String quizId, List<Quiz.Question> questions) {
         // 删除旧的Question实体
         questionRepository.deleteByQuizId(quizId);
-        
+
         // 创建新的Question实体
         for (int i = 0; i < questions.size(); i++) {
             Quiz.Question q = questions.get(i);
@@ -173,7 +173,7 @@ public class QuizService {
                             .build())
                     .collect(Collectors.toList());
             existing.setQuestions(qs);
-            
+
             // 同步更新Question实体
             syncQuestionsToEntity(courseId, quizId, qs);
         }
@@ -207,13 +207,13 @@ public class QuizService {
 
         // 获取Question实体，建立字符串ID到Long ID的映射
         List<Question> questionEntities = questionRepository.findByQuizIdOrderByOrderIndexAsc(quizId);
-        
+
         // 如果Question实体不存在，自动创建它们（兼容旧数据）
         if (questionEntities.isEmpty() && quiz.getQuestions() != null && !quiz.getQuestions().isEmpty()) {
             syncQuestionsToEntity(courseId, quizId, quiz.getQuestions());
             questionEntities = questionRepository.findByQuizIdOrderByOrderIndexAsc(quizId);
         }
-        
+
         Map<String, Long> questionIdMap = questionEntities.stream()
                 .filter(q -> q.getOriginalId() != null)
                 .collect(Collectors.toMap(
@@ -234,7 +234,7 @@ public class QuizService {
         // 计算每道题的基础分数和余数，确保总分正好是100
         int baseScore = maxScore / totalQuestions;
         int remainder = maxScore % totalQuestions;
-        
+
         // 为每道题分配分数：前remainder道题多1分，确保总分正好是100
         // 按照题目在列表中的顺序分配分数
         List<Quiz.Question> questionList = Optional.ofNullable(quiz.getQuestions()).orElse(List.of());
@@ -264,10 +264,10 @@ public class QuizService {
                 results.add(r);
                 continue;
             }
-            
+
             boolean correct = false;
             int questionScore = questionScoreMap.getOrDefault(a.getQuestionId(), baseScore);
-            
+
             if ("single".equalsIgnoreCase(q.getType()) || "multiple".equalsIgnoreCase(q.getType()) || "truefalse".equalsIgnoreCase(q.getType())) {
                 List<Integer> correctAnswer = q.getAnswer() == null ? List.of() : q.getAnswer();
                 List<Integer> provided = a.getAnswer() == null ? List.of() : a.getAnswer();
@@ -286,7 +286,7 @@ public class QuizService {
             }
             results.add(r);
         }
-        
+
         // 处理用户未回答的题目
         for (Quiz.Question q : questionList) {
             boolean alreadyProcessed = results.stream()
