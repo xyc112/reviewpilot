@@ -20,7 +20,7 @@ const FilterBar = ({
   if (!hasActiveFilters && !extra) return null;
 
   return (
-    <div className="flex w-full flex-col gap-3 rounded-xl border border-border bg-muted/30 p-4">
+    <div className="flex w-full flex-col gap-3 rounded-2xl border border-border/80 bg-card/70 p-4">
       {hasActiveFilters ? (
         <Button
           variant="outline"

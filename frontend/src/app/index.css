@@ -1,45 +1,46 @@
 @import "tailwindcss";
 
-/* 固定主题：shadcn + 靛蓝主色，无暗色切换 */
+/* 固定主题：米色风格 + 靛蓝主色，全项目统一 */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.985 0.002 247);
-  --foreground: oklch(0.21 0.02 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.02 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 265);
+  --radius: 0.75rem;
+  /* 米色系背景与表面（无纯白，统一暖色） */
+  --background: oklch(0.98 0.012 85);
+  --foreground: oklch(0.22 0.02 265);
+  --card: oklch(0.985 0.012 85);
+  --card-foreground: oklch(0.22 0.02 265);
+  --popover: oklch(0.985 0.012 85);
+  --popover-foreground: oklch(0.22 0.02 265);
   --primary: oklch(0.488 0.243 264.376);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.968 0.01 265);
-  --secondary-foreground: oklch(0.31 0.05 265);
-  --muted: oklch(0.968 0.008 265);
-  --muted-foreground: oklch(0.45 0.02 265);
-  --accent: oklch(0.968 0.015 265);
-  --accent-foreground: oklch(0.31 0.05 265);
+  --secondary: oklch(0.965 0.018 85);
+  --secondary-foreground: oklch(0.28 0.03 265);
+  --muted: oklch(0.96 0.015 85);
+  --muted-foreground: oklch(0.42 0.025 265);
+  --accent: oklch(0.965 0.02 85);
+  --accent-foreground: oklch(0.28 0.03 265);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.01 265);
-  --input: oklch(0.92 0.01 265);
+  --border: oklch(0.91 0.022 85);
+  --input: oklch(0.91 0.022 85);
   --ring: oklch(0.488 0.243 264.376);
   --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.171 62.48);
+  --chart-2: oklch(0.65 0.15 55);
   --chart-3: oklch(0.55 0.2 200);
   --chart-4: oklch(0.65 0.2 30);
   --chart-5: oklch(0.6 0.18 300);
-  --sidebar: oklch(0.99 0.002 265);
-  --sidebar-foreground: oklch(0.21 0.02 265);
+  --sidebar: oklch(0.99 0.01 85);
+  --sidebar-foreground: oklch(0.22 0.02 265);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.968 0.015 265);
-  --sidebar-accent-foreground: oklch(0.31 0.05 265);
-  --sidebar-border: oklch(0.92 0.01 265);
+  --sidebar-accent: oklch(0.965 0.02 85);
+  --sidebar-accent-foreground: oklch(0.28 0.03 265);
+  --sidebar-border: oklch(0.91 0.022 85);
   --sidebar-ring: oklch(0.488 0.243 264.376);
 
-  /* 落地页 / 认证页：米色柔和背景 */
-  --landing-bg: oklch(0.98 0.01 85);
-  --landing-card: oklch(1 0.005 85);
-  --landing-border: oklch(0.92 0.02 85);
+  /* 落地页 / 认证页：与全局米色一致 */
+  --landing-bg: oklch(0.98 0.012 85);
+  --landing-card: oklch(0.985 0.012 85);
+  --landing-border: oklch(0.91 0.022 85);
 }
 
 @theme inline {

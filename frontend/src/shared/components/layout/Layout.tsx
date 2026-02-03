@@ -37,10 +37,20 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* 与落地页一致的背景：网格 + 渐变光晕 */}
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_0.5px,transparent_0.5px),linear-gradient(to_bottom,var(--border)_0.5px,transparent_0.5px)] bg-[size:4rem_4rem]"
+          style={{ opacity: 0.5 }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,var(--primary)/10%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_85%_50%,var(--chart-2)/6%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_30%_at_15%_85%,var(--primary)/5%,transparent_50%)]" />
+      </div>
       <Sidebar />
       <div className={isMobile ? "" : "ml-[260px]"}>
-        <header className="sticky top-0 z-[100] flex h-16 items-center justify-between border-b border-border bg-card/95 px-6 shadow-sm backdrop-blur-md md:px-8">
+        <header className="sticky top-0 z-[100] flex h-16 items-center justify-between border-b border-border/80 bg-card/90 px-6 shadow-sm backdrop-blur-xl md:px-8">
           <div className="flex items-center gap-2">
             <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <LayoutDashboard className="size-5" />
@@ -80,7 +90,7 @@ const Layout = () => {
             </DropdownMenu>
           </div>
         </header>
-        <main className="mx-auto my-6 min-h-[280px] max-w-[1400px] w-full px-4 md:my-8 md:px-6">
+        <main className="page-container mx-auto my-6 min-h-[280px] w-full md:my-8">
           <Outlet />
         </main>
       </div>

@@ -62,6 +62,7 @@ const GraphCanvas = ({
   onRelationDirectedChange,
   onRelationWeightChange,
 }: GraphCanvasProps) => {
+  const isDark = false;
   const token = {
     padding: 16,
     paddingSM: 12,
@@ -76,7 +77,7 @@ const GraphCanvas = ({
     colorText: "rgba(0,0,0,0.88)",
     colorTextSecondary: "rgba(0,0,0,0.65)",
     colorBorder: "rgba(0,0,0,0.15)",
-    colorBgContainer: "#ffffff",
+    colorBgContainer: "oklch(0.985 0.012 85)",
   } as const;
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -314,7 +315,7 @@ const GraphCanvas = ({
       .append("circle")
       .attr("r", 20)
       .attr("fill", (d) => colorScale(d.group ?? "default"))
-      .attr("stroke", (d) => (d.id === selectedNodeId ? "#f39c12" : "#fff"))
+      .attr("stroke", (d) => (d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)"))
       .attr("stroke-width", (d) => (d.id === selectedNodeId ? 4 : 2))
       .attr("class", "node-circle")
       .style("cursor", "pointer");
@@ -440,7 +441,7 @@ const GraphCanvas = ({
           .transition()
           .duration(150)
           .attr("r", 20)
-          .attr("stroke", d.id === selectedNodeId ? "#f39c12" : "#fff")
+          .attr("stroke", d.id === selectedNodeId ? "#f39c12" : "oklch(0.97 0.01 85)")
           .attr("stroke-width", d.id === selectedNodeId ? 4 : 2);
       } else {
         d3.select(this)
@@ -672,7 +673,7 @@ const GraphCanvas = ({
     position: "relative",
     width: "100%",
     height: "100%",
-    background: isDark ? "#141414" : "#fafafa",
+    background: isDark ? "#141414" : "oklch(0.97 0.012 85)",
     borderRadius: token.borderRadiusLG,
     overflow: "hidden",
   };
@@ -681,7 +682,7 @@ const GraphCanvas = ({
     position: "absolute",
     top: token.padding,
     left: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
@@ -715,7 +716,7 @@ const GraphCanvas = ({
   const canvasStyle: React.CSSProperties = {
     width: "100%",
     height: "100%",
-    background: isDark ? "#141414" : "#fafafa",
+    background: isDark ? "#141414" : "oklch(0.97 0.012 85)",
     borderRadius: token.borderRadiusLG,
   };
 
@@ -723,7 +724,7 @@ const GraphCanvas = ({
     position: "absolute",
     bottom: token.padding,
     left: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,
@@ -755,7 +756,7 @@ const GraphCanvas = ({
     position: "absolute",
     bottom: token.padding,
     right: token.padding,
-    background: isDark ? "rgba(20, 20, 20, 0.95)" : "rgba(255, 255, 255, 0.95)",
+    background: isDark ? "rgba(20, 20, 20, 0.95)" : "oklch(0.985 0.012 85 / 0.95)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     padding: token.padding,

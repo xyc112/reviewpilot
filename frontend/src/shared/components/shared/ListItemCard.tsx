@@ -27,8 +27,8 @@ const ListItemCard = ({
           : undefined
       }
       className={cn(
-        "mb-4 rounded-xl border border-border bg-card px-6 py-5 shadow-sm transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-border hover:shadow-md",
+        "mb-4 rounded-2xl border border-border/90 bg-card/95 px-6 py-5 shadow-sm backdrop-blur-sm transition-all duration-200 ease-out",
+        "hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md",
         cursor === "pointer" ? "cursor-pointer" : "cursor-default",
       )}
       onClick={onClick}

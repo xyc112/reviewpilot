@@ -83,6 +83,7 @@ const GraphView = () => {
   const fetchGraphData = async () => {
     if (!course) return;
     try {
+      setError("");
       setLoading(true);
       const [nodesResponse, relationsResponse] = await Promise.all([
         graphAPI.getNodes(course.id),
@@ -344,33 +345,31 @@ const GraphView = () => {
   };
 
   if (!course) {
-    return (
-      <div className="mx-auto max-w-[900px] px-4 py-8">
-        <Alert variant="destructive">
-          <AlertTitle>请先选择一个课程</AlertTitle>
-          <div className="mt-2">
-            <Button onClick={() => void navigate(ROUTES.COURSES)}>
-              前往课程列表
-            </Button>
-          </div>
-        </Alert>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (loading) return <LoadingSpinner />;
-  if (error) {
-    return (
-      <div className="mx-auto max-w-[900px] px-4 py-8">
-        <Alert variant="destructive">
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
-    <div className="h-screen w-full p-0">
+    <div className="flex h-screen w-full flex-col p-0">
+      {error ? (
+        <div className="flex shrink-0 items-center gap-4 px-4 py-2">
+          <Alert variant="destructive" className="flex-1 rounded-xl">
+            <AlertTitle className="text-sm">{error}</AlertTitle>
+          </Alert>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 border-destructive/50 text-destructive hover:bg-destructive/10"
+            onClick={() => {
+              setError("");
+              void fetchGraphData();
+            }}
+          >
+            重试
+          </Button>
+        </div>
+      ) : null}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={deleteConfirm.type === "node" ? "删除节点" : "删除关系"}
@@ -390,7 +389,7 @@ const GraphView = () => {
         }}
       />
 
-      <div className="h-full w-full">
+      <div className="min-h-0 flex-1 w-full">
         <div className="h-full w-full">
           <GraphCanvas
             nodes={nodes}

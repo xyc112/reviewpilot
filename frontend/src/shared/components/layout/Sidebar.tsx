@@ -216,7 +216,7 @@ const Sidebar = () => {
 
       {!isMobile ? (
         <aside
-          className="fixed left-0 top-0 bottom-0 z-40 h-screen w-[260px] overflow-auto border-r border-border bg-card shadow-sm"
+          className="fixed left-0 top-0 bottom-0 z-40 h-screen w-[260px] overflow-auto border-r border-border bg-card/95 shadow-sm backdrop-blur-xl"
           aria-label="主导航"
         >
           {menuContent}

@@ -38,7 +38,7 @@ const ListEmptyState = ({
     ) : null;
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30 py-16">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/60 py-16">
       {resolvedIcon ? (
         <div className="mb-5 flex justify-center text-muted-foreground">
           {resolvedIcon}
